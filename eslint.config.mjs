@@ -5,5 +5,8 @@ export default antfu({
   react: true,
   nextjs: true,
   typescript: true,
-  formatters: true
+  formatters: true,
+  rules: {
+    'e18e/ban-dependencies': 'off',
+  },
 })
