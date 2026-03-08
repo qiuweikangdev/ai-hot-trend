@@ -1,12 +1,10 @@
 'use client'
 
-import { AlertCircle, CheckCircle2, Github, Loader2, LogOut, Sparkles } from 'lucide-react'
+import { AlertCircle, CheckCircle2, Github, Loader2, LogOut } from 'lucide-react'
 import { useSearchParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 import { authClient } from '@/lib/auth-client'
 import { signInWithGithub, signInWithGoogle } from '@/lib/auth-social'
 
@@ -142,13 +140,12 @@ export function LoginPanel() {
     return (
       <Card className="border-white/60 bg-white/90 shadow-xl shadow-amber-900/10 backdrop-blur-md">
         <CardHeader>
-          <CardTitle className="text-xl">正在检查登录状态</CardTitle>
-          <CardDescription>请稍候，系统正在读取你的会话信息。</CardDescription>
+          <CardTitle className="text-xl">登录中</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <Loader2 className="size-4 animate-spin" />
-            会话验证中...
+            正在检查会话
           </div>
         </CardContent>
       </Card>
@@ -170,7 +167,7 @@ export function LoginPanel() {
             欢迎回来，
             {displayName}
           </CardTitle>
-          <CardDescription>你已完成 OAuth 授权，当前会话状态正常。</CardDescription>
+          <CardDescription>当前账号已登录。</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex items-center gap-3 rounded-lg border bg-muted/40 p-3">
@@ -187,9 +184,6 @@ export function LoginPanel() {
               <p className="truncate text-xs text-muted-foreground">{session.data.user.email || '未提供邮箱'}</p>
             </div>
           </div>
-          <p className="text-sm text-muted-foreground">
-            你可以继续访问热点内容工作台，如需切换账号可退出后重新登录。
-          </p>
         </CardContent>
         <CardFooter>
           <Button type="button" variant="outline" className="w-full" onClick={handleSignOut}>
@@ -204,78 +198,42 @@ export function LoginPanel() {
   return (
     <Card className="border-white/60 bg-white/90 shadow-xl shadow-amber-900/10 backdrop-blur-md">
       <CardHeader className="gap-3">
-        <div className="inline-flex w-fit items-center gap-2 rounded-full bg-amber-100 px-3 py-1 text-xs font-medium text-amber-700">
-          <Sparkles className="size-3.5" />
-          欢迎回来
-        </div>
-        <CardTitle className="text-2xl">登录账号</CardTitle>
-        <CardDescription>支持 Google / GitHub 一键登录，邮箱密码登录将在下一版本开放。</CardDescription>
+        <CardTitle className="text-2xl">登录</CardTitle>
+        <CardDescription>选择一个社交账号继续</CardDescription>
       </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="space-y-3">
-          <Button
-            type="button"
-            className="h-11 w-full justify-start rounded-lg bg-slate-900 px-4 text-white hover:bg-slate-800"
-            onClick={() => handleSocialLogin('github')}
-            disabled={isLoadingProviders || !providers.github || pendingProvider !== null}
-          >
-            {pendingProvider === 'github'
-              ? (
-                  <Loader2 className="size-4 animate-spin" />
-                )
-              : (
-                  <Github className="size-4" />
-                )}
-            通过 GitHub 登录
-          </Button>
-          <Button
-            type="button"
-            variant="outline"
-            className="h-11 w-full justify-start rounded-lg border-slate-200 bg-white px-4"
-            onClick={() => handleSocialLogin('google')}
-            disabled={isLoadingProviders || !providers.google || pendingProvider !== null}
-          >
-            {pendingProvider === 'google'
-              ? (
-                  <Loader2 className="size-4 animate-spin" />
-                )
-              : (
-                  <GoogleIcon />
-                )}
-            通过 Google 登录
-          </Button>
-        </div>
-
-        <div className="relative py-1">
-          <div className="absolute inset-0 flex items-center">
-            <span className="w-full border-t" />
-          </div>
-          <div className="relative flex justify-center text-xs uppercase">
-            <span className="bg-card px-2 text-muted-foreground">或使用邮箱</span>
-          </div>
-        </div>
-
-        <form
-          className="space-y-3"
-          onSubmit={(event) => {
-            event.preventDefault()
-            setErrorMessage('邮箱密码登录功能开发中，请先使用社交登录。')
-          }}
+      <CardContent className="space-y-3">
+        <Button
+          type="button"
+          className="h-11 w-full justify-start rounded-lg bg-slate-900 px-4 text-white hover:bg-slate-800"
+          onClick={() => handleSocialLogin('github')}
+          disabled={isLoadingProviders || !providers.github || pendingProvider !== null}
         >
-          <div className="space-y-1.5">
-            <Label htmlFor="email">邮箱</Label>
-            <Input id="email" type="email" placeholder="you@company.com" autoComplete="email" />
-          </div>
-          <div className="space-y-1.5">
-            <Label htmlFor="password">密码</Label>
-            <Input id="password" type="password" placeholder="请输入密码" autoComplete="current-password" />
-          </div>
-          <Button type="submit" variant="secondary" className="h-10 w-full rounded-lg">
-            邮箱登录（即将开放）
-          </Button>
-        </form>
-      </CardContent>
-      <CardFooter className="flex-col items-start gap-2">
+          {pendingProvider === 'github'
+            ? (
+                <Loader2 className="size-4 animate-spin" />
+              )
+            : (
+                <Github className="size-4" />
+              )}
+          GitHub
+        </Button>
+        <Button
+          type="button"
+          variant="outline"
+          className="h-11 w-full justify-start rounded-lg border-slate-200 bg-white px-4"
+          onClick={() => handleSocialLogin('google')}
+          disabled={isLoadingProviders || !providers.google || pendingProvider !== null}
+        >
+          {pendingProvider === 'google'
+            ? (
+                <Loader2 className="size-4 animate-spin" />
+              )
+            : (
+                <GoogleIcon />
+              )}
+          Google
+        </Button>
+
         {displayErrorMessage
           ? (
               <p className="flex items-start gap-2 text-sm text-rose-600">
@@ -283,12 +241,8 @@ export function LoginPanel() {
                 {displayErrorMessage}
               </p>
             )
-          : (
-              <p className="text-sm text-muted-foreground">
-                登录即表示你同意平台服务协议与隐私政策。
-              </p>
-            )}
-      </CardFooter>
+          : null}
+      </CardContent>
     </Card>
   )
 }
