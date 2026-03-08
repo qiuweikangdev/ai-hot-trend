@@ -1,11 +1,13 @@
 'use client'
 
-import { AlertCircle, Github, Loader2, Sparkles } from 'lucide-react'
+import { AlertCircle, CheckCircle2, Github, Loader2, LogOut, Sparkles } from 'lucide-react'
+import { useSearchParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { authClient } from '@/lib/auth-client'
 import { signInWithGithub, signInWithGoogle } from '@/lib/auth-social'
 
 type SocialProvider = 'google' | 'github'
@@ -28,16 +30,36 @@ function GoogleIcon() {
   )
 }
 
+function getDisplayName(user: { name?: string | null, email?: string | null }) {
+  return user.name || user.email || '用户'
+}
+
+function getInitial(value: string) {
+  return value.slice(0, 1).toUpperCase()
+}
+
 export function LoginPanel() {
+  const searchParams = useSearchParams()
+  const oauthError = searchParams.get('error')
+
+  const session = authClient.useSession()
+
   const [providers, setProviders] = useState<ProviderStatus>(DEFAULT_PROVIDER_STATUS)
   const [isLoadingProviders, setIsLoadingProviders] = useState(true)
   const [pendingProvider, setPendingProvider] = useState<SocialProvider | null>(null)
   const [errorMessage, setErrorMessage] = useState('')
 
+  const displayErrorMessage = errorMessage || (oauthError ? `登录失败：${oauthError}` : '')
+
   useEffect(() => {
     let isMounted = true
 
     async function loadProviders() {
+      if (session.data?.user) {
+        setIsLoadingProviders(false)
+        return
+      }
+
       try {
         const response = await fetch('/api/user/providers', {
           cache: 'no-store',
@@ -78,7 +100,7 @@ export function LoginPanel() {
     return () => {
       isMounted = false
     }
-  }, [])
+  }, [session.data?.user])
 
   async function handleSocialLogin(provider: SocialProvider) {
     if (!providers[provider]) {
@@ -102,6 +124,81 @@ export function LoginPanel() {
       setErrorMessage(error instanceof Error ? error.message : fallback)
       setPendingProvider(null)
     }
+  }
+
+  async function handleSignOut() {
+    setErrorMessage('')
+
+    try {
+      await authClient.signOut()
+      await session.refetch()
+    }
+    catch {
+      setErrorMessage('退出登录失败，请稍后重试。')
+    }
+  }
+
+  if (session.isPending) {
+    return (
+      <Card className="border-white/60 bg-white/90 shadow-xl shadow-amber-900/10 backdrop-blur-md">
+        <CardHeader>
+          <CardTitle className="text-xl">正在检查登录状态</CardTitle>
+          <CardDescription>请稍候，系统正在读取你的会话信息。</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Loader2 className="size-4 animate-spin" />
+            会话验证中...
+          </div>
+        </CardContent>
+      </Card>
+    )
+  }
+
+  if (session.data?.user) {
+    const displayName = getDisplayName(session.data.user)
+    const initial = getInitial(displayName)
+
+    return (
+      <Card className="border-emerald-200/80 bg-white/95 shadow-xl shadow-emerald-900/10 backdrop-blur-md">
+        <CardHeader className="gap-3">
+          <div className="inline-flex w-fit items-center gap-2 rounded-full bg-emerald-100 px-3 py-1 text-xs font-medium text-emerald-700">
+            <CheckCircle2 className="size-3.5" />
+            登录成功
+          </div>
+          <CardTitle className="text-2xl">
+            欢迎回来，
+            {displayName}
+          </CardTitle>
+          <CardDescription>你已完成 OAuth 授权，当前会话状态正常。</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex items-center gap-3 rounded-lg border bg-muted/40 p-3">
+            <div
+              className="flex size-11 items-center justify-center rounded-full bg-primary/10 bg-cover bg-center text-sm font-semibold text-primary"
+              style={session.data.user.image
+                ? { backgroundImage: `url(${session.data.user.image})` }
+                : undefined}
+            >
+              {session.data.user.image ? null : initial}
+            </div>
+            <div className="min-w-0 space-y-0.5">
+              <p className="truncate text-sm font-medium text-foreground">{displayName}</p>
+              <p className="truncate text-xs text-muted-foreground">{session.data.user.email || '未提供邮箱'}</p>
+            </div>
+          </div>
+          <p className="text-sm text-muted-foreground">
+            你可以继续访问热点内容工作台，如需切换账号可退出后重新登录。
+          </p>
+        </CardContent>
+        <CardFooter>
+          <Button type="button" variant="outline" className="w-full" onClick={handleSignOut}>
+            <LogOut className="size-4" />
+            退出登录
+          </Button>
+        </CardFooter>
+      </Card>
+    )
   }
 
   return (
@@ -179,11 +276,11 @@ export function LoginPanel() {
         </form>
       </CardContent>
       <CardFooter className="flex-col items-start gap-2">
-        {errorMessage
+        {displayErrorMessage
           ? (
               <p className="flex items-start gap-2 text-sm text-rose-600">
                 <AlertCircle className="mt-0.5 size-4" />
-                {errorMessage}
+                {displayErrorMessage}
               </p>
             )
           : (
