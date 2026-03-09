@@ -1,0 +1,43 @@
+export const TREND_SOURCE_VALUES = ['github'] as const
+
+export type TrendSource = (typeof TREND_SOURCE_VALUES)[number]
+
+export const TREND_PERIOD_VALUES = ['today', 'week', 'month'] as const
+
+export type TrendPeriod = (typeof TREND_PERIOD_VALUES)[number]
+
+export interface TrendQuery {
+  source: TrendSource
+  period: TrendPeriod
+  language?: string
+  keyword?: string
+  limit: number
+}
+
+export interface TrendItem {
+  id: string
+  source: TrendSource
+  rank: number
+  title: string
+  fullName: string
+  owner: string
+  description: string
+  url: string
+  ownerAvatarUrl: string
+  language: string | null
+  stars: number
+  forks: number
+  hotScore: number
+  createdAt: string
+  updatedAt: string
+}
+
+export interface TrendResult {
+  source: TrendSource
+  period: TrendPeriod
+  language?: string
+  keyword?: string
+  fetchedAt: string
+  stale: boolean
+  items: TrendItem[]
+}

@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 })
 
 export const metadata: Metadata = {
-  title: 'AI Hot Trend 登录',
-  description: 'AI Hot Trend 账号登录入口',
+  title: '热点趋势系统',
+  description: '支持模块化扩展的热点趋势与收藏系统',
 }
 
 export default function RootLayout({
