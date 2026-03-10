@@ -7,6 +7,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { LoginPanel } from '@/components/auth/login-panel'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { TREND_UI_SCALE_PRESETS, trendUiConfig } from '@/config/trends'
 import { authClient } from '@/lib/auth-client'
 import { cn } from '@/lib/utils'
 import { TrendCard } from './trend-card'
@@ -35,33 +36,9 @@ interface FavoriteMutationResponse {
   }
 }
 
-interface SourceTab {
-  value: TrendSource | string
-  label: string
-  enabled: boolean
-}
-
-const SOURCE_TABS: SourceTab[] = [
-  { value: 'hot', label: '热点', enabled: false },
-  { value: 'github', label: 'GitHub', enabled: true },
-  { value: 'npm', label: 'npm', enabled: false },
-  { value: 'vue', label: 'Vue生态', enabled: false },
-  { value: 'react', label: 'React生态', enabled: false },
-  { value: 'node', label: 'Node生态', enabled: false },
-  { value: 'ai', label: 'AI生态', enabled: false },
-  { value: 'weibo', label: '微博', enabled: false },
-  { value: 'zhihu', label: '知乎', enabled: false },
-  { value: 'juejin', label: '掘金', enabled: false },
-  { value: 'v2ex', label: 'v2ex', enabled: false },
-]
-
-const PERIOD_TABS: Array<{ value: TrendPeriod, label: string }> = [
-  { value: 'today', label: '今日热度' },
-  { value: 'week', label: '本周热点' },
-  { value: 'month', label: '本月趋势' },
-]
-
-const PRESET_LANGUAGES = ['TypeScript', 'JavaScript', 'Python', 'Go', 'Rust', 'Vue', 'React']
+const SOURCE_TABS = trendUiConfig.sourceTabs
+const PERIOD_TABS = trendUiConfig.periodTabs
+const PRESET_LANGUAGES = trendUiConfig.presetLanguages
 
 function buildFavoriteKey(source: string, trendId: string) {
   return `${source}:${trendId}`
@@ -76,6 +53,8 @@ function trimText(value: string) {
 }
 
 export function TrendDashboard() {
+  const uiScale = TREND_UI_SCALE_PRESETS[trendUiConfig.activeScalePreset]
+
   const session = authClient.useSession()
 
   const [source, setSource] = useState<TrendSource>('github')
@@ -110,7 +89,7 @@ export function TrendDashboard() {
     return [...new Set([...PRESET_LANGUAGES, ...fromTrends])]
   }, [trendData?.items])
 
-  const visibleQuickLanguages = expandedQuickFilter ? quickLanguages : quickLanguages.slice(0, 5)
+  const visibleQuickLanguages = expandedQuickFilter ? quickLanguages : quickLanguages.slice(0, trendUiConfig.quickFilterCollapsedCount)
 
   useEffect(() => {
     let aborted = false
@@ -122,7 +101,7 @@ export function TrendDashboard() {
       const searchParams = new URLSearchParams({
         source,
         period,
-        limit: '18',
+        limit: String(trendUiConfig.trendLimit),
       })
 
       if (language) {
@@ -226,7 +205,7 @@ export function TrendDashboard() {
 
     const timer = window.setTimeout(() => {
       setNotice('')
-    }, 2200)
+    }, trendUiConfig.noticeDurationMs)
 
     return () => {
       window.clearTimeout(timer)
@@ -374,14 +353,14 @@ export function TrendDashboard() {
   return (
     <div className="min-h-screen bg-[radial-gradient(circle_at_18%_16%,rgba(251,207,130,0.24),transparent_28%),radial-gradient(circle_at_86%_12%,rgba(139,205,245,0.25),transparent_24%),linear-gradient(180deg,#f7f9fd_0%,#edf2f9_100%)] text-slate-800">
       <header className="border-b border-white/70 bg-white/70 backdrop-blur-md">
-        <div className="mx-auto flex w-full max-w-[1360px] items-center justify-between px-4 py-5 sm:px-6 lg:px-8">
+        <div className={cn('mx-auto flex w-full max-w-[1360px] items-center justify-between px-4 sm:px-6 lg:px-8', uiScale.headerPadding)}>
           <div className="flex items-center gap-3">
-            <div className="grid size-14 place-items-center rounded-2xl bg-[linear-gradient(145deg,#ffd17b_0%,#ffc36d_45%,#8fe0c4_100%)] shadow-[0_14px_25px_-16px_rgba(34,105,84,0.6)]">
-              <Sparkles className="size-7 text-slate-800" />
+            <div className={cn('grid place-items-center rounded-2xl bg-[linear-gradient(145deg,#ffd17b_0%,#ffc36d_45%,#8fe0c4_100%)] shadow-[0_14px_25px_-16px_rgba(34,105,84,0.6)]', uiScale.logoSize)}>
+              <Sparkles className={cn('text-slate-800', uiScale.logoIcon)} />
             </div>
             <div>
-              <h1 className="text-3xl font-semibold tracking-tight text-slate-900">热点趋势</h1>
-              <p className="text-sm text-slate-500">模块化热点系统 · 首期 GitHub</p>
+              <h1 className={cn('font-semibold tracking-tight text-slate-900', uiScale.title)}>热点趋势</h1>
+              <p className={cn('text-slate-500', uiScale.subtitle)}>模块化热点系统 · 首期 GitHub</p>
             </div>
           </div>
 
@@ -408,7 +387,7 @@ export function TrendDashboard() {
             {session.data?.user
               ? (
                   <>
-                    <div className="hidden items-center gap-2 rounded-2xl border border-slate-200 bg-white/90 px-3 py-2 text-sm text-slate-700 md:flex">
+                    <div className={cn('hidden items-center gap-2 rounded-2xl border border-slate-200 bg-white/90 px-3 py-2 text-slate-700 md:flex', uiScale.userInfo)}>
                       <UserCircle2 className="size-4 text-slate-500" />
                       {userDisplayName}
                     </div>
@@ -428,7 +407,7 @@ export function TrendDashboard() {
         </div>
       </header>
 
-      <main className="mx-auto w-full max-w-[1360px] px-4 py-8 sm:px-6 lg:px-8">
+      <main className={cn('mx-auto w-full max-w-[1360px] px-4 sm:px-6 lg:px-8', uiScale.pagePadding)}>
         <section className="rounded-[30px] border border-white/80 bg-white/75 p-4 shadow-[0_30px_65px_-55px_rgba(35,63,112,0.7)] backdrop-blur-md sm:p-6">
           <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
             <div className="flex flex-wrap items-center gap-2 rounded-full border border-slate-200 bg-white p-1">
@@ -437,7 +416,8 @@ export function TrendDashboard() {
                   key={tab.value}
                   type="button"
                   className={cn(
-                    'rounded-full px-4 py-2 text-sm transition',
+                    'rounded-full px-4 py-2 transition',
+                    uiScale.tabText,
                     tab.enabled
                       ? 'text-slate-600 hover:bg-slate-100'
                       : 'cursor-not-allowed text-slate-300',
@@ -463,7 +443,8 @@ export function TrendDashboard() {
                   key={tab.value}
                   type="button"
                   className={cn(
-                    'rounded-full px-4 py-2 text-sm text-slate-600 transition hover:bg-slate-100',
+                    'rounded-full px-4 py-2 text-slate-600 transition hover:bg-slate-100',
+                    uiScale.tabText,
                     tab.value === period && 'bg-blue-600 text-white hover:bg-blue-600',
                   )}
                   onClick={() => setPeriod(tab.value)}
@@ -485,19 +466,19 @@ export function TrendDashboard() {
                 }
               }}
               placeholder="筛选语言或关键词，例如 vue / react / ai agent"
-              className="h-11 border-0 bg-transparent text-base shadow-none focus-visible:ring-0"
+              className={cn('border-0 bg-transparent shadow-none focus-visible:ring-0', uiScale.searchButtonHeight, uiScale.inputText)}
             />
-            <Button type="button" className="h-11 rounded-xl bg-blue-600 px-5 text-white hover:bg-blue-500" onClick={handleSearch}>
+            <Button type="button" className={cn('rounded-xl bg-blue-600 px-5 text-white hover:bg-blue-500', uiScale.searchButtonHeight)} onClick={handleSearch}>
               <Search className="size-4" />
               搜索
             </Button>
-            <Button type="button" variant="outline" size="icon" className="h-11 w-11 rounded-xl border-slate-200" onClick={handleResetSearch}>
+            <Button type="button" variant="outline" size="icon" className={cn('rounded-xl border-slate-200', uiScale.resetButtonHeight)} onClick={handleResetSearch}>
               <RefreshCw className="size-4" />
             </Button>
           </div>
 
           <div className="mt-3 flex flex-col items-start justify-between gap-3 lg:flex-row lg:items-center">
-            <div className="inline-flex flex-wrap items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-sm text-slate-600">
+            <div className={cn('inline-flex flex-wrap items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-slate-600', uiScale.filterBarText)}>
               当前筛选：
               <span className="font-medium text-slate-900">
                 来源
@@ -517,7 +498,7 @@ export function TrendDashboard() {
 
             <button
               type="button"
-              className="text-sm text-slate-500 underline-offset-4 hover:text-blue-600 hover:underline"
+              className={cn('text-slate-500 underline-offset-4 hover:text-blue-600 hover:underline', uiScale.helperText)}
               onClick={() => setExpandedQuickFilter(value => !value)}
             >
               {expandedQuickFilter ? '收起快捷筛选' : '展开快捷筛选'}
@@ -528,7 +509,8 @@ export function TrendDashboard() {
             <button
               type="button"
               className={cn(
-                'rounded-full border px-3 py-1 text-sm transition',
+                'rounded-full border px-3 py-1 transition',
+                uiScale.quickFilterText,
                 language
                   ? 'border-slate-200 bg-white text-slate-600 hover:border-blue-200 hover:text-blue-600'
                   : 'border-blue-200 bg-blue-50 text-blue-700',
@@ -543,7 +525,8 @@ export function TrendDashboard() {
                 key={item}
                 type="button"
                 className={cn(
-                  'rounded-full border px-3 py-1 text-sm transition',
+                  'rounded-full border px-3 py-1 transition',
+                  uiScale.quickFilterText,
                   language === item
                     ? 'border-blue-200 bg-blue-50 text-blue-700'
                     : 'border-slate-200 bg-white text-slate-600 hover:border-blue-200 hover:text-blue-600',
@@ -558,7 +541,7 @@ export function TrendDashboard() {
 
         {notice
           ? (
-              <div className="mt-4 rounded-2xl border border-blue-100 bg-blue-50 px-4 py-2 text-sm text-blue-700">
+              <div className={cn('mt-4 rounded-2xl border border-blue-100 bg-blue-50 px-4 py-2 text-blue-700', uiScale.noticeText)}>
                 {notice}
               </div>
             )
@@ -567,7 +550,7 @@ export function TrendDashboard() {
         <section className="mt-6">
           {isTrendLoading
             ? (
-                <div className="flex items-center justify-center rounded-3xl border border-white/80 bg-white/70 px-4 py-20 text-slate-500">
+                <div className="flex items-center justify-center rounded-3xl border border-white/80 bg-white/70 px-4 py-20 text-sm text-slate-500">
                   <Loader2 className="mr-2 size-5 animate-spin" />
                   正在加载热点趋势...
                 </div>
@@ -582,7 +565,7 @@ export function TrendDashboard() {
                   <>
                     {trendData?.stale
                       ? (
-                          <div className="mb-4 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-2 text-sm text-amber-700">
+                          <div className="mb-4 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-2 text-xs text-amber-700">
                             当前展示缓存数据，GitHub 接口暂时不可用。
                           </div>
                         )
@@ -593,6 +576,7 @@ export function TrendDashboard() {
                         <TrendCard
                           key={item.id}
                           item={item}
+                          size={uiScale.cardSize}
                           isFavorite={favoriteKeySet.has(buildFavoriteKey(item.source, item.id))}
                           favoriteDisabled={favoriteBusyKey === buildFavoriteKey(item.source, item.id)}
                           onToggleFavorite={handleToggleFavorite}
@@ -621,7 +605,7 @@ export function TrendDashboard() {
                 onClick={event => event.stopPropagation()}
               >
                 <div className="mb-4 flex items-center justify-between">
-                  <h2 className="text-xl font-semibold text-slate-900">收藏中心</h2>
+                  <h2 className={cn('font-semibold text-slate-900', uiScale.favPanelTitle)}>收藏中心</h2>
                   <Button type="button" variant="outline" size="icon" className="rounded-xl" onClick={() => setIsFavoritesOpen(false)}>
                     <X className="size-4" />
                   </Button>
@@ -629,7 +613,7 @@ export function TrendDashboard() {
 
                 {isFavoriteLoading
                   ? (
-                      <div className="flex items-center gap-2 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4 text-slate-500">
+                      <div className={cn('flex items-center gap-2 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4 text-slate-500', uiScale.favPanelText)}>
                         <Loader2 className="size-4 animate-spin" />
                         正在加载收藏列表...
                       </div>
@@ -638,7 +622,7 @@ export function TrendDashboard() {
 
                 {!isFavoriteLoading && !favorites.length
                   ? (
-                      <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-8 text-center text-slate-500">
+                      <div className={cn('rounded-2xl border border-slate-200 bg-slate-50 px-4 py-8 text-slate-500', uiScale.favPanelText)}>
                         你还没有收藏项目，先去榜单点亮第一颗心吧。
                       </div>
                     )
@@ -649,8 +633,8 @@ export function TrendDashboard() {
                     <article key={item.id} className="rounded-2xl border border-slate-200 p-4">
                       <div className="flex items-start justify-between gap-3">
                         <div className="min-w-0">
-                          <p className="truncate text-lg font-medium text-slate-900">{item.title}</p>
-                          <p className="truncate text-sm text-slate-500">{item.fullName}</p>
+                          <p className={cn('truncate font-medium text-slate-900', uiScale.favItemTitle)}>{item.title}</p>
+                          <p className={cn('truncate text-slate-500', uiScale.favItemSub)}>{item.fullName}</p>
                         </div>
                         <Button
                           type="button"
@@ -663,7 +647,7 @@ export function TrendDashboard() {
                           <Heart className="size-4 fill-current" />
                         </Button>
                       </div>
-                      <p className="mt-2 line-clamp-2 text-sm text-slate-600">{item.description}</p>
+                      <p className={cn('mt-2 line-clamp-2 text-slate-600', uiScale.favItemDesc)}>{item.description}</p>
                       <div className="mt-3 flex items-center justify-end">
                         <Button asChild variant="outline" size="sm" className="rounded-xl">
                           <a href={item.url} target="_blank" rel="noreferrer">打开仓库</a>

@@ -1,9 +1,11 @@
 'use client'
 
+import type { TrendCardSize } from '@/config/trends'
 import type { TrendItem } from '@/modules/trends/types'
 import { Copy, ExternalLink, GitFork, Heart, Languages, Star } from 'lucide-react'
 import Image from 'next/image'
 import { Button } from '@/components/ui/button'
+import { TREND_CARD_CLASS_MAP } from '@/config/trends'
 import { cn } from '@/lib/utils'
 
 function formatCount(value: number) {
@@ -17,6 +19,7 @@ function formatCount(value: number) {
 interface TrendCardProps {
   item: TrendItem
   isFavorite: boolean
+  size: TrendCardSize
   favoriteDisabled?: boolean
   onToggleFavorite: (item: TrendItem) => void
   onCopyName: (item: TrendItem) => void
@@ -25,20 +28,23 @@ interface TrendCardProps {
 export function TrendCard({
   item,
   isFavorite,
+  size,
   favoriteDisabled,
   onToggleFavorite,
   onCopyName,
 }: TrendCardProps) {
+  const scale = TREND_CARD_CLASS_MAP[size]
+
   return (
-    <article className="group rounded-3xl border border-slate-200/90 bg-white/80 p-5 shadow-[0_8px_32px_-24px_rgba(35,63,112,0.6)] backdrop-blur-sm transition hover:-translate-y-0.5 hover:shadow-[0_20px_45px_-28px_rgba(35,63,112,0.45)]">
+    <article className={cn('group rounded-3xl border border-slate-200/90 bg-white/80 shadow-[0_8px_32px_-24px_rgba(35,63,112,0.6)] backdrop-blur-sm transition hover:-translate-y-0.5 hover:shadow-[0_20px_45px_-28px_rgba(35,63,112,0.45)]', scale.root)}>
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-center gap-2">
-          <span className="rounded-full border border-amber-300 bg-amber-50 px-3 py-1 text-sm font-semibold text-amber-700">
+          <span className={cn('rounded-full border border-amber-300 bg-amber-50 font-semibold text-amber-700', scale.topBadge)}>
             TOP
             {' '}
             {item.rank}
           </span>
-          <span className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-sm text-slate-600">GitHub</span>
+          <span className={cn('rounded-full border border-slate-200 bg-slate-50 text-slate-600', scale.sourceBadge)}>GitHub</span>
         </div>
         <Image
           src={item.ownerAvatarUrl}
@@ -50,26 +56,26 @@ export function TrendCard({
         />
       </div>
 
-      <div className="mt-4 space-y-2">
-        <h3 className="line-clamp-1 text-3xl/none font-semibold tracking-tight text-slate-900">{item.title}</h3>
-        <p className="line-clamp-1 text-lg text-slate-500">{item.fullName}</p>
-        <p className="line-clamp-2 min-h-14 text-lg/7 text-slate-600">{item.description}</p>
+      <div className="mt-3 space-y-1.5">
+        <h3 className={cn('line-clamp-1 font-semibold tracking-tight text-slate-900', scale.title)}>{item.title}</h3>
+        <p className={cn('line-clamp-1 text-slate-500', scale.fullName)}>{item.fullName}</p>
+        <p className={cn('line-clamp-2 text-slate-600', scale.description)}>{item.description}</p>
       </div>
 
-      <div className="mt-4 flex flex-wrap items-center gap-2 text-sm">
-        <span className="inline-flex items-center gap-1 rounded-full border border-amber-300/80 bg-amber-50 px-3 py-1.5 font-medium text-amber-700">
+      <div className={cn('flex flex-wrap items-center gap-2', scale.metricWrap)}>
+        <span className={cn('inline-flex items-center gap-1 rounded-full border border-amber-300/80 bg-amber-50 font-medium text-amber-700', scale.metricItem)}>
           <Star className="size-3.5" />
           Star
           {' '}
           {formatCount(item.stars)}
         </span>
-        <span className="inline-flex items-center gap-1 rounded-full border border-cyan-300/80 bg-cyan-50 px-3 py-1.5 font-medium text-cyan-700">
+        <span className={cn('inline-flex items-center gap-1 rounded-full border border-cyan-300/80 bg-cyan-50 font-medium text-cyan-700', scale.metricItem)}>
           <GitFork className="size-3.5" />
           Fork
           {' '}
           {formatCount(item.forks)}
         </span>
-        <span className="inline-flex items-center gap-1 rounded-full border border-emerald-300/80 bg-emerald-50 px-3 py-1.5 font-medium text-emerald-700">
+        <span className={cn('inline-flex items-center gap-1 rounded-full border border-emerald-300/80 bg-emerald-50 font-medium text-emerald-700', scale.metricItem)}>
           <Languages className="size-3.5" />
           语言
           {' '}
@@ -77,7 +83,7 @@ export function TrendCard({
         </span>
       </div>
 
-      <div className="mt-5 flex items-center justify-end gap-2">
+      <div className={cn('flex items-center justify-end gap-2', scale.actionWrap)}>
         <Button
           type="button"
           variant="outline"
