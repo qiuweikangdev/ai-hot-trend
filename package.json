@@ -9,10 +9,14 @@
     "commit": "cz",
     "lint": "eslint",
     "lint:fix": "eslint --fix",
+    "prisma:generate": "prisma generate",
+    "prisma:migrate": "prisma migrate dev",
+    "prisma:studio": "prisma studio",
     "prepare": "husky",
     "lint-staged": "lint-staged"
   },
   "dependencies": {
+    "@prisma/client": "^6.17.1",
     "better-auth": "^1.5.4",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
@@ -43,6 +47,7 @@
     "eslint-plugin-react-refresh": "^0.5.2",
     "husky": "^9.1.7",
     "lint-staged": "^16.3.2",
+    "prisma": "^6.17.1",
     "tailwindcss": "^4",
     "typescript": "^5"
   },

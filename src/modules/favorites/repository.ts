@@ -1,53 +1,109 @@
 import type { FavoriteItem, FavoritePayload } from '@/modules/favorites/types'
+import { prisma } from '@/lib/prisma'
+import { TREND_SOURCE_VALUES } from '@/modules/trends/types'
 
 export interface FavoriteRepository {
-  listByUser: (userId: string) => FavoriteItem[]
-  upsert: (userId: string, payload: FavoritePayload) => FavoriteItem
-  remove: (userId: string, source: string, trendId: string) => boolean
+  listByUser: (userId: string) => Promise<FavoriteItem[]>
+  upsert: (userId: string, payload: FavoritePayload) => Promise<FavoriteItem>
+  remove: (userId: string, source: string, trendId: string) => Promise<boolean>
 }
 
-function buildFavoriteKey(source: string, trendId: string) {
-  return `${source}:${trendId}`
+function mapFavoriteToItem(favorite: {
+  id: string
+  userId: string
+  source: string
+  trendId: string
+  title: string
+  fullName: string
+  description: string
+  url: string
+  language: string | null
+  stars: number
+  forks: number
+  ownerAvatarUrl: string
+  createdAt: Date
+}) {
+  const source = TREND_SOURCE_VALUES.includes(favorite.source as FavoriteItem['source'])
+    ? favorite.source as FavoriteItem['source']
+    : 'github'
+
+  return {
+    id: favorite.id,
+    userId: favorite.userId,
+    source,
+    trendId: favorite.trendId,
+    title: favorite.title,
+    fullName: favorite.fullName,
+    description: favorite.description,
+    url: favorite.url,
+    language: favorite.language,
+    stars: favorite.stars,
+    forks: favorite.forks,
+    ownerAvatarUrl: favorite.ownerAvatarUrl,
+    createdAt: favorite.createdAt.toISOString(),
+  }
 }
 
-export class MemoryFavoriteRepository implements FavoriteRepository {
-  private data = new Map<string, Map<string, FavoriteItem>>()
+export class PrismaFavoriteRepository implements FavoriteRepository {
+  async listByUser(userId: string) {
+    const favorites = await prisma.favorite.findMany({
+      where: {
+        userId,
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    })
 
-  listByUser(userId: string) {
-    const favorites = this.data.get(userId)
-
-    if (!favorites) {
-      return []
-    }
-
-    return [...favorites.values()].toSorted((a, b) => Number(new Date(b.createdAt)) - Number(new Date(a.createdAt)))
+    return favorites.map(mapFavoriteToItem)
   }
 
-  upsert(userId: string, payload: FavoritePayload) {
-    const byUser = this.data.get(userId) ?? new Map<string, FavoriteItem>()
-    const key = buildFavoriteKey(payload.source, payload.trendId)
-    const existing = byUser.get(key)
+  async upsert(userId: string, payload: FavoritePayload) {
+    const favorite = await prisma.favorite.upsert({
+      where: {
+        userId_source_trendId: {
+          userId,
+          source: payload.source,
+          trendId: payload.trendId,
+        },
+      },
+      create: {
+        userId,
+        source: payload.source,
+        trendId: payload.trendId,
+        title: payload.title,
+        fullName: payload.fullName,
+        description: payload.description,
+        url: payload.url,
+        language: payload.language,
+        stars: payload.stars,
+        forks: payload.forks,
+        ownerAvatarUrl: payload.ownerAvatarUrl,
+      },
+      update: {
+        title: payload.title,
+        fullName: payload.fullName,
+        description: payload.description,
+        url: payload.url,
+        language: payload.language,
+        stars: payload.stars,
+        forks: payload.forks,
+        ownerAvatarUrl: payload.ownerAvatarUrl,
+      },
+    })
 
-    const item: FavoriteItem = {
-      ...payload,
-      userId,
-      id: existing?.id ?? key,
-      createdAt: existing?.createdAt ?? new Date().toISOString(),
-    }
-
-    byUser.set(key, item)
-    this.data.set(userId, byUser)
-
-    return item
+    return mapFavoriteToItem(favorite)
   }
 
-  remove(userId: string, source: string, trendId: string) {
-    const byUser = this.data.get(userId)
+  async remove(userId: string, source: string, trendId: string) {
+    const result = await prisma.favorite.deleteMany({
+      where: {
+        userId,
+        source,
+        trendId,
+      },
+    })
 
-    if (!byUser) {
-      return false
-    }
-
-    return byUser.delete(buildFavoriteKey(source, trendId))
+    return result.count > 0
   }
 }

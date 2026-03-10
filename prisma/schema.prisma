@@ -1,0 +1,28 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Favorite {
+  id             String   @id @default(cuid())
+  userId         String
+  source         String
+  trendId        String
+  title          String
+  fullName       String
+  description    String   @db.Text
+  url            String
+  language       String?
+  stars          Int      @default(0)
+  forks          Int      @default(0)
+  ownerAvatarUrl String
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@unique([userId, source, trendId])
+  @@index([userId, createdAt])
+}

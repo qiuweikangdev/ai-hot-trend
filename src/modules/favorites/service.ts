@@ -1,11 +1,11 @@
 import type { FavoritePayload } from '@/modules/favorites/types'
-import { MemoryFavoriteRepository } from '@/modules/favorites/repository'
+import { PrismaFavoriteRepository } from '@/modules/favorites/repository'
 
 class FavoriteService {
-  constructor(private readonly repository = new MemoryFavoriteRepository()) {}
+  constructor(private readonly repository = new PrismaFavoriteRepository()) {}
 
-  listByUser(userId: string) {
-    const items = this.repository.listByUser(userId)
+  async listByUser(userId: string) {
+    const items = await this.repository.listByUser(userId)
 
     return {
       count: items.length,
@@ -13,9 +13,9 @@ class FavoriteService {
     }
   }
 
-  upsert(userId: string, payload: FavoritePayload) {
-    const item = this.repository.upsert(userId, payload)
-    const summary = this.listByUser(userId)
+  async upsert(userId: string, payload: FavoritePayload) {
+    const item = await this.repository.upsert(userId, payload)
+    const summary = await this.listByUser(userId)
 
     return {
       item,
@@ -24,9 +24,9 @@ class FavoriteService {
     }
   }
 
-  remove(userId: string, source: string, trendId: string) {
-    const removed = this.repository.remove(userId, source, trendId)
-    const summary = this.listByUser(userId)
+  async remove(userId: string, source: string, trendId: string) {
+    const removed = await this.repository.remove(userId, source, trendId)
+    const summary = await this.listByUser(userId)
 
     return {
       removed,

@@ -99,7 +99,7 @@ favoritesRoute.get('/', async (c) => {
     )
   }
 
-  const data = favoriteService.listByUser(userId)
+  const data = await favoriteService.listByUser(userId)
 
   return c.json({
     success: true,
@@ -133,7 +133,7 @@ favoritesRoute.post('/', async (c) => {
     )
   }
 
-  const data = favoriteService.upsert(userId, payload)
+  const data = await favoriteService.upsert(userId, payload)
 
   return c.json(
     {
@@ -174,7 +174,7 @@ favoritesRoute.delete('/', async (c) => {
     )
   }
 
-  const data = favoriteService.remove(userId, source, trendId)
+  const data = await favoriteService.remove(userId, source, trendId)
 
   return c.json({
     success: true,

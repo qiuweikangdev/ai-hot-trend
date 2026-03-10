@@ -1,3 +1,11 @@
+shellEmulator: true
+trustPolicy: no-downgrade
+
 ignoredBuiltDependencies:
   - sharp
   - unrs-resolver
+
+onlyBuiltDependencies:
+  - '@prisma/client'
+  - '@prisma/engines'
+  - prisma
