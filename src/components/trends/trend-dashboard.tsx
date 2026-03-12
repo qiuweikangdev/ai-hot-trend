@@ -160,6 +160,7 @@ export function TrendDashboard() {
       try {
         const response = await fetch('/api/favorites', {
           cache: 'no-store',
+          credentials: 'include',
         })
 
         if (response.status === 401) {
@@ -213,6 +214,11 @@ export function TrendDashboard() {
   }, [notice])
 
   async function handleSignOut() {
+    await fetch('/api/user/revoke-github', {
+      method: 'POST',
+      credentials: 'include',
+    }).catch(() => null)
+
     await authClient.signOut()
     setIsLoginOpen(false)
     setIsFavoritesOpen(false)
@@ -254,6 +260,7 @@ export function TrendDashboard() {
       if (isFavorite) {
         await updateFavoritesFromRequest(fetch('/api/favorites', {
           method: 'DELETE',
+          credentials: 'include',
           headers: {
             'Content-Type': 'application/json',
           },
@@ -268,6 +275,7 @@ export function TrendDashboard() {
       else {
         await updateFavoritesFromRequest(fetch('/api/favorites', {
           method: 'POST',
+          credentials: 'include',
           headers: {
             'Content-Type': 'application/json',
           },
@@ -305,6 +313,7 @@ export function TrendDashboard() {
     try {
       await updateFavoritesFromRequest(fetch('/api/favorites', {
         method: 'DELETE',
+        credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
         },

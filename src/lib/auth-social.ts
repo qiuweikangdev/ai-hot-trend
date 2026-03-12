@@ -6,6 +6,7 @@ async function signInWithSocial(provider: SocialProvider, callbackURL = '/') {
   return authClient.signIn.social({
     provider,
     callbackURL,
+    errorCallbackURL: callbackURL,
   })
 }
 

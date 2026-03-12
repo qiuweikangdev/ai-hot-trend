@@ -6,6 +6,8 @@ export const socialProviders = {
         github: {
           clientId: authEnv.githubClientId,
           clientSecret: authEnv.githubClientSecret,
+          redirectURI: authEnv.githubRedirectURI,
+          prompt: 'select_account' as const,
         },
       }
     : {}),
@@ -14,6 +16,7 @@ export const socialProviders = {
         google: {
           clientId: authEnv.googleClientId,
           clientSecret: authEnv.googleClientSecret,
+          redirectURI: authEnv.googleRedirectURI,
         },
       }
     : {}),

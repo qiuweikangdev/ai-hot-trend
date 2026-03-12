@@ -11,6 +11,15 @@ interface SessionUser {
   id?: string
 }
 
+interface SessionData {
+  userId?: string
+}
+
+interface SessionPayload {
+  user?: SessionUser
+  session?: SessionData
+}
+
 function normalizeText(value: unknown, fallback = '') {
   if (typeof value !== 'string') {
     return fallback
@@ -45,10 +54,13 @@ function parseSource(value: unknown): TrendSource | null {
 async function getSessionUserId(headers: Headers) {
   const session = await auth.api.getSession({
     headers,
+    query: {
+      disableRefresh: true,
+    },
   })
 
-  const user = session?.user as SessionUser | undefined
-  return user?.id ?? null
+  const payload = session as SessionPayload | null
+  return payload?.user?.id || payload?.session?.userId || null
 }
 
 function parseFavoritePayload(rawValue: unknown): FavoritePayload | null {

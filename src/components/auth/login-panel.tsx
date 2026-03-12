@@ -36,6 +36,18 @@ function getInitial(value: string) {
   return value.slice(0, 1).toUpperCase()
 }
 
+function mapOAuthErrorMessage(errorCode: string | null) {
+  if (!errorCode) {
+    return ''
+  }
+
+  if (errorCode === 'invalid_code') {
+    return 'GitHub 授权码无效或已过期，请确认 OAuth 回调地址与本地域名一致后重试。'
+  }
+
+  return `登录失败：${errorCode}`
+}
+
 export function LoginPanel() {
   const searchParams = useSearchParams()
   const oauthError = searchParams.get('error')
@@ -47,7 +59,7 @@ export function LoginPanel() {
   const [pendingProvider, setPendingProvider] = useState<SocialProvider | null>(null)
   const [errorMessage, setErrorMessage] = useState('')
 
-  const displayErrorMessage = errorMessage || (oauthError ? `登录失败：${oauthError}` : '')
+  const displayErrorMessage = errorMessage || mapOAuthErrorMessage(oauthError)
 
   useEffect(() => {
     let isMounted = true
@@ -128,6 +140,11 @@ export function LoginPanel() {
     setErrorMessage('')
 
     try {
+      await fetch('/api/user/revoke-github', {
+        method: 'POST',
+        credentials: 'include',
+      }).catch(() => null)
+
       await authClient.signOut()
       await session.refetch()
     }
