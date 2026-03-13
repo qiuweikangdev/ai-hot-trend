@@ -1,11 +1,10 @@
 'use client'
 
-import { AlertCircle, CheckCircle2, Github, Loader2, LogOut } from 'lucide-react'
+import { AlertCircle, Github, Loader2 } from 'lucide-react'
 import { useSearchParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
-import { authClient } from '@/lib/auth-client'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { signInWithGithub, signInWithGoogle } from '@/lib/auth-social'
 
 type SocialProvider = 'google' | 'github'
@@ -28,21 +27,13 @@ function GoogleIcon() {
   )
 }
 
-function getDisplayName(user: { name?: string | null, email?: string | null }) {
-  return user.name || user.email || '用户'
-}
-
-function getInitial(value: string) {
-  return value.slice(0, 1).toUpperCase()
-}
-
 function mapOAuthErrorMessage(errorCode: string | null) {
   if (!errorCode) {
     return ''
   }
 
   if (errorCode === 'invalid_code') {
-    return 'GitHub 授权码无效或已过期，请确认 OAuth 回调地址与本地域名一致后重试。'
+    return 'GitHub 授权码无效或已过期，请确认 OAuth 回调地址与当前域名一致后重试。'
   }
 
   return `登录失败：${errorCode}`
@@ -51,8 +42,6 @@ function mapOAuthErrorMessage(errorCode: string | null) {
 export function LoginPanel() {
   const searchParams = useSearchParams()
   const oauthError = searchParams.get('error')
-
-  const session = authClient.useSession()
 
   const [providers, setProviders] = useState<ProviderStatus>(DEFAULT_PROVIDER_STATUS)
   const [isLoadingProviders, setIsLoadingProviders] = useState(true)
@@ -65,15 +54,11 @@ export function LoginPanel() {
     let isMounted = true
 
     async function loadProviders() {
-      if (session.data?.user) {
-        setIsLoadingProviders(false)
-        return
-      }
-
       try {
         const response = await fetch('/api/user/providers', {
           cache: 'no-store',
         })
+
         if (!response.ok) {
           throw new Error('Failed to fetch providers')
         }
@@ -110,7 +95,7 @@ export function LoginPanel() {
     return () => {
       isMounted = false
     }
-  }, [session.data?.user])
+  }, [])
 
   async function handleSocialLogin(provider: SocialProvider) {
     if (!providers[provider]) {
@@ -134,82 +119,6 @@ export function LoginPanel() {
       setErrorMessage(error instanceof Error ? error.message : fallback)
       setPendingProvider(null)
     }
-  }
-
-  async function handleSignOut() {
-    setErrorMessage('')
-
-    try {
-      await fetch('/api/user/revoke-github', {
-        method: 'POST',
-        credentials: 'include',
-      }).catch(() => null)
-
-      await authClient.signOut()
-      await session.refetch()
-    }
-    catch {
-      setErrorMessage('退出登录失败，请稍后重试。')
-    }
-  }
-
-  if (session.isPending) {
-    return (
-      <Card className="border-white/60 bg-white/90 shadow-xl shadow-amber-900/10 backdrop-blur-md">
-        <CardHeader>
-          <CardTitle className="text-xl">登录中</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <Loader2 className="size-4 animate-spin" />
-            正在检查会话
-          </div>
-        </CardContent>
-      </Card>
-    )
-  }
-
-  if (session.data?.user) {
-    const displayName = getDisplayName(session.data.user)
-    const initial = getInitial(displayName)
-
-    return (
-      <Card className="border-emerald-200/80 bg-white/95 shadow-xl shadow-emerald-900/10 backdrop-blur-md">
-        <CardHeader className="gap-3">
-          <div className="inline-flex w-fit items-center gap-2 rounded-full bg-emerald-100 px-3 py-1 text-xs font-medium text-emerald-700">
-            <CheckCircle2 className="size-3.5" />
-            登录成功
-          </div>
-          <CardTitle className="text-2xl">
-            欢迎回来，
-            {displayName}
-          </CardTitle>
-          <CardDescription>当前账号已登录。</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex items-center gap-3 rounded-lg border bg-muted/40 p-3">
-            <div
-              className="flex size-11 items-center justify-center rounded-full bg-primary/10 bg-cover bg-center text-sm font-semibold text-primary"
-              style={session.data.user.image
-                ? { backgroundImage: `url(${session.data.user.image})` }
-                : undefined}
-            >
-              {session.data.user.image ? null : initial}
-            </div>
-            <div className="min-w-0 space-y-0.5">
-              <p className="truncate text-sm font-medium text-foreground">{displayName}</p>
-              <p className="truncate text-xs text-muted-foreground">{session.data.user.email || '未提供邮箱'}</p>
-            </div>
-          </div>
-        </CardContent>
-        <CardFooter>
-          <Button type="button" variant="outline" className="w-full" onClick={handleSignOut}>
-            <LogOut className="size-4" />
-            退出登录
-          </Button>
-        </CardFooter>
-      </Card>
-    )
   }
 
   return (

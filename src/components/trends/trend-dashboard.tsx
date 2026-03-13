@@ -91,6 +91,7 @@ export function TrendDashboard() {
       <LoginModal
         isOpen={state.isLoginOpen}
         isSignedIn={Boolean(session.data?.user)}
+        isSessionPending={session.isPending}
         onClose={() => actions.setIsLoginOpen(false)}
       />
     </div>
