@@ -1,8 +1,9 @@
 'use client'
 
+import type { AuthSessionSnapshot } from '@/lib/auth-session'
 import type { FavoriteItem } from '@/modules/favorites/types'
 import type { TrendItem, TrendPeriod, TrendResult, TrendSource } from '@/modules/trends/types'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { TREND_UI_SCALE_PRESETS, trendUiConfig } from '@/config/trends'
 import { authClient } from '@/lib/auth-client'
 import {
@@ -31,9 +32,10 @@ function getErrorMessage(error: unknown, fallback: string) {
   return error instanceof Error ? error.message : fallback
 }
 
-export function useTrendDashboard() {
+export function useTrendDashboard(initialSession: AuthSessionSnapshot | null) {
   const uiScale = TREND_UI_SCALE_PRESETS[trendUiConfig.activeScalePreset]
-  const session = authClient.useSession()
+  const clientSession = authClient.useSession()
+  const hasResolvedClientSessionRef = useRef(!clientSession.isPending)
 
   const [source, setSource] = useState<TrendSource>(DEFAULT_TREND_SOURCE)
   const [period, setPeriod] = useState<TrendPeriod>(DEFAULT_TREND_PERIOD)
@@ -55,6 +57,21 @@ export function useTrendDashboard() {
   const [isFavoritesOpen, setIsFavoritesOpen] = useState(false)
   const [refreshTick, setRefreshTick] = useState(0)
 
+  if (!clientSession.isPending) {
+    hasResolvedClientSessionRef.current = true
+  }
+
+  // Seed the first client render with the server snapshot so refreshes do not
+  // flash into a signed-out state before Better Auth finishes hydrating.
+  const hasResolvedClientSession = hasResolvedClientSessionRef.current
+  const session = {
+    ...clientSession,
+    data: clientSession.data ?? (!hasResolvedClientSession ? initialSession : null),
+    isPending: clientSession.isPending && !hasResolvedClientSession,
+  }
+  const sessionUser = session.data?.user ?? null
+  const sessionUserId = sessionUser?.id ?? ''
+
   const favoriteKeySet = useMemo(() => {
     return new Set(favorites.map(item => buildFavoriteKey(item.source, item.trendId)))
   }, [favorites])
@@ -71,7 +88,7 @@ export function useTrendDashboard() {
   const selectedKeywordLabel = keyword || '未设置'
   const favoriteCount = favorites.length
   const activeSourceMeta = getTrendSourceMeta(source)
-  const userDisplayName = session.data?.user ? getDisplayName(session.data.user) : ''
+  const userDisplayName = sessionUser ? getDisplayName(sessionUser) : ''
 
   useEffect(() => {
     let cancelled = false
@@ -116,7 +133,7 @@ export function useTrendDashboard() {
     let cancelled = false
 
     async function loadFavorites() {
-      if (!session.data?.user) {
+      if (!sessionUserId) {
         setFavorites([])
         setIsFavoriteLoading(false)
         return
@@ -148,7 +165,7 @@ export function useTrendDashboard() {
     return () => {
       cancelled = true
     }
-  }, [session.data?.user])
+  }, [sessionUserId])
 
   useEffect(() => {
     if (!notice) {
@@ -176,6 +193,7 @@ export function useTrendDashboard() {
     }).catch(() => null)
 
     await authClient.signOut()
+    await clientSession.refetch()
     setIsLoginOpen(false)
     setIsFavoritesOpen(false)
     setFavorites([])
@@ -183,7 +201,7 @@ export function useTrendDashboard() {
   }
 
   async function handleToggleFavorite(item: TrendItem) {
-    if (!session.data?.user) {
+    if (!sessionUser) {
       openLoginWithNotice('请先登录后再收藏')
       return
     }
@@ -271,7 +289,7 @@ export function useTrendDashboard() {
   }
 
   function handleToggleFavoritesPanel() {
-    if (!session.data?.user) {
+    if (!sessionUser) {
       openLoginWithNotice('登录后可查看收藏中心')
       return
     }

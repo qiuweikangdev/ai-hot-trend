@@ -1,5 +1,6 @@
 'use client'
 
+import type { AuthSessionSnapshot } from '@/lib/auth-session'
 import { FavoritesPanel } from '@/components/trends/dashboard/favorites-panel'
 import { LoginModal } from '@/components/trends/dashboard/login-modal'
 import { TrendDashboardHeader } from '@/components/trends/dashboard/trend-dashboard-header'
@@ -8,7 +9,11 @@ import { TrendResults } from '@/components/trends/dashboard/trend-results'
 import { useTrendDashboard } from '@/components/trends/dashboard/use-trend-dashboard'
 import { cn } from '@/lib/utils'
 
-export function TrendDashboard() {
+interface TrendDashboardProps {
+  initialSession: AuthSessionSnapshot | null
+}
+
+export function TrendDashboard({ initialSession }: TrendDashboardProps) {
   const {
     uiScale,
     session,
@@ -17,7 +22,7 @@ export function TrendDashboard() {
     state,
     derived,
     actions,
-  } = useTrendDashboard()
+  } = useTrendDashboard(initialSession)
 
   return (
     <div className="min-h-screen bg-[radial-gradient(circle_at_18%_16%,rgba(251,207,130,0.24),transparent_28%),radial-gradient(circle_at_86%_12%,rgba(139,205,245,0.25),transparent_24%),linear-gradient(180deg,#f7f9fd_0%,#edf2f9_100%)] text-slate-800">
