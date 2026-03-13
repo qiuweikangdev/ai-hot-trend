@@ -6,6 +6,14 @@ export const TREND_PERIOD_VALUES = ['today', 'week', 'month'] as const
 
 export type TrendPeriod = (typeof TREND_PERIOD_VALUES)[number]
 
+export function isTrendSource(value: string): value is TrendSource {
+  return TREND_SOURCE_VALUES.includes(value as TrendSource)
+}
+
+export function isTrendPeriod(value: string): value is TrendPeriod {
+  return TREND_PERIOD_VALUES.includes(value as TrendPeriod)
+}
+
 export interface TrendQuery {
   source: TrendSource
   period: TrendPeriod

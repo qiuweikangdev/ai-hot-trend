@@ -7,10 +7,11 @@ import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import { TREND_CARD_CLASS_MAP } from '@/config/trends'
 import { cn } from '@/lib/utils'
+import { getTrendSourceMeta } from '@/modules/trends/catalog'
 
 function formatCount(value: number) {
   if (value >= 10000) {
-    return `${(value / 10000).toFixed(1)}万`
+    return `${(value / 10000).toFixed(1)}w`
   }
 
   return String(value)
@@ -34,6 +35,7 @@ export function TrendCard({
   onCopyName,
 }: TrendCardProps) {
   const scale = TREND_CARD_CLASS_MAP[size]
+  const sourceMeta = getTrendSourceMeta(item.source)
 
   return (
     <article className={cn('group rounded-3xl border border-slate-200/90 bg-white/80 shadow-[0_8px_32px_-24px_rgba(35,63,112,0.6)] backdrop-blur-sm transition hover:-translate-y-0.5 hover:shadow-[0_20px_45px_-28px_rgba(35,63,112,0.45)]', scale.root)}>
@@ -44,7 +46,9 @@ export function TrendCard({
             {' '}
             {item.rank}
           </span>
-          <span className={cn('rounded-full border border-slate-200 bg-slate-50 text-slate-600', scale.sourceBadge)}>GitHub</span>
+          <span className={cn('rounded-full border border-slate-200 bg-slate-50 text-slate-600', scale.sourceBadge)}>
+            {sourceMeta.label}
+          </span>
         </div>
         <Image
           src={item.ownerAvatarUrl}
@@ -79,7 +83,7 @@ export function TrendCard({
           <Languages className="size-3.5" />
           语言
           {' '}
-          {item.language ?? '未知'}
+          {item.language ?? 'Unknown'}
         </span>
       </div>
 
@@ -109,7 +113,7 @@ export function TrendCard({
           <Copy className="size-4" />
         </Button>
         <Button asChild variant="outline" size="icon" className="rounded-xl border-slate-200 bg-white text-slate-600 hover:border-emerald-200 hover:bg-emerald-50 hover:text-emerald-700">
-          <a href={item.url} target="_blank" rel="noreferrer" aria-label="打开仓库">
+          <a href={item.url} target="_blank" rel="noreferrer" aria-label="打开详情">
             <ExternalLink className="size-4" />
           </a>
         </Button>

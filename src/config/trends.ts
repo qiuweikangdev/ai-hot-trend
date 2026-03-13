@@ -1,4 +1,4 @@
-import type { TrendPeriod, TrendSource } from '@/modules/trends/types'
+import { DEFAULT_TREND_LIMIT } from '@/modules/trends/catalog'
 
 export type TrendCardSize = 'compact' | 'default' | 'comfortable'
 
@@ -36,17 +36,6 @@ export interface TrendUiScale {
   favItemTitle: string
   favItemSub: string
   favItemDesc: string
-}
-
-export interface SourceTab {
-  value: TrendSource | string
-  label: string
-  enabled: boolean
-}
-
-export interface PeriodTab {
-  value: TrendPeriod
-  label: string
 }
 
 export const TREND_CARD_CLASS_MAP: Record<TrendCardSize, TrendCardClassTokens> = {
@@ -159,26 +148,7 @@ export const TREND_UI_SCALE_PRESETS: Record<'compact' | 'default' | 'comfortable
 
 export const trendUiConfig = {
   activeScalePreset: 'compact' as keyof typeof TREND_UI_SCALE_PRESETS,
-  trendLimit: 18,
+  trendLimit: DEFAULT_TREND_LIMIT,
   quickFilterCollapsedCount: 5,
   noticeDurationMs: 2200,
-  sourceTabs: [
-    { value: 'hot', label: '热点', enabled: false },
-    { value: 'github', label: 'GitHub', enabled: true },
-    { value: 'npm', label: 'npm', enabled: false },
-    { value: 'vue', label: 'Vue生态', enabled: false },
-    { value: 'react', label: 'React生态', enabled: false },
-    { value: 'node', label: 'Node生态', enabled: false },
-    { value: 'ai', label: 'AI生态', enabled: false },
-    { value: 'weibo', label: '微博', enabled: false },
-    { value: 'zhihu', label: '知乎', enabled: false },
-    { value: 'juejin', label: '掘金', enabled: false },
-    { value: 'v2ex', label: 'v2ex', enabled: false },
-  ] satisfies SourceTab[],
-  periodTabs: [
-    { value: 'today', label: '今日热度' },
-    { value: 'week', label: '本周热点' },
-    { value: 'month', label: '本月趋势' },
-  ] satisfies PeriodTab[],
-  presetLanguages: ['TypeScript', 'JavaScript', 'Python', 'Go', 'Rust', 'Vue', 'React'],
 }
