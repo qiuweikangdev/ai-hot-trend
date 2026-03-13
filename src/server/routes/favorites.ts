@@ -3,7 +3,7 @@ import type { TrendSource } from '@/modules/trends/types'
 import { Hono } from 'hono'
 import { favoriteService } from '@/modules/favorites/service'
 import { TREND_SOURCE_VALUES } from '@/modules/trends/types'
-import { auth } from '@/server/auth'
+import { getAuth } from '@/server/auth'
 
 const favoritesRoute = new Hono()
 
@@ -52,7 +52,7 @@ function parseSource(value: unknown): TrendSource | null {
 }
 
 async function getSessionUserId(headers: Headers) {
-  const session = await auth.api.getSession({
+  const session = await getAuth().api.getSession({
     headers,
     query: {
       disableRefresh: true,

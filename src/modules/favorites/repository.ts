@@ -1,5 +1,5 @@
 import type { FavoriteItem, FavoritePayload } from '@/modules/favorites/types'
-import { prisma } from '@/lib/prisma'
+import { getPrisma } from '@/lib/prisma'
 import { TREND_SOURCE_VALUES } from '@/modules/trends/types'
 
 export interface FavoriteRepository {
@@ -46,6 +46,8 @@ function mapFavoriteToItem(favorite: {
 
 export class PrismaFavoriteRepository implements FavoriteRepository {
   async listByUser(userId: string) {
+    const prisma = getPrisma()
+
     const favorites = await prisma.favorite.findMany({
       where: {
         userId,
@@ -59,6 +61,8 @@ export class PrismaFavoriteRepository implements FavoriteRepository {
   }
 
   async upsert(userId: string, payload: FavoritePayload) {
+    const prisma = getPrisma()
+
     const favorite = await prisma.favorite.upsert({
       where: {
         userId_source_trendId: {
@@ -96,6 +100,8 @@ export class PrismaFavoriteRepository implements FavoriteRepository {
   }
 
   async remove(userId: string, source: string, trendId: string) {
+    const prisma = getPrisma()
+
     const result = await prisma.favorite.deleteMany({
       where: {
         userId,

@@ -36,34 +36,40 @@ function toOrigin(value: string) {
   }
 }
 
-const baseURL = removeTrailingSlash(readRequiredEnv('BETTER_AUTH_URL', AUTH_BASE_URL_FALLBACK))
-const appURL = readEnv('NEXT_PUBLIC_APP_URL') || baseURL
+export function getAuthEnv() {
+  const baseURL = removeTrailingSlash(readRequiredEnv('BETTER_AUTH_URL', AUTH_BASE_URL_FALLBACK))
+  const appURL = readEnv('NEXT_PUBLIC_APP_URL') || baseURL
 
-const envTrustedOrigins = readEnv('BETTER_AUTH_TRUSTED_ORIGINS')
-  .split(',')
-  .map(origin => origin.trim())
-  .filter(Boolean)
+  const envTrustedOrigins = readEnv('BETTER_AUTH_TRUSTED_ORIGINS')
+    .split(',')
+    .map(origin => origin.trim())
+    .filter(Boolean)
 
-const trustedOrigins = [...new Set([
-  ...envTrustedOrigins,
-  toOrigin(baseURL),
-  toOrigin(appURL),
-  ...LOCAL_TRUSTED_ORIGINS,
-].filter(Boolean))]
+  const trustedOrigins = [...new Set([
+    ...envTrustedOrigins,
+    toOrigin(baseURL),
+    toOrigin(appURL),
+    ...LOCAL_TRUSTED_ORIGINS,
+  ].filter(Boolean))]
 
-export const authEnv = {
-  baseURL,
-  secret: readRequiredEnv('BETTER_AUTH_SECRET', AUTH_SECRET_FALLBACK),
-  githubClientId: readEnv('GITHUB_CLIENT_ID'),
-  githubClientSecret: readEnv('GITHUB_CLIENT_SECRET'),
-  githubRedirectURI: readEnv('GITHUB_REDIRECT_URI') || `${baseURL}/api/auth/callback/github`,
-  googleClientId: readEnv('GOOGLE_CLIENT_ID'),
-  googleClientSecret: readEnv('GOOGLE_CLIENT_SECRET'),
-  googleRedirectURI: readEnv('GOOGLE_REDIRECT_URI') || `${baseURL}/api/auth/callback/google`,
-  trustedOrigins,
+  return {
+    baseURL,
+    secret: readRequiredEnv('BETTER_AUTH_SECRET', AUTH_SECRET_FALLBACK),
+    githubClientId: readEnv('GITHUB_CLIENT_ID'),
+    githubClientSecret: readEnv('GITHUB_CLIENT_SECRET'),
+    githubRedirectURI: readEnv('GITHUB_REDIRECT_URI') || `${baseURL}/api/auth/callback/github`,
+    googleClientId: readEnv('GOOGLE_CLIENT_ID'),
+    googleClientSecret: readEnv('GOOGLE_CLIENT_SECRET'),
+    googleRedirectURI: readEnv('GOOGLE_REDIRECT_URI') || `${baseURL}/api/auth/callback/google`,
+    trustedOrigins,
+  }
 }
 
-export const enabledProviderMap = {
-  github: Boolean(authEnv.githubClientId && authEnv.githubClientSecret),
-  google: Boolean(authEnv.googleClientId && authEnv.googleClientSecret),
+export function getEnabledProviderMap() {
+  const authEnv = getAuthEnv()
+
+  return {
+    github: Boolean(authEnv.githubClientId && authEnv.githubClientSecret),
+    google: Boolean(authEnv.googleClientId && authEnv.googleClientSecret),
+  }
 }

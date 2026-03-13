@@ -1,8 +1,8 @@
 import { Buffer } from 'node:buffer'
 import { Hono } from 'hono'
-import { prisma } from '@/lib/prisma'
-import { auth } from '@/server/auth'
-import { authEnv, enabledProviderMap } from '@/server/auth/env'
+import { getPrisma } from '@/lib/prisma'
+import { getAuth } from '@/server/auth'
+import { getAuthEnv, getEnabledProviderMap } from '@/server/auth/env'
 
 const userRoute = new Hono()
 
@@ -25,9 +25,13 @@ function getSessionUserId(session: unknown) {
 }
 
 async function revokeGithubGrantByUserId(userId: string) {
+  const authEnv = getAuthEnv()
+
   if (!authEnv.githubClientId || !authEnv.githubClientSecret) {
     return { revoked: false, reason: 'github_not_configured' }
   }
+
+  const prisma = getPrisma()
 
   const githubAccount = await prisma.account.findFirst({
     where: {
@@ -86,12 +90,12 @@ userRoute.get('/', (c) => {
 userRoute.get('/providers', (c) => {
   return c.json({
     success: true,
-    data: enabledProviderMap,
+    data: getEnabledProviderMap(),
   })
 })
 
 userRoute.get('/session', async (c) => {
-  const session = await auth.api.getSession({
+  const session = await getAuth().api.getSession({
     headers: c.req.raw.headers,
   })
 
@@ -114,7 +118,7 @@ userRoute.get('/session', async (c) => {
 })
 
 userRoute.post('/revoke-github', async (c) => {
-  const session = await auth.api.getSession({
+  const session = await getAuth().api.getSession({
     headers: c.req.raw.headers,
     query: {
       disableRefresh: true,
