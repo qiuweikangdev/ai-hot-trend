@@ -55,6 +55,10 @@ const sourceMetaMap = new Map<string, TrendSourceOption>(
   TREND_SOURCE_OPTIONS.map(option => [option.value, option]),
 )
 
+const periodMetaMap = new Map<TrendPeriod, TrendPeriodOption>(
+  TREND_PERIOD_OPTIONS.map(option => [option.value, option]),
+)
+
 export function getTrendSourceMeta(source: TrendSource | string) {
   return sourceMetaMap.get(source) ?? {
     value: source,
@@ -62,4 +66,8 @@ export function getTrendSourceMeta(source: TrendSource | string) {
     enabled: false,
     description: '未配置站点描述',
   }
+}
+
+export function getTrendPeriodLabel(period: TrendPeriod) {
+  return periodMetaMap.get(period)?.label ?? '趋势周期'
 }

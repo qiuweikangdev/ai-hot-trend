@@ -2,10 +2,20 @@
 
 import type { TrendUiScale } from '@/config/trends'
 import type { TrendItem, TrendResult } from '@/modules/trends/types'
-import { Loader2 } from 'lucide-react'
 import { TrendCard } from '@/components/trends/trend-card'
 import { getTrendSourceMeta } from '@/modules/trends/catalog'
 import { buildFavoriteKey } from './utils'
+
+const TREND_RESULT_SKELETON_KEYS = [
+  'skeleton-1',
+  'skeleton-2',
+  'skeleton-3',
+  'skeleton-4',
+  'skeleton-5',
+  'skeleton-6',
+  'skeleton-7',
+  'skeleton-8',
+]
 
 interface TrendResultsProps {
   uiScale: TrendUiScale
@@ -30,16 +40,20 @@ export function TrendResults({
 }: TrendResultsProps) {
   if (isTrendLoading) {
     return (
-      <div className="flex items-center justify-center rounded-3xl border border-white/80 bg-white/70 px-4 py-20 text-sm text-slate-500">
-        <Loader2 className="mr-2 size-5 animate-spin" />
-        正在加载热点趋势...
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
+        {TREND_RESULT_SKELETON_KEYS.map(key => (
+          <div
+            key={key}
+            className="h-[320px] animate-pulse rounded-[30px] border border-slate-200/80 bg-gradient-to-b from-white via-slate-50 to-slate-100/90"
+          />
+        ))}
       </div>
     )
   }
 
   if (trendError) {
     return (
-      <div className="rounded-3xl border border-rose-200 bg-rose-50 px-4 py-8 text-rose-700">
+      <div className="rounded-[30px] border border-rose-200 bg-rose-50 px-4 py-8 text-rose-700 shadow-[0_24px_55px_-45px_rgba(244,63,94,0.25)]">
         {trendError}
       </div>
     )
@@ -52,7 +66,7 @@ export function TrendResults({
     <>
       {trendData?.stale
         ? (
-            <div className="mb-4 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-2 text-xs text-amber-700">
+            <div className="mb-4 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-700">
               当前展示缓存数据，
               {staleSourceLabel}
               接口暂时不可用。
@@ -60,7 +74,7 @@ export function TrendResults({
           )
         : null}
 
-      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 xl:grid-cols-3">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 [content-visibility:auto]">
         {items.map(item => (
           <TrendCard
             key={item.id}
@@ -76,7 +90,7 @@ export function TrendResults({
 
       {!items.length
         ? (
-            <div className="rounded-3xl border border-slate-200 bg-white/80 px-4 py-10 text-center text-slate-500">
+            <div className="rounded-[30px] border border-slate-200 bg-white/82 px-4 py-12 text-center text-slate-500 shadow-[0_24px_55px_-45px_rgba(15,23,42,0.28)]">
               当前筛选条件下暂无热点项目，请调整筛选后重试。
             </div>
           )
