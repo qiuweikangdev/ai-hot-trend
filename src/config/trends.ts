@@ -40,15 +40,15 @@ export interface TrendUiScale {
 
 export const TREND_CARD_CLASS_MAP: Record<TrendCardSize, TrendCardClassTokens> = {
   compact: {
-    root: 'p-[1.125rem]',
+    root: 'p-4',
     topBadge: 'px-2.5 py-1 text-xs',
     sourceBadge: 'px-2.5 py-1 text-xs',
     title: 'text-xl/6',
     fullName: 'text-sm',
-    description: 'min-h-16 text-sm/6',
-    metricWrap: 'mt-4 text-xs',
+    description: 'min-h-14 text-sm/6',
+    metricWrap: 'mt-3 text-xs',
     metricItem: 'px-3 py-2',
-    actionWrap: 'mt-4 pt-4',
+    actionWrap: 'mt-3 pt-3',
   },
   default: {
     root: 'p-5',
@@ -77,13 +77,13 @@ export const TREND_CARD_CLASS_MAP: Record<TrendCardSize, TrendCardClassTokens> =
 export const TREND_UI_SCALE_PRESETS: Record<'compact' | 'default' | 'comfortable', TrendUiScale> = {
   compact: {
     cardSize: 'compact',
-    headerPadding: 'py-4',
+    headerPadding: 'py-3',
     logoSize: 'size-12',
     logoIcon: 'size-6',
     title: 'text-2xl',
     subtitle: 'text-xs',
     userInfo: 'text-xs',
-    pagePadding: 'py-6',
+    pagePadding: 'py-4',
     tabText: 'text-xs',
     inputText: 'text-sm',
     searchButtonHeight: 'h-10',

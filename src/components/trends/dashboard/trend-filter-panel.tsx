@@ -34,8 +34,8 @@ export function TrendFilterPanel({
   onReset,
 }: TrendFilterPanelProps) {
   return (
-    <section className="overflow-hidden rounded-[30px] border border-white/85 bg-[linear-gradient(160deg,rgba(255,255,255,0.74)_0%,rgba(249,252,255,0.7)_55%,rgba(243,248,255,0.76)_100%)] p-4 shadow-[0_22px_52px_-42px_rgba(30,64,175,0.35)] ring-1 ring-slate-200/55 backdrop-blur-md sm:p-5">
-      <div className="space-y-4">
+    <section>
+      <div className="space-y-2.5">
         <div className="grid gap-3 xl:grid-cols-[minmax(0,1fr)_auto] xl:items-center">
           <div className="xl:hidden">
             <TrendSegmentedControl

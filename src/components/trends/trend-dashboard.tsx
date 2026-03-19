@@ -25,7 +25,7 @@ export function TrendDashboard({ initialSession }: TrendDashboardProps) {
   } = useTrendDashboard(initialSession)
 
   return (
-    <div className="min-h-screen bg-[radial-gradient(circle_at_8%_6%,rgba(251,191,36,0.12),transparent_30%),radial-gradient(circle_at_92%_10%,rgba(125,211,252,0.14),transparent_28%),linear-gradient(180deg,#f8fafd_0%,#f2f6fb_48%,#edf3fa_100%)] text-slate-800">
+    <div className="min-h-screen bg-[radial-gradient(circle_at_12%_6%,rgba(251,191,36,0.12),transparent_26%),radial-gradient(circle_at_88%_10%,rgba(59,130,246,0.12),transparent_28%),linear-gradient(180deg,#f8fafc_0%,#f1f5fb_46%,#eaf1f8_100%)] text-slate-800">
       <TrendDashboardHeader
         uiScale={uiScale}
         favoriteCount={derived.favoriteCount}
@@ -38,7 +38,7 @@ export function TrendDashboard({ initialSession }: TrendDashboardProps) {
       />
 
       <main className={cn('mx-auto w-full max-w-[1360px] px-4 sm:px-6 lg:px-8', uiScale.pagePadding)}>
-        <div className="md:sticky md:top-[88px] md:z-20 md:isolate md:-mx-2 md:px-2 md:pt-2 md:before:absolute md:before:inset-x-0 md:before:-top-2 md:before:bottom-0 md:before:-z-10 md:before:bg-[linear-gradient(180deg,rgba(248,250,253,0.98)_0%,rgba(248,250,253,0.94)_70%,rgba(248,250,253,0.68)_100%)] md:before:backdrop-blur-sm">
+        <div className="md:sticky md:top-[72px] md:z-20 md:-mx-2 md:bg-[#f3f7fc] md:px-2 md:py-1">
           <TrendFilterPanel
             uiScale={uiScale}
             sourceOptions={sourceOptions}
@@ -62,9 +62,7 @@ export function TrendDashboard({ initialSession }: TrendDashboardProps) {
             )
           : null}
 
-        <div className="pointer-events-none mt-4 hidden h-8 rounded-[999px] bg-[radial-gradient(55%_100%_at_50%_0%,rgba(100,116,139,0.15)_0%,rgba(148,163,184,0.06)_45%,transparent_100%)] blur-[0.5px] md:block" />
-
-        <section className="mt-4 pb-10 sm:pb-14">
+        <section className="mt-1.5 pb-8 sm:pb-10">
           <TrendResults
             uiScale={uiScale}
             trendData={state.trendData}

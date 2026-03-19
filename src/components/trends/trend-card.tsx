@@ -56,15 +56,15 @@ export function TrendCard({
   const sourceMeta = getTrendSourceMeta(item.source)
 
   return (
-    <article className={cn('group flex h-full min-h-[340px] flex-col rounded-[30px] border border-white/85 bg-[linear-gradient(180deg,rgba(255,255,255,0.82)_0%,rgba(248,251,255,0.76)_100%)] shadow-[0_14px_36px_-30px_rgba(15,23,42,0.24)] ring-1 ring-slate-200/55 transition hover:-translate-y-0.5 hover:shadow-[0_24px_52px_-36px_rgba(15,23,42,0.3)]', scale.root)}>
+    <article className={cn('group flex h-full min-h-[340px] flex-col rounded-[30px] border border-white/88 bg-white/84 shadow-[0_12px_30px_-28px_rgba(15,23,42,0.2)] ring-1 ring-slate-200/58 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_22px_46px_-34px_rgba(30,64,175,0.28)]', scale.root)}>
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-center gap-2">
-          <span className={cn('rounded-full border border-amber-300/80 bg-amber-50 font-semibold text-amber-700', scale.topBadge)}>
+          <span className={cn('rounded-full border border-amber-300/80 bg-amber-50/90 font-semibold text-amber-700', scale.topBadge)}>
             TOP
             {' '}
             {item.rank}
           </span>
-          <span className={cn('rounded-full border border-slate-200/80 bg-slate-50 text-slate-600', scale.sourceBadge)}>
+          <span className={cn('rounded-full border border-slate-200/80 bg-white/84 text-slate-600', scale.sourceBadge)}>
             {sourceMeta.label}
           </span>
         </div>
@@ -78,10 +78,10 @@ export function TrendCard({
         />
       </div>
 
-      <div className="mt-4 space-y-2">
+      <div className="mt-3.5 space-y-2">
         <h3 className={cn('line-clamp-1 font-semibold tracking-tight text-slate-900', scale.title)}>{item.title}</h3>
         <p className={cn('line-clamp-1 text-slate-500', scale.fullName)}>{item.fullName}</p>
-        <p className={cn('line-clamp-3 text-slate-600', scale.description)}>{item.description}</p>
+        <p className={cn('line-clamp-4 text-slate-600', scale.description)}>{item.description}</p>
       </div>
 
       <div className={cn('flex flex-wrap items-center gap-2', scale.metricWrap)}>
@@ -108,7 +108,7 @@ export function TrendCard({
         />
       </div>
 
-      <div className={cn('mt-auto flex items-center justify-end border-t-0 border-slate-100 md:justify-between md:border-t', scale.actionWrap)}>
+      <div className={cn('mt-auto flex items-center justify-end border-t border-slate-100/85 md:justify-between', scale.actionWrap)}>
         <div className="hidden min-w-0 pr-3 md:block">
           <p className="truncate text-sm font-medium text-slate-700">{item.owner}</p>
           <p className="mt-1 text-xs text-slate-400">
@@ -122,7 +122,7 @@ export function TrendCard({
             variant="outline"
             size="icon"
             className={cn(
-              'size-14 rounded-[20px] border-slate-200 bg-white text-slate-600 hover:border-rose-200 hover:bg-rose-50 hover:text-rose-600 sm:size-10 sm:rounded-2xl',
+              'size-11 rounded-[16px] border-slate-200/90 bg-white/92 text-slate-600 hover:border-rose-200 hover:bg-rose-50 hover:text-rose-600 sm:size-10 sm:rounded-2xl',
               isFavorite && 'border-rose-200 bg-rose-50 text-rose-600',
             )}
             onClick={() => onToggleFavorite(item)}
@@ -135,13 +135,13 @@ export function TrendCard({
             type="button"
             variant="outline"
             size="icon"
-            className="size-14 rounded-[20px] border-slate-200 bg-white text-slate-600 hover:border-blue-200 hover:bg-blue-50 hover:text-blue-600 sm:size-10 sm:rounded-2xl"
+            className="size-11 rounded-[16px] border-slate-200/90 bg-white/92 text-slate-600 hover:border-blue-200 hover:bg-blue-50 hover:text-blue-600 sm:size-10 sm:rounded-2xl"
             onClick={() => onCopyName(item)}
             aria-label="复制仓库名"
           >
             <Copy className="size-4" />
           </Button>
-          <Button asChild variant="outline" size="icon" className="size-14 rounded-[20px] border-slate-200 bg-white text-slate-600 hover:border-emerald-200 hover:bg-emerald-50 hover:text-emerald-700 sm:size-10 sm:rounded-2xl">
+          <Button asChild variant="outline" size="icon" className="size-11 rounded-[16px] border-slate-200/90 bg-white/92 text-slate-600 hover:border-emerald-200 hover:bg-emerald-50 hover:text-emerald-700 sm:size-10 sm:rounded-2xl">
             <a href={item.url} target="_blank" rel="noreferrer" aria-label="打开详情">
               <ExternalLink className="size-4" />
             </a>

@@ -27,11 +27,11 @@ export function TrendDashboardHeader({
   onSignOut,
 }: TrendDashboardHeaderProps) {
   return (
-    <header className="sticky top-0 z-30 border-b border-slate-200/70 bg-white/90 backdrop-blur-xl supports-[backdrop-filter]:bg-white/72">
+    <header className="sticky top-0 z-30 border-b border-slate-200/75 bg-white/92 backdrop-blur-xl supports-[backdrop-filter]:bg-white/80">
       <div className={cn('mx-auto flex w-full max-w-[1360px] flex-col gap-4 px-4 sm:px-6 lg:px-8', uiScale.headerPadding)}>
         <div className="flex items-center justify-between gap-2 sm:gap-4">
           <div className="flex min-w-0 items-center gap-2.5 sm:gap-3">
-            <div className={cn('grid shrink-0 place-items-center rounded-[30px] border border-slate-200/80 bg-white/88 p-1.5 shadow-[0_14px_26px_-22px_rgba(15,23,42,0.36)]', uiScale.logoSize)}>
+            <div className={cn('grid shrink-0 place-items-center rounded-[30px] border border-slate-200/80 bg-white/92 p-1.5 shadow-[0_12px_22px_-20px_rgba(15,23,42,0.28)]', uiScale.logoSize)}>
               <div className="grid size-full place-items-center rounded-[22px] bg-[linear-gradient(145deg,#ffd17b_0%,#ffc36d_45%,#8fe0c4_100%)] shadow-[0_18px_30px_-20px_rgba(34,105,84,0.7)] ring-1 ring-white/80">
                 <Sparkles className={cn('text-slate-800', uiScale.logoIcon)} />
               </div>
@@ -42,11 +42,11 @@ export function TrendDashboardHeader({
             </div>
           </div>
 
-          <div className="flex shrink-0 items-center gap-2">
+          <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
             <Button
               type="button"
               variant="outline"
-              className="h-11 rounded-2xl border-slate-200/85 bg-white/84 px-4 text-slate-700 shadow-[0_10px_26px_-24px_rgba(15,23,42,0.42)]"
+              className="h-10 rounded-2xl border-slate-200/85 bg-white/88 px-3 text-slate-700 shadow-[0_10px_24px_-22px_rgba(15,23,42,0.3)] sm:h-11 sm:px-4"
               onClick={onToggleFavorites}
             >
               <Heart className="size-4" />
@@ -56,7 +56,7 @@ export function TrendDashboardHeader({
 
             {isSessionPending && !isSignedIn
               ? (
-                  <div className={cn('hidden h-11 items-center gap-2 rounded-2xl border border-slate-200/85 bg-white/84 px-3 text-slate-500 sm:inline-flex', uiScale.userInfo)}>
+                  <div className={cn('hidden h-10 items-center gap-2 rounded-2xl border border-slate-200/85 bg-white/88 px-3 text-slate-500 sm:inline-flex md:h-11', uiScale.userInfo)}>
                     <LoaderCircle className="size-4 animate-spin text-blue-600" />
                     检查会话
                   </div>
@@ -66,18 +66,18 @@ export function TrendDashboardHeader({
             {isSignedIn
               ? (
                   <>
-                    <div className={cn('hidden items-center gap-2 rounded-2xl border border-slate-200/85 bg-white/84 px-3 py-2 text-slate-700 lg:flex', uiScale.userInfo)}>
+                    <div className={cn('hidden items-center gap-2 rounded-2xl border border-slate-200/85 bg-white/88 px-3 py-2 text-slate-700 lg:flex', uiScale.userInfo)}>
                       <UserCircle2 className="size-4 text-slate-500" />
                       <span className="max-w-32 truncate">{userDisplayName}</span>
                     </div>
-                    <Button type="button" variant="outline" className="h-11 rounded-2xl border-slate-200/85 bg-white/84 px-4" onClick={onSignOut}>
+                    <Button type="button" variant="outline" className="h-10 rounded-2xl border-slate-200/85 bg-white/88 px-3 sm:h-11 sm:px-4" onClick={onSignOut}>
                       <LogOut className="size-4" />
                       退出
                     </Button>
                   </>
                 )
               : (
-                  <Button type="button" className="h-11 rounded-2xl bg-slate-900 px-4 text-white shadow-[0_14px_28px_-20px_rgba(15,23,42,0.85)] hover:bg-slate-800" onClick={onOpenLogin}>
+                  <Button type="button" className="h-10 rounded-2xl bg-slate-900 px-3 text-white shadow-[0_14px_28px_-20px_rgba(15,23,42,0.85)] hover:bg-slate-800 sm:h-11 sm:px-4" onClick={onOpenLogin}>
                     <LogIn className="size-4" />
                     登录
                   </Button>

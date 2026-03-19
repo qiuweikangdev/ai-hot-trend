@@ -68,13 +68,13 @@ export function TrendSegmentedControl({
   if (showEdgeControls) {
     return (
       <div
-        className="grid w-full min-w-0 max-w-full grid-cols-[2rem_minmax(0,1fr)_2rem] items-center gap-1 overflow-hidden rounded-full border border-slate-200/70 bg-white/66 p-1"
+        className="grid w-full min-w-0 max-w-full grid-cols-[1.9rem_minmax(0,1fr)_1.9rem] items-center gap-1 overflow-hidden rounded-full border border-slate-200/85 bg-white p-1"
         role="tablist"
         aria-label={label}
       >
         <button
           type="button"
-          className="inline-flex size-8 items-center justify-center rounded-full border border-slate-200/80 bg-white/90 text-slate-500 shadow-[0_10px_18px_-14px_rgba(15,23,42,0.26)] transition hover:text-slate-800"
+          className="inline-flex size-7.5 items-center justify-center rounded-full border border-slate-200/85 bg-white text-slate-500 shadow-[0_8px_16px_-12px_rgba(15,23,42,0.16)] transition hover:text-slate-800 focus-visible:ring-blue-200"
           aria-label="向左滚动"
           onClick={() => scrollByStep('left')}
         >
@@ -100,12 +100,12 @@ export function TrendSegmentedControl({
                   type="button"
                   data-segment-value={item.value}
                   className={cn(
-                    'inline-flex h-8 shrink-0 snap-start items-center justify-center rounded-full px-3 text-xs font-medium transition sm:px-4',
+                    'inline-flex h-8 shrink-0 snap-start items-center justify-center rounded-full px-2.5 text-xs font-medium transition sm:px-3',
                     textClassName,
                     isEnabled
-                      ? 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+                      ? 'text-slate-600 hover:bg-slate-100/90 hover:text-slate-900'
                       : 'cursor-not-allowed text-slate-300',
-                    isActive && 'bg-blue-600 text-white shadow-[0_10px_18px_-14px_rgba(37,99,235,0.9)] hover:bg-blue-600 hover:text-white',
+                    isActive && 'bg-blue-600 text-white shadow-[0_12px_20px_-14px_rgba(37,99,235,0.95)] hover:bg-blue-600 hover:text-white',
                   )}
                   role="tab"
                   aria-selected={isActive}
@@ -120,7 +120,7 @@ export function TrendSegmentedControl({
 
         <button
           type="button"
-          className="inline-flex size-8 items-center justify-center rounded-full border border-slate-200/80 bg-white/90 text-slate-500 shadow-[0_10px_18px_-14px_rgba(15,23,42,0.26)] transition hover:text-slate-800"
+          className="inline-flex size-7.5 items-center justify-center rounded-full border border-slate-200/85 bg-white text-slate-500 shadow-[0_8px_16px_-12px_rgba(15,23,42,0.16)] transition hover:text-slate-800 focus-visible:ring-blue-200"
           aria-label="向右滚动"
           onClick={() => scrollByStep('right')}
         >
@@ -134,7 +134,7 @@ export function TrendSegmentedControl({
     <div className="overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
       <div
         className={cn(
-          'inline-flex items-center gap-1 rounded-full border border-slate-200/70 bg-white/66 p-1',
+          'inline-flex items-center gap-1 rounded-full border border-slate-200/85 bg-white p-1',
           stretch ? 'min-w-full' : 'min-w-max',
         )}
         role="tablist"
@@ -153,12 +153,12 @@ export function TrendSegmentedControl({
               key={item.value}
               type="button"
               className={cn(
-                'inline-flex h-8 shrink-0 items-center justify-center rounded-full px-3 text-xs font-medium transition sm:px-4',
+                'inline-flex h-8 shrink-0 items-center justify-center rounded-full px-2.5 text-xs font-medium transition sm:px-3',
                 textClassName,
                 isEnabled
-                  ? 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+                  ? 'text-slate-600 hover:bg-slate-100/90 hover:text-slate-900'
                   : 'cursor-not-allowed text-slate-300',
-                isActive && 'bg-blue-600 text-white shadow-[0_10px_18px_-14px_rgba(37,99,235,0.9)] hover:bg-blue-600 hover:text-white',
+                isActive && 'bg-blue-600 text-white shadow-[0_12px_20px_-14px_rgba(37,99,235,0.9)] hover:bg-blue-600 hover:text-white',
               )}
               role="tab"
               aria-selected={isActive}

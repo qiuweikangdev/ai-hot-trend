@@ -22,9 +22,9 @@ export function TrendSearchBox({
   onReset,
 }: TrendSearchBoxProps) {
   return (
-    <div className="rounded-[24px] border border-white/85 bg-[linear-gradient(180deg,rgba(255,255,255,0.86)_0%,rgba(250,253,255,0.8)_100%)] p-1.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.9),0_10px_24px_-22px_rgba(100,116,139,0.22)] ring-1 ring-slate-200/55">
-      <div className="flex items-center gap-2">
-        <div className="flex flex-1 items-center gap-3 rounded-[18px] bg-[linear-gradient(180deg,rgba(255,255,255,0.95)_0%,rgba(252,254,255,0.9)_100%)] px-4 ring-1 ring-slate-200/75">
+    <div className="rounded-[22px] border border-slate-200/85 bg-white p-1 shadow-[0_10px_22px_-20px_rgba(15,23,42,0.14)]">
+      <div className="flex items-center gap-1.5 sm:gap-2">
+        <div className="flex flex-1 items-center gap-2.5 rounded-[16px] bg-slate-50/80 px-3.5 ring-1 ring-slate-200/85 transition focus-within:ring-blue-200/90">
           <Search className="size-4 text-slate-500/70" />
           <Input
             value={value}
@@ -39,8 +39,8 @@ export function TrendSearchBox({
           />
         </div>
 
-        <div className="flex items-center gap-2">
-          <Button type="button" className={cn('w-12 rounded-[16px] bg-blue-600 px-0 text-white shadow-[0_12px_24px_-18px_rgba(37,99,235,0.8)] hover:bg-blue-500 sm:min-w-24 sm:px-5', uiScale.searchButtonHeight)} onClick={onSearch}>
+        <div className="flex items-center gap-1.5 sm:gap-2">
+          <Button type="button" className={cn('w-11 rounded-[14px] bg-blue-600 px-0 text-white shadow-[0_12px_22px_-14px_rgba(37,99,235,0.72)] transition-all duration-200 hover:bg-blue-500 hover:shadow-[0_14px_24px_-14px_rgba(37,99,235,0.85)] focus-visible:ring-blue-200 sm:min-w-20 sm:px-4', uiScale.searchButtonHeight)} onClick={onSearch}>
             <Search className="size-4" />
             <span className="hidden sm:inline">搜索</span>
           </Button>
@@ -48,7 +48,7 @@ export function TrendSearchBox({
             type="button"
             variant="outline"
             size="icon"
-            className={cn('rounded-[16px] border-slate-200/85 bg-white/88 text-slate-600 hover:border-slate-300 hover:bg-slate-50', uiScale.resetButtonHeight)}
+            className={cn('rounded-[16px] border-slate-200/85 bg-white text-slate-600 hover:border-slate-300 hover:bg-slate-50 focus-visible:ring-blue-200', uiScale.resetButtonHeight)}
             onClick={onReset}
             aria-label="重置筛选"
           >

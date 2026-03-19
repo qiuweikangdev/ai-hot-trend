@@ -40,11 +40,11 @@ export function TrendResults({
 }: TrendResultsProps) {
   if (isTrendLoading) {
     return (
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
+      <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2 lg:gap-4 xl:grid-cols-3 2xl:grid-cols-4">
         {TREND_RESULT_SKELETON_KEYS.map(key => (
           <div
             key={key}
-            className="h-[320px] animate-pulse rounded-[30px] border border-slate-200/80 bg-gradient-to-b from-white via-slate-50 to-slate-100/90"
+            className="h-[320px] animate-pulse rounded-[30px] border border-white/88 bg-gradient-to-b from-white/88 via-slate-50/76 to-slate-100/70 ring-1 ring-slate-200/50"
           />
         ))}
       </div>
@@ -74,7 +74,7 @@ export function TrendResults({
           )
         : null}
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 [content-visibility:auto]">
+      <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2 lg:gap-4 xl:grid-cols-3 2xl:grid-cols-4 [content-visibility:auto]">
         {items.map(item => (
           <TrendCard
             key={item.id}
@@ -90,7 +90,7 @@ export function TrendResults({
 
       {!items.length
         ? (
-            <div className="rounded-[30px] border border-slate-200 bg-white/82 px-4 py-12 text-center text-slate-500 shadow-[0_24px_55px_-45px_rgba(15,23,42,0.28)]">
+            <div className="rounded-[30px] border border-white/90 bg-white/78 px-4 py-12 text-center text-slate-500 shadow-[0_24px_55px_-45px_rgba(15,23,42,0.22)] ring-1 ring-slate-200/55">
               当前筛选条件下暂无热点项目，请调整筛选后重试。
             </div>
           )
