@@ -3,7 +3,7 @@
 import type { ComponentType } from 'react'
 import type { TrendCardSize } from '@/config/trends'
 import type { TrendItem } from '@/modules/trends/types'
-import { Copy, ExternalLink, GitFork, Heart, Languages, Star } from 'lucide-react'
+import { Clock3, Copy, ExternalLink, GitFork, Heart, Languages, Star } from 'lucide-react'
 import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import { TREND_CARD_CLASS_MAP } from '@/config/trends'
@@ -32,6 +32,34 @@ function TrendMetricItem({
   )
 }
 
+function formatRelativeUpdateTime(value: string) {
+  const date = new Date(value)
+
+  if (Number.isNaN(date.getTime())) {
+    return '最近更新未知'
+  }
+
+  const diffMs = Date.now() - date.getTime()
+  const diffMinutes = Math.max(0, Math.floor(diffMs / 60000))
+
+  if (diffMinutes < 1) {
+    return '刚刚更新'
+  }
+
+  if (diffMinutes < 60) {
+    return `${diffMinutes}分钟前更新`
+  }
+
+  const diffHours = Math.floor(diffMinutes / 60)
+
+  if (diffHours < 24) {
+    return `${diffHours}小时前更新`
+  }
+
+  const diffDays = Math.floor(diffHours / 24)
+  return `${diffDays}天前更新`
+}
+
 interface TrendCardProps {
   item: TrendItem
   isFavorite: boolean
@@ -52,6 +80,10 @@ export function TrendCard({
   const scale = TREND_CARD_CLASS_MAP[size]
   const sourceMeta = getTrendSourceMeta(item.source)
   const isTopThree = item.rank <= 3
+  const isNpmSource = item.source === 'npm'
+  const hasLanguage = Boolean(item.language?.trim())
+  const updateTimeLabel = formatRelativeUpdateTime(item.updatedAt)
+  const primaryMetricLabel = isNpmSource ? '下载' : 'Star'
 
   return (
     <article
@@ -96,22 +128,40 @@ export function TrendCard({
       <div className="mt-3 flex flex-wrap items-center gap-2">
         <TrendMetricItem
           icon={Star}
-          value={`Star ${formatCompactCount(item.stars)}`}
+          value={`${primaryMetricLabel} ${formatCompactCount(item.stars)}`}
           className="border-amber-300/70 bg-amber-50/80 text-amber-700 dark:border-amber-300/35 dark:bg-amber-300/10 dark:text-amber-200"
           sizeClassName="px-2.5 py-1.5 text-xs"
         />
-        <TrendMetricItem
-          icon={GitFork}
-          value={`Fork ${formatCompactCount(item.forks)}`}
-          className="border-cyan-300/70 bg-cyan-50/80 text-cyan-700 dark:border-cyan-300/35 dark:bg-cyan-300/10 dark:text-cyan-200"
-          sizeClassName="px-2.5 py-1.5 text-xs"
-        />
-        <TrendMetricItem
-          icon={Languages}
-          value={`语言 ${item.language ?? 'Unknown'}`}
-          className="border-emerald-300/70 bg-emerald-50/80 text-emerald-700 dark:border-emerald-300/35 dark:bg-emerald-300/10 dark:text-emerald-200"
-          sizeClassName="px-2.5 py-1.5 text-xs"
-        />
+        {isNpmSource
+          ? null
+          : (
+              <TrendMetricItem
+                icon={GitFork}
+                value={`Fork ${formatCompactCount(item.forks)}`}
+                className="border-cyan-300/70 bg-cyan-50/80 text-cyan-700 dark:border-cyan-300/35 dark:bg-cyan-300/10 dark:text-cyan-200"
+                sizeClassName="px-2.5 py-1.5 text-xs"
+              />
+            )}
+        {isNpmSource
+          ? (
+              <TrendMetricItem
+                icon={Clock3}
+                value={updateTimeLabel}
+                className="border-cyan-300/70 bg-cyan-50/80 text-cyan-700 dark:border-cyan-300/35 dark:bg-cyan-300/10 dark:text-cyan-200"
+                sizeClassName="px-2.5 py-1.5 text-xs"
+              />
+            )
+          : null}
+        {hasLanguage
+          ? (
+              <TrendMetricItem
+                icon={Languages}
+                value={`语言 ${item.language}`}
+                className="border-emerald-300/70 bg-emerald-50/80 text-emerald-700 dark:border-emerald-300/35 dark:bg-emerald-300/10 dark:text-emerald-200"
+                sizeClassName="px-2.5 py-1.5 text-xs"
+              />
+            )
+          : null}
       </div>
 
       <div className="mt-auto flex items-center justify-end pt-3">

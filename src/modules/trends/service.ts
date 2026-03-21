@@ -1,12 +1,18 @@
-import type { TrendQuery, TrendResult } from '@/modules/trends/types'
+import type { TrendQuery, TrendResult, TrendSource } from '@/modules/trends/types'
 import { MemoryCache } from '@/modules/trends/cache'
 import { bootstrapTrendProviders } from '@/modules/trends/providers'
 import { getTrendProvider } from '@/modules/trends/registry'
 
 const trendCache = new MemoryCache<TrendResult>(5 * 60 * 1000)
 
+const TREND_CACHE_VERSION_MAP: Record<TrendSource, string> = {
+  github: 'v1',
+  npm: 'v2',
+}
+
 function buildTrendCacheKey(query: TrendQuery) {
   return [
+    TREND_CACHE_VERSION_MAP[query.source],
     query.source,
     query.period,
     query.language || '',

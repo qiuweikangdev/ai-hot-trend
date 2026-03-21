@@ -52,7 +52,6 @@ export function TrendDashboardHeader({
 
             <div className="min-w-0 shrink-0 pr-2">
               <h1 className={cn('truncate text-[30px] font-semibold leading-none tracking-tight text-slate-950 dark:text-white', uiScale.title)}>热点趋势</h1>
-              <p className="mt-1 hidden text-xs text-slate-400 sm:block dark:hidden">实时追踪技术热度与趋势变化</p>
             </div>
 
             <nav className="hidden min-w-0 items-center gap-6 overflow-x-auto lg:flex [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
