@@ -8,6 +8,7 @@ const trendCache = new MemoryCache<TrendResult>(5 * 60 * 1000)
 const TREND_CACHE_VERSION_MAP: Record<TrendSource, string> = {
   github: 'v1',
   npm: 'v3',
+  vue: 'v1',
 }
 
 function buildTrendCacheKey(query: TrendQuery) {
