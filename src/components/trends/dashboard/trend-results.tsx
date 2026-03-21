@@ -2,7 +2,9 @@
 
 import type { TrendUiScale } from '@/config/trends'
 import type { TrendItem, TrendResult } from '@/modules/trends/types'
+import { ChevronDown } from 'lucide-react'
 import { TrendCard } from '@/components/trends/trend-card'
+import { Button } from '@/components/ui/button'
 import { getTrendSourceMeta } from '@/modules/trends/catalog'
 import { buildFavoriteKey } from './utils'
 
@@ -40,11 +42,11 @@ export function TrendResults({
 }: TrendResultsProps) {
   if (isTrendLoading) {
     return (
-      <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2 lg:gap-4 xl:grid-cols-3 2xl:grid-cols-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
         {TREND_RESULT_SKELETON_KEYS.map(key => (
           <div
             key={key}
-            className="h-[320px] animate-pulse rounded-[30px] border border-white/88 bg-gradient-to-b from-white/88 via-slate-50/76 to-slate-100/70 ring-1 ring-slate-200/50"
+            className="h-[296px] animate-pulse rounded-[18px] border border-slate-200/80 bg-slate-100/80"
           />
         ))}
       </div>
@@ -74,7 +76,7 @@ export function TrendResults({
           )
         : null}
 
-      <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2 lg:gap-4 xl:grid-cols-3 2xl:grid-cols-4 [content-visibility:auto]">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 [content-visibility:auto]">
         {items.map(item => (
           <TrendCard
             key={item.id}
@@ -87,6 +89,22 @@ export function TrendResults({
           />
         ))}
       </div>
+
+      {items.length
+        ? (
+            <div className="mt-8 flex justify-center sm:mt-10">
+              <Button
+                type="button"
+                variant="outline"
+                className="h-10 rounded-full border-slate-300/90 bg-white px-6 text-[13px] font-medium text-slate-700 shadow-[0_8px_18px_-16px_rgba(15,23,42,0.55)] transition-all duration-200 hover:-translate-y-0.5 hover:border-slate-400 hover:bg-slate-50 hover:text-slate-900"
+                aria-label="加载更多（即将上线）"
+              >
+                <ChevronDown className="size-3.5" strokeWidth={2} />
+                查看更多
+              </Button>
+            </div>
+          )
+        : null}
 
       {!items.length
         ? (

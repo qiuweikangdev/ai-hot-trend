@@ -152,3 +152,8 @@ export const trendUiConfig = {
   quickFilterCollapsedCount: 5,
   noticeDurationMs: 2200,
 }
+
+export const TREND_DASHBOARD_LAYOUT = {
+  headerStickyOffsetPx: 65,
+  filterStickyGapPx: 8,
+} as const

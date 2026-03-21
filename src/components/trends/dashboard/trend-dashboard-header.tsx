@@ -1,16 +1,21 @@
 'use client'
 
 import type { TrendUiScale } from '@/config/trends'
-import { Heart, LoaderCircle, LogIn, LogOut, Sparkles, UserCircle2 } from 'lucide-react'
+import type { TrendSourceOption } from '@/modules/trends/catalog'
+import { Heart, LoaderCircle, LogIn, LogOut, Sparkles, Sun, UserCircle2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { TREND_DASHBOARD_LAYOUT } from '@/config/trends'
 import { cn } from '@/lib/utils'
 
 interface TrendDashboardHeaderProps {
   uiScale: TrendUiScale
+  sourceOptions: TrendSourceOption[]
+  sourceValue: string
   favoriteCount: number
   isSignedIn: boolean
   isSessionPending: boolean
   userDisplayName: string
+  onSelectSource: (value: string, enabled: boolean, label: string) => void
   onToggleFavorites: () => void
   onOpenLogin: () => void
   onSignOut: () => void
@@ -18,35 +23,76 @@ interface TrendDashboardHeaderProps {
 
 export function TrendDashboardHeader({
   uiScale,
+  sourceOptions,
+  sourceValue,
   favoriteCount,
   isSignedIn,
   isSessionPending,
   userDisplayName,
+  onSelectSource,
   onToggleFavorites,
   onOpenLogin,
   onSignOut,
 }: TrendDashboardHeaderProps) {
+  const primarySourceOptions = sourceOptions.filter(option => ['github', 'npm', 'twitter', 'weibo'].includes(option.value)).slice(0, 4)
+
   return (
-    <header className="sticky top-0 z-30 border-b border-slate-200/75 bg-white/92 backdrop-blur-xl supports-[backdrop-filter]:bg-white/80">
-      <div className={cn('mx-auto flex w-full max-w-[1360px] flex-col gap-4 px-4 sm:px-6 lg:px-8', uiScale.headerPadding)}>
-        <div className="flex items-center justify-between gap-2 sm:gap-4">
-          <div className="flex min-w-0 items-center gap-2.5 sm:gap-3">
-            <div className={cn('grid shrink-0 place-items-center rounded-[30px] border border-slate-200/80 bg-white/92 p-1.5 shadow-[0_12px_22px_-20px_rgba(15,23,42,0.28)]', uiScale.logoSize)}>
-              <div className="grid size-full place-items-center rounded-[22px] bg-[linear-gradient(145deg,#ffd17b_0%,#ffc36d_45%,#8fe0c4_100%)] shadow-[0_18px_30px_-20px_rgba(34,105,84,0.7)] ring-1 ring-white/80">
-                <Sparkles className={cn('text-slate-800', uiScale.logoIcon)} />
+    <header style={{ minHeight: `${TREND_DASHBOARD_LAYOUT.headerStickyOffsetPx}px` }} className="sticky top-0 z-30 border-b border-slate-200 bg-white">
+      <div className={cn('mx-auto flex w-full max-w-[1360px] flex-col gap-2 px-4 sm:px-6 lg:px-8', uiScale.headerPadding)}>
+        <div className="flex items-center justify-between gap-3">
+          <div className="group/brand flex min-w-0 items-center gap-4">
+            <div className={cn('relative grid shrink-0 place-items-center overflow-hidden rounded-2xl border border-slate-200/80 bg-white p-1.5 transition-transform duration-300 group-hover/brand:-translate-y-0.5', uiScale.logoSize)}>
+              <span aria-hidden className="pointer-events-none absolute inset-0 rounded-2xl bg-[radial-gradient(circle_at_30%_25%,rgba(59,130,246,0.14),transparent_55%)] opacity-0 transition-opacity duration-500 group-hover/brand:opacity-100" />
+              <div className="grid size-full place-items-center rounded-xl bg-[linear-gradient(140deg,#ffe2a6_0%,#ffcb75_58%,#9de9cd_100%)] shadow-[0_10px_18px_-14px_rgba(15,23,42,0.5)]">
+                <Sparkles className={cn('text-slate-800 motion-safe:animate-[spin_18s_linear_infinite] transition-transform duration-300 group-hover/brand:scale-110 group-hover/brand:rotate-6', uiScale.logoIcon)} />
               </div>
             </div>
 
-            <div className="min-w-0">
-              <h1 className={cn('truncate font-semibold leading-none tracking-tight text-slate-950', uiScale.title)}>热点趋势</h1>
+            <div className="min-w-0 shrink-0 pr-2">
+              <h1 className={cn('truncate text-[30px] font-semibold leading-none tracking-tight text-slate-950', uiScale.title)}>热点趋势</h1>
+              <p className="mt-1 hidden text-xs text-slate-400 sm:block">实时追踪技术热度与趋势变化</p>
             </div>
+
+            <nav className="hidden min-w-0 items-center gap-6 overflow-x-auto lg:flex [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+              {primarySourceOptions.map((option) => {
+                const isEnabled = option.enabled ?? true
+                const isActive = isEnabled && option.value === sourceValue
+
+                return (
+                  <button
+                    key={option.value}
+                    type="button"
+                    className={cn(
+                      'relative inline-flex h-11 shrink-0 items-center justify-center text-sm font-medium text-slate-600 transition',
+                      isEnabled ? 'hover:text-slate-900' : 'cursor-not-allowed text-slate-300',
+                      isActive && 'text-blue-600',
+                    )}
+                    onClick={() => onSelectSource(option.value, isEnabled, option.label)}
+                    disabled={!isEnabled}
+                  >
+                    {option.label}
+                    <span className={cn('absolute inset-x-0 -bottom-0.5 h-0.5 rounded-full bg-transparent', isActive && 'bg-blue-500')} />
+                  </button>
+                )
+              })}
+            </nav>
           </div>
 
-          <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
+          <div className="flex shrink-0 items-center gap-2 sm:gap-2.5">
             <Button
               type="button"
               variant="outline"
-              className="h-10 rounded-2xl border-slate-200/85 bg-white/88 px-3 text-slate-700 shadow-[0_10px_24px_-22px_rgba(15,23,42,0.3)] sm:h-11 sm:px-4"
+              size="icon"
+              className="size-9 rounded-full border-slate-200/90 bg-white text-slate-500 transition-colors hover:border-slate-300 hover:bg-slate-50 hover:text-slate-800 sm:size-10"
+              aria-label="主题切换（敬请期待）"
+            >
+              <Sun className="size-3.5" strokeWidth={1.9} />
+            </Button>
+
+            <Button
+              type="button"
+              variant="outline"
+              className="h-10 rounded-full border-slate-200/85 bg-white px-3 text-slate-700 sm:h-11 sm:px-4"
               onClick={onToggleFavorites}
             >
               <Heart className="size-4" />
@@ -56,7 +102,7 @@ export function TrendDashboardHeader({
 
             {isSessionPending && !isSignedIn
               ? (
-                  <div className={cn('hidden h-10 items-center gap-2 rounded-2xl border border-slate-200/85 bg-white/88 px-3 text-slate-500 sm:inline-flex md:h-11', uiScale.userInfo)}>
+                  <div className={cn('hidden h-10 items-center gap-2 rounded-full border border-slate-200/85 bg-white px-3 text-slate-500 sm:inline-flex md:h-11', uiScale.userInfo)}>
                     <LoaderCircle className="size-4 animate-spin text-blue-600" />
                     检查会话
                   </div>
@@ -66,24 +112,50 @@ export function TrendDashboardHeader({
             {isSignedIn
               ? (
                   <>
-                    <div className={cn('hidden items-center gap-2 rounded-2xl border border-slate-200/85 bg-white/88 px-3 py-2 text-slate-700 lg:flex', uiScale.userInfo)}>
+                    <div className={cn('hidden items-center gap-2 rounded-full border border-slate-200/85 bg-white px-3 py-2 text-slate-700 lg:flex', uiScale.userInfo)}>
                       <UserCircle2 className="size-4 text-slate-500" />
                       <span className="max-w-32 truncate">{userDisplayName}</span>
                     </div>
-                    <Button type="button" variant="outline" className="h-10 rounded-2xl border-slate-200/85 bg-white/88 px-3 sm:h-11 sm:px-4" onClick={onSignOut}>
+                    <Button type="button" variant="outline" className="h-10 rounded-full border-slate-200/85 bg-white px-3 sm:h-11 sm:px-4" onClick={onSignOut}>
                       <LogOut className="size-4" />
                       退出
                     </Button>
                   </>
                 )
               : (
-                  <Button type="button" className="h-10 rounded-2xl bg-slate-900 px-3 text-white shadow-[0_14px_28px_-20px_rgba(15,23,42,0.85)] hover:bg-slate-800 sm:h-11 sm:px-4" onClick={onOpenLogin}>
+                  <Button type="button" className="h-10 rounded-full bg-[#0f2345] px-4 text-white hover:bg-[#0c1d3a] sm:h-11 sm:px-5" onClick={onOpenLogin}>
                     <LogIn className="size-4" />
                     登录
                   </Button>
                 )}
           </div>
         </div>
+
+        <nav className="flex min-w-0 items-center gap-5 overflow-x-auto pb-1 lg:hidden [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          {primarySourceOptions.map((option) => {
+            const isEnabled = option.enabled ?? true
+            const isActive = isEnabled && option.value === sourceValue
+
+            return (
+              <button
+                key={option.value}
+                type="button"
+                className={cn(
+                  'relative inline-flex h-8 shrink-0 items-center justify-center text-sm font-medium transition-all',
+                  isEnabled
+                    ? 'text-slate-600 hover:text-slate-900'
+                    : 'cursor-not-allowed text-slate-300',
+                  isActive && 'text-blue-600',
+                )}
+                onClick={() => onSelectSource(option.value, isEnabled, option.label)}
+                disabled={!isEnabled}
+              >
+                {option.label}
+                <span className={cn('absolute inset-x-0 -bottom-0.5 h-0.5 rounded-full bg-transparent', isActive && 'bg-blue-500')} />
+              </button>
+            )
+          })}
+        </nav>
       </div>
     </header>
   )

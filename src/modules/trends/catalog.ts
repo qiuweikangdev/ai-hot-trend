@@ -36,9 +36,9 @@ export const TREND_SOURCE_OPTIONS: TrendSourceOption[] = [
 ]
 
 export const TREND_PERIOD_OPTIONS: TrendPeriodOption[] = [
-  { value: 'today', label: '今日热度' },
-  { value: 'week', label: '本周热点' },
-  { value: 'month', label: '本月趋势' },
+  { value: 'today', label: '今日' },
+  { value: 'week', label: '本周' },
+  { value: 'month', label: '本月' },
 ]
 
 export const PRESET_TREND_LANGUAGES = [
