@@ -64,8 +64,10 @@ export function TrendDashboardHeader({
                     key={option.value}
                     type="button"
                     className={cn(
-                      'relative inline-flex h-11 shrink-0 items-center justify-center text-sm font-medium text-slate-600 transition dark:text-slate-400',
-                      isEnabled ? 'hover:text-slate-900 dark:hover:text-white' : 'cursor-not-allowed text-slate-300 dark:text-slate-700',
+                      'relative inline-flex h-11 shrink-0 items-center justify-center text-sm font-medium transition-all dark:text-slate-400',
+                      isEnabled
+                        ? 'text-slate-600 hover:text-slate-900 dark:hover:text-white px-3 hover:bg-slate-100 dark:hover:bg-white/8 dark:text-slate-400 rounded-full'
+                        : 'cursor-not-allowed text-slate-300 dark:text-slate-700',
                       isActive && 'text-blue-600 dark:text-white',
                     )}
                     onClick={() => onSelectSource(option.value, isEnabled, option.label)}
@@ -146,7 +148,7 @@ export function TrendDashboardHeader({
                 className={cn(
                   'relative inline-flex h-8 shrink-0 items-center justify-center text-sm font-medium transition-all dark:text-slate-400',
                   isEnabled
-                    ? 'text-slate-600 hover:text-slate-900 dark:hover:text-white'
+                    ? 'text-slate-600 hover:text-slate-900 dark:hover:text-white px-2.5 hover:bg-slate-100 dark:hover:bg-white/8 rounded-full'
                     : 'cursor-not-allowed text-slate-300 dark:text-slate-700',
                   isActive && 'text-blue-600 dark:text-white',
                 )}
