@@ -54,7 +54,7 @@ export function TrendDashboardHeader({
               <h1 className={cn('truncate text-[30px] font-semibold leading-none tracking-tight text-slate-950 dark:text-white', uiScale.title)}>热点趋势</h1>
             </div>
 
-            <nav className="hidden min-w-0 items-center gap-6 overflow-x-auto lg:flex [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            <nav className="hidden min-w-0 items-center gap-5 overflow-x-auto lg:flex [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
               {primarySourceOptions.map((option) => {
                 const isEnabled = option.enabled ?? true
                 const isActive = isEnabled && option.value === sourceValue
@@ -64,17 +64,23 @@ export function TrendDashboardHeader({
                     key={option.value}
                     type="button"
                     className={cn(
-                      'relative inline-flex h-11 shrink-0 items-center justify-center text-sm font-medium transition-all dark:text-slate-400',
+                      'group/tab relative shrink-0 text-[13px] font-medium transition-colors duration-150',
                       isEnabled
-                        ? 'text-slate-600 hover:text-slate-900 dark:hover:text-white px-3 hover:bg-slate-100 dark:hover:bg-white/8 dark:text-slate-400 rounded-full'
+                        ? 'text-slate-500 hover:text-slate-800 dark:text-slate-500 dark:hover:text-slate-200'
                         : 'cursor-not-allowed text-slate-300 dark:text-slate-700',
-                      isActive && 'text-blue-600 dark:text-white',
+                      isActive && 'text-slate-900 dark:text-white',
                     )}
                     onClick={() => onSelectSource(option.value, isEnabled, option.label)}
                     disabled={!isEnabled}
                   >
                     {option.label}
-                    <span className={cn('absolute inset-x-0 -bottom-0.5 h-0.5 rounded-full bg-transparent', isActive && 'bg-blue-500 dark:bg-white')} />
+                    <span className={cn(
+                      'absolute -bottom-1.5 left-1/2 -translate-x-1/2 h-[2px] rounded-full transition-all duration-200',
+                      isActive
+                        ? 'w-full -translate-x-1/2 bg-slate-900 dark:bg-white'
+                        : 'w-0 bg-slate-400 dark:bg-slate-500 group-hover/tab:w-5',
+                    )}
+                    />
                   </button>
                 )
               })}
@@ -136,7 +142,7 @@ export function TrendDashboardHeader({
           </div>
         </div>
 
-        <nav className="flex min-w-0 items-center gap-5 overflow-x-auto pb-1 lg:hidden [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        <nav className="flex min-w-0 items-center gap-4 overflow-x-auto pb-1 lg:hidden [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           {primarySourceOptions.map((option) => {
             const isEnabled = option.enabled ?? true
             const isActive = isEnabled && option.value === sourceValue
@@ -146,17 +152,23 @@ export function TrendDashboardHeader({
                 key={option.value}
                 type="button"
                 className={cn(
-                  'relative inline-flex h-8 shrink-0 items-center justify-center text-sm font-medium transition-all dark:text-slate-400',
+                  'group/tab relative shrink-0 text-[13px] font-medium transition-colors duration-150',
                   isEnabled
-                    ? 'text-slate-600 hover:text-slate-900 dark:hover:text-white px-2.5 hover:bg-slate-100 dark:hover:bg-white/8 rounded-full'
+                    ? 'text-slate-500 hover:text-slate-800 dark:text-slate-500 dark:hover:text-slate-200'
                     : 'cursor-not-allowed text-slate-300 dark:text-slate-700',
-                  isActive && 'text-blue-600 dark:text-white',
+                  isActive && 'text-slate-900 dark:text-white',
                 )}
                 onClick={() => onSelectSource(option.value, isEnabled, option.label)}
                 disabled={!isEnabled}
               >
                 {option.label}
-                <span className={cn('absolute inset-x-0 -bottom-0.5 h-0.5 rounded-full bg-transparent', isActive && 'bg-blue-500 dark:bg-white')} />
+                <span className={cn(
+                  'absolute -bottom-1 left-1/2 -translate-x-1/2 h-[2px] rounded-full transition-all duration-200',
+                  isActive
+                    ? 'w-full -translate-x-1/2 bg-slate-900 dark:bg-white'
+                    : 'w-0 bg-slate-400 dark:bg-slate-500 group-hover/tab:w-5',
+                )}
+                />
               </button>
             )
           })}
