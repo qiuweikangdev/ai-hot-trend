@@ -32,6 +32,7 @@ export const TREND_SOURCE_OPTIONS: TrendSourceOption[] = [
   { value: 'react', label: 'React 生态', enabled: true, description: 'Best of JS 的 React 生态增星趋势' },
   { value: 'node', label: 'Node 生态', enabled: true, description: 'Best of JS 的 Node 生态增星趋势' },
   { value: 'ai', label: 'AI 生态', enabled: true, description: 'Best of JS 的 AI 生态增星趋势' },
+  { value: 'component', label: '组件库', enabled: true, description: 'Best of JS 的 UI 组件库增星趋势' },
   { value: 'weibo', label: '微博', enabled: false, description: '中文社区实时热榜' },
   { value: 'zhihu', label: '知乎', enabled: false, description: '问答社区讨论趋势' },
   { value: 'juejin', label: '掘金', enabled: false, description: '开发者内容热点' },

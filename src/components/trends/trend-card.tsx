@@ -85,9 +85,10 @@ export function TrendCard({
   const isReactSource = item.source === 'react'
   const isNodeSource = item.source === 'node'
   const isAiSource = item.source === 'ai'
+  const isComponentSource = item.source === 'component'
   const hasLanguage = Boolean(item.language?.trim())
   const updateTimeLabel = formatRelativeUpdateTime(item.updatedAt)
-  const primaryMetricLabel = isNpmSource ? '下载' : (isVueSource || isReactSource || isNodeSource || isAiSource) ? '增星' : 'Star'
+  const primaryMetricLabel = isNpmSource ? '下载' : (isVueSource || isReactSource || isNodeSource || isAiSource || isComponentSource) ? '增星' : 'Star'
 
   return (
     <article
@@ -136,7 +137,7 @@ export function TrendCard({
           className="border-amber-300/70 bg-amber-50/80 text-amber-700 dark:border-amber-300/35 dark:bg-amber-300/10 dark:text-amber-200"
           sizeClassName="px-2.5 py-1.5 text-xs"
         />
-        {isNpmSource || isVueSource || isReactSource || isNodeSource || isAiSource
+        {isNpmSource || isVueSource || isReactSource || isNodeSource || isAiSource || isComponentSource
           ? null
           : (
               <TrendMetricItem
@@ -187,6 +188,16 @@ export function TrendCard({
             )
           : null}
         {isAiSource
+          ? (
+              <TrendMetricItem
+                icon={Star}
+                value={`总星 ${formatCompactCount(item.forks)}`}
+                className="border-cyan-300/70 bg-cyan-50/80 text-cyan-700 dark:border-cyan-300/35 dark:bg-cyan-300/10 dark:text-cyan-200"
+                sizeClassName="px-2.5 py-1.5 text-xs"
+              />
+            )
+          : null}
+        {isComponentSource
           ? (
               <TrendMetricItem
                 icon={Star}

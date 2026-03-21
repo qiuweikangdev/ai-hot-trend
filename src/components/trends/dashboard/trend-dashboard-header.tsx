@@ -36,7 +36,7 @@ export function TrendDashboardHeader({
   onOpenLogin,
   onSignOut,
 }: TrendDashboardHeaderProps) {
-  const primarySourceOptions = sourceOptions.filter(option => ['github', 'npm', 'vue', 'react', 'node', 'ai'].includes(option.value))
+  const primarySourceOptions = sourceOptions.filter(option => ['github', 'npm', 'vue', 'react', 'node', 'ai', 'component'].includes(option.value))
 
   return (
     <header style={{ minHeight: `${TREND_DASHBOARD_LAYOUT.headerStickyOffsetPx}px` }} className="sticky top-0 z-30 border-b border-slate-200 bg-white dark:border-white/8 dark:bg-[#020407]/96">
@@ -64,20 +64,20 @@ export function TrendDashboardHeader({
                     key={option.value}
                     type="button"
                     className={cn(
-                      'group/tab relative shrink-0 text-[13px] font-medium transition-colors duration-150',
+                      'group/tab relative shrink-0 text-[13px] font-medium transition-all duration-150',
                       isEnabled
-                        ? 'text-slate-500 hover:text-slate-800 dark:text-slate-500 dark:hover:text-slate-200'
+                        ? 'text-slate-400 hover:text-slate-800 dark:text-slate-500 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-white/8 rounded-lg px-2 py-1'
                         : 'cursor-not-allowed text-slate-300 dark:text-slate-700',
-                      isActive && 'text-slate-900 dark:text-white',
+                      isActive && 'text-slate-900 dark:text-white font-semibold',
                     )}
                     onClick={() => onSelectSource(option.value, isEnabled, option.label)}
                     disabled={!isEnabled}
                   >
                     {option.label}
                     <span className={cn(
-                      'absolute -bottom-1.5 left-1/2 -translate-x-1/2 h-[2px] rounded-full transition-all duration-200',
+                      'absolute -bottom-1 left-1/2 -translate-x-1/2 h-[2.5px] rounded-full transition-all duration-200',
                       isActive
-                        ? 'w-full -translate-x-1/2 bg-slate-900 dark:bg-white'
+                        ? 'w-full -translate-x-1/2 bg-blue-600 dark:bg-white'
                         : 'w-0 bg-slate-400 dark:bg-slate-500 group-hover/tab:w-5',
                     )}
                     />
@@ -152,20 +152,20 @@ export function TrendDashboardHeader({
                 key={option.value}
                 type="button"
                 className={cn(
-                  'group/tab relative shrink-0 text-[13px] font-medium transition-colors duration-150',
+                  'group/tab relative shrink-0 text-[13px] font-medium transition-all duration-150',
                   isEnabled
-                    ? 'text-slate-500 hover:text-slate-800 dark:text-slate-500 dark:hover:text-slate-200'
+                    ? 'text-slate-400 hover:text-slate-800 dark:text-slate-500 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-white/8 rounded-lg px-2 py-1'
                     : 'cursor-not-allowed text-slate-300 dark:text-slate-700',
-                  isActive && 'text-slate-900 dark:text-white',
+                  isActive && 'text-slate-900 dark:text-white font-semibold',
                 )}
                 onClick={() => onSelectSource(option.value, isEnabled, option.label)}
                 disabled={!isEnabled}
               >
                 {option.label}
                 <span className={cn(
-                  'absolute -bottom-1 left-1/2 -translate-x-1/2 h-[2px] rounded-full transition-all duration-200',
+                  'absolute -bottom-0.5 left-1/2 -translate-x-1/2 h-[2px] rounded-full transition-all duration-200',
                   isActive
-                    ? 'w-full -translate-x-1/2 bg-slate-900 dark:bg-white'
+                    ? 'w-full -translate-x-1/2 bg-blue-600 dark:bg-white'
                     : 'w-0 bg-slate-400 dark:bg-slate-500 group-hover/tab:w-5',
                 )}
                 />
