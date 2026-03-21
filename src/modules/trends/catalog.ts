@@ -29,6 +29,7 @@ export const TREND_SOURCE_OPTIONS: TrendSourceOption[] = [
   { value: 'github', label: 'GitHub', enabled: true, description: '代码仓库热点趋势' },
   { value: 'npm', label: 'npm', enabled: true, description: '包生态下载与讨论热度' },
   { value: 'vue', label: 'Vue 生态', enabled: true, description: 'Best of JS 的 Vue 生态增星趋势' },
+  { value: 'react', label: 'React 生态', enabled: true, description: 'Best of JS 的 React 生态增星趋势' },
   { value: 'weibo', label: '微博', enabled: false, description: '中文社区实时热榜' },
   { value: 'zhihu', label: '知乎', enabled: false, description: '问答社区讨论趋势' },
   { value: 'juejin', label: '掘金', enabled: false, description: '开发者内容热点' },
