@@ -1,7 +1,7 @@
 'use client'
 
 import type { TrendPeriod, TrendResult, TrendSource } from '@/modules/trends/types'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { fetchTrendResult } from '@/modules/trends/client'
 
 function getErrorMessage(error: unknown, fallback: string) {
@@ -28,49 +28,92 @@ export function useTrendFeed({
   const [trendData, setTrendData] = useState<TrendResult | null>(null)
   const [isTrendLoading, setIsTrendLoading] = useState(true)
   const [trendError, setTrendError] = useState('')
+  const [offset, setOffset] = useState(0)
+  const [isLoadingMore, setIsLoadingMore] = useState(false)
+  const [hasMore, setHasMore] = useState(true)
+
+  const paramsRef = useRef({ source, period, language, keyword, limit })
 
   useEffect(() => {
-    let cancelled = false
+    paramsRef.current = { source, period, language, keyword, limit }
+  }, [source, period, language, keyword, limit])
 
-    async function loadTrends() {
+  const fetchTrends = useCallback(async (fetchOffset: number, isLoadMore = false) => {
+    const { source: src, period: prd, language: lng, keyword: kw, limit: lmt } = paramsRef.current
+
+    if (isLoadMore) {
+      setIsLoadingMore(true)
+    }
+    else {
       setIsTrendLoading(true)
-      setTrendError('')
+    }
+    setTrendError('')
 
-      try {
-        const data = await fetchTrendResult({
-          source,
-          period,
-          language,
-          keyword,
-          limit,
-        })
+    try {
+      const data = await fetchTrendResult({
+        source: src,
+        period: prd,
+        language: lng,
+        keyword: kw,
+        limit: lmt,
+        offset: fetchOffset,
+      })
 
-        if (!cancelled) {
-          setTrendData(data)
-        }
+      if (!data.items.length) {
+        setHasMore(false)
       }
-      catch (error) {
-        if (!cancelled) {
-          setTrendError(getErrorMessage(error, '热点数据加载失败'))
+
+      setTrendData((prev) => {
+        if (isLoadMore && prev) {
+          const existingIds = new Set(prev.items.map(item => item.id))
+          const newItems = data.items.filter(item => !existingIds.has(item.id))
+          const mergedItems = [...prev.items, ...newItems]
+          if (!newItems.length && data.items.length > 0) {
+            setHasMore(false)
+          }
+          return {
+            ...data,
+            items: mergedItems,
+          }
         }
+        return data
+      })
+    }
+    catch (error) {
+      setTrendError(getErrorMessage(error, '热点数据加载失败'))
+    }
+    finally {
+      if (isLoadMore) {
+        setIsLoadingMore(false)
       }
-      finally {
-        if (!cancelled) {
-          setIsTrendLoading(false)
-        }
+      else {
+        setIsTrendLoading(false)
       }
     }
+  }, [])
 
-    loadTrends()
+  useEffect(() => {
+    setOffset(0)
+    setHasMore(true)
+    fetchTrends(0)
+  }, [keyword, language, limit, period, refreshTick, source, fetchTrends])
 
-    return () => {
-      cancelled = true
+  const loadMore = useCallback(async () => {
+    if (isLoadingMore || !hasMore) {
+      return
     }
-  }, [keyword, language, limit, period, refreshTick, source])
+
+    const newOffset = offset + limit
+    setOffset(newOffset)
+    await fetchTrends(newOffset, true)
+  }, [fetchTrends, hasMore, isLoadingMore, limit, offset])
 
   return {
     trendData,
     isTrendLoading,
     trendError,
+    isLoadingMore,
+    hasMore,
+    loadMore,
   }
 }

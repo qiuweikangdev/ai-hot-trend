@@ -33,12 +33,14 @@ function buildGithubSearchParams(query: TrendQuery, now: Date) {
     conditions.push(`${keyword} in:name,description`)
   }
 
+  const page = Math.floor(query.offset / query.limit) + 1
+
   return new URLSearchParams({
     q: conditions.join(' '),
     sort: 'stars',
     order: 'desc',
     per_page: String(query.limit),
-    page: '1',
+    page: String(page),
   })
 }
 

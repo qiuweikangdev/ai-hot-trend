@@ -24,10 +24,13 @@ interface TrendResultsProps {
   trendData: TrendResult | null
   isTrendLoading: boolean
   trendError: string
+  isLoadingMore: boolean
+  hasMore: boolean
   favoriteBusyKey: string
   favoriteKeySet: Set<string>
   onToggleFavorite: (item: TrendItem) => void
   onCopyName: (item: TrendItem) => void
+  onLoadMore: () => void
 }
 
 export function TrendResults({
@@ -35,10 +38,13 @@ export function TrendResults({
   trendData,
   isTrendLoading,
   trendError,
+  isLoadingMore,
+  hasMore,
   favoriteBusyKey,
   favoriteKeySet,
   onToggleFavorite,
   onCopyName,
+  onLoadMore,
 }: TrendResultsProps) {
   if (isTrendLoading) {
     return (
@@ -90,17 +96,19 @@ export function TrendResults({
         ))}
       </div>
 
-      {items.length
+      {items.length && hasMore
         ? (
             <div className="mt-8 flex justify-center sm:mt-10">
               <Button
                 type="button"
                 variant="outline"
-                className="h-10 rounded-full border-slate-300/90 bg-white px-6 text-[13px] font-medium text-slate-700 shadow-[0_8px_18px_-16px_rgba(15,23,42,0.55)] transition-all duration-200 hover:-translate-y-0.5 hover:border-slate-400 hover:bg-slate-50 hover:text-slate-900 dark:border-white/12 dark:bg-[#0b0f16] dark:text-slate-200 dark:hover:border-white/22 dark:hover:bg-[#121722] dark:hover:text-white"
-                aria-label="加载更多（即将上线）"
+                disabled={isLoadingMore}
+                onClick={onLoadMore}
+                className="h-10 rounded-full border-slate-300/90 bg-white px-6 text-[13px] font-medium text-slate-700 shadow-[0_8px_18px_-16px_rgba(15,23,42,0.55)] transition-all duration-200 hover:-translate-y-0.5 hover:border-slate-400 hover:bg-slate-50 hover:text-slate-900 dark:border-white/12 dark:bg-[#0b0f16] dark:text-slate-200 dark:hover:border-white/22 dark:hover:bg-[#121722] dark:hover:text-white disabled:opacity-50"
+                aria-label="加载更多"
               >
-                <ChevronDown className="size-3.5" strokeWidth={2} />
-                查看更多
+                <ChevronDown className={`size-3.5 ${isLoadingMore ? 'animate-spin' : ''}`} strokeWidth={2} />
+                {isLoadingMore ? '加载中...' : '查看更多'}
               </Button>
             </div>
           )

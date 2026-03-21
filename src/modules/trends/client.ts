@@ -7,11 +7,12 @@ export interface TrendsResponse {
   data?: TrendResult
 }
 
-export async function fetchTrendResult(query: Omit<TrendQuery, 'limit'> & { limit?: number }) {
+export async function fetchTrendResult(query: Omit<TrendQuery, 'limit' | 'offset'> & { limit?: number, offset?: number }) {
   const searchParams = new URLSearchParams({
     source: query.source,
     period: query.period,
     limit: String(query.limit ?? DEFAULT_TREND_LIMIT),
+    offset: String(query.offset ?? 0),
   })
 
   if (query.language) {

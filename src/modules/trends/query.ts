@@ -13,6 +13,7 @@ export interface TrendRequestQueryInput {
   language?: string | null
   keyword?: string | null
   limit?: string | null
+  offset?: string | null
 }
 
 function parseSource(value: string | null | undefined) {
@@ -53,6 +54,20 @@ function parseLimit(value: string | null | undefined) {
   return Math.min(parsed, MAX_TREND_LIMIT)
 }
 
+function parseOffset(value: string | null | undefined) {
+  if (!value) {
+    return 0
+  }
+
+  const parsed = Number.parseInt(value, 10)
+
+  if (Number.isNaN(parsed) || parsed < 0) {
+    return 0
+  }
+
+  return parsed
+}
+
 function parseTextValue(value: string | null | undefined) {
   const trimmed = value?.trim()
   return trimmed || undefined
@@ -67,5 +82,6 @@ export function parseTrendRequestQuery(input: TrendRequestQueryInput): TrendQuer
     language: parseTextValue(input.language),
     keyword: parseTextValue(input.keyword),
     limit: parseLimit(input.limit),
+    offset: parseOffset(input.offset),
   }
 }

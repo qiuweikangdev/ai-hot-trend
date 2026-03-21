@@ -12,6 +12,7 @@ trendsRoute.get('/', async (c) => {
       limit: c.req.query('limit') ?? null,
       language: c.req.query('language') ?? null,
       keyword: c.req.query('keyword') ?? null,
+      offset: c.req.query('offset') ?? null,
     })
 
     const data = await queryTrendItems(query)

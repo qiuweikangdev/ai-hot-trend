@@ -125,6 +125,8 @@ export function useTrendDashboard(initialSession: AuthSessionSnapshot) {
       trendData: trendFeed.trendData,
       isTrendLoading: trendFeed.isTrendLoading,
       trendError: trendFeed.trendError,
+      isLoadingMore: trendFeed.isLoadingMore,
+      hasMore: trendFeed.hasMore,
       recentKeywords: searchHistory.recentKeywords,
       favorites: favoritesManager.state.favorites,
       isFavoriteLoading: favoritesManager.state.isFavoriteLoading,
@@ -159,6 +161,7 @@ export function useTrendDashboard(initialSession: AuthSessionSnapshot) {
       handleRemoveFavorite: favoritesManager.actions.handleRemoveFavorite,
       handleCopyName,
       handleToggleFavoritesPanel,
+      handleLoadMore: trendFeed.loadMore,
       handleSignOut,
     },
   }

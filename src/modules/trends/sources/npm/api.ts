@@ -23,8 +23,6 @@ function buildNpmSearchParams(query: TrendQuery) {
     conditions.push(`keywords:${language}`)
   }
 
-  // npm search 在仅使用 `not:deprecated` 时会返回极少结果，
-  // 默认使用 javascript 作为生态锚点，确保热点列表稳定产出。
   if (!conditions.length) {
     conditions.push('javascript')
   }
@@ -32,7 +30,7 @@ function buildNpmSearchParams(query: TrendQuery) {
   return new URLSearchParams({
     text: conditions.join(' '),
     size: String(Math.min(query.limit * 4, 80)),
-    from: '0',
+    from: String(query.offset),
   })
 }
 

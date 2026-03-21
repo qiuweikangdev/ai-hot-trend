@@ -20,6 +20,7 @@ export interface TrendQuery {
   language?: string
   keyword?: string
   limit: number
+  offset: number
 }
 
 export interface TrendItem {

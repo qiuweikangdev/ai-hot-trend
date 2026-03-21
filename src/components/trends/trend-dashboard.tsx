@@ -91,10 +91,13 @@ export function TrendDashboard({ initialSession, initialIsDarkTheme }: TrendDash
             trendData={state.trendData}
             isTrendLoading={state.isTrendLoading}
             trendError={state.trendError}
+            isLoadingMore={state.isLoadingMore}
+            hasMore={state.hasMore}
             favoriteBusyKey={state.favoriteBusyKey}
             favoriteKeySet={derived.favoriteKeySet}
             onToggleFavorite={actions.handleToggleFavorite}
             onCopyName={actions.handleCopyName}
+            onLoadMore={actions.handleLoadMore}
           />
         </section>
       </main>
