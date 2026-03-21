@@ -32,18 +32,24 @@ function inferLanguageFromKeywords(keywords: string[] | undefined) {
     return null
   }
 
-  const candidateKeywords = ['typescript', 'javascript', 'vue', 'react', 'svelte', 'solid', 'node']
+  const candidateKeywords = ['typescript', 'javascript', 'vue', 'react', 'svelte', 'solid', 'node', 'python', 'go', 'rust']
   const matched = keywords.find(keyword => candidateKeywords.includes(keyword.toLowerCase()))
 
   return matched ?? null
 }
 
-export function mapNpmPackageToTrendItem(item: NpmSearchObject, index: number, downloads: number): TrendItem {
+export function mapNpmPackageToTrendItem(
+  item: NpmSearchObject,
+  index: number,
+  downloads: number,
+  growthRate: number = 0,
+): TrendItem {
   const packageName = item.package.name
   const publishDate = item.package.date ?? new Date().toISOString()
   const qualityScore = Math.max(1, Math.round(item.score.detail.quality * 1000))
   const maintenanceScore = Math.max(1, Math.round(item.score.detail.maintenance * 1000))
   const normalizedDownloads = Math.max(0, downloads)
+  const normalizedGrowth = Math.max(0, growthRate)
 
   return {
     id: `npm:${packageName}`,
@@ -58,7 +64,7 @@ export function mapNpmPackageToTrendItem(item: NpmSearchObject, index: number, d
     language: inferLanguageFromKeywords(item.package.keywords),
     stars: normalizedDownloads,
     forks: qualityScore,
-    hotScore: normalizedDownloads + maintenanceScore,
+    hotScore: normalizedDownloads + maintenanceScore + normalizedGrowth * 10,
     createdAt: publishDate,
     updatedAt: publishDate,
   }

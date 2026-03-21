@@ -13,20 +13,26 @@ export class NpmTrendProvider implements TrendProvider {
 
     const rankedItems = payload.objects
       .map((item) => {
-        const downloads = downloadStats.get(item.package.name) ?? 0
+        const stats = downloadStats.get(item.package.name)
 
         return {
           item,
-          downloads,
+          stats,
         }
       })
+      .filter(entry => entry.stats && entry.stats.currentDownloads > 0)
       .sort((left, right) => {
-        return right.downloads - left.downloads
+        return right.stats!.growthRate - left.stats!.growthRate
       })
       .slice(0, query.limit)
 
     return rankedItems.map((entry, index) => {
-      return mapNpmPackageToTrendItem(entry.item, index, entry.downloads)
+      return mapNpmPackageToTrendItem(
+        entry.item,
+        index,
+        entry.stats!.currentDownloads,
+        entry.stats!.growthRate,
+      )
     })
   }
 }
