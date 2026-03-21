@@ -22,18 +22,18 @@ export function LoginModal({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/30 p-4 backdrop-blur-sm" onClick={onClose}>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/30 p-4 backdrop-blur-sm dark:bg-black/55" onClick={onClose}>
       <div className="w-full max-w-md" onClick={event => event.stopPropagation()}>
         {isSessionPending
           ? (
               // Reuse the page-level session state so reopening the modal
               // does not start another auth status request.
-              <Card className="border-white/60 bg-white/90 shadow-xl shadow-amber-900/10 backdrop-blur-md">
+              <Card className="border-white/60 bg-white/90 shadow-xl shadow-amber-900/10 backdrop-blur-md dark:border-white/10 dark:bg-[#0a0e15] dark:shadow-black/60">
                 <CardHeader>
-                  <CardTitle className="text-xl">登录中</CardTitle>
+                  <CardTitle className="text-xl dark:text-slate-100">登录中</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground dark:text-slate-300">
                     <Loader2 className="size-4 animate-spin" />
                     正在检查会话
                   </div>

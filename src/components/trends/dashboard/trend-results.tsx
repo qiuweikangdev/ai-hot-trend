@@ -46,7 +46,7 @@ export function TrendResults({
         {TREND_RESULT_SKELETON_KEYS.map(key => (
           <div
             key={key}
-            className="h-[296px] animate-pulse rounded-[18px] border border-slate-200/80 bg-slate-100/80"
+            className="h-[296px] animate-pulse rounded-[18px] border border-slate-200/80 bg-slate-100/80 dark:border-white/10 dark:bg-[#0b0f16]"
           />
         ))}
       </div>
@@ -55,7 +55,7 @@ export function TrendResults({
 
   if (trendError) {
     return (
-      <div className="rounded-[30px] border border-rose-200 bg-rose-50 px-4 py-8 text-rose-700 shadow-[0_24px_55px_-45px_rgba(244,63,94,0.25)]">
+      <div className="rounded-[30px] border border-rose-200 bg-rose-50 px-4 py-8 text-rose-700 shadow-[0_24px_55px_-45px_rgba(244,63,94,0.25)] dark:border-rose-500/30 dark:bg-rose-500/10 dark:text-rose-200">
         {trendError}
       </div>
     )
@@ -68,7 +68,7 @@ export function TrendResults({
     <>
       {trendData?.stale
         ? (
-            <div className="mb-4 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-700">
+            <div className="mb-4 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-700 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-200">
               当前展示缓存数据，
               {staleSourceLabel}
               接口暂时不可用。
@@ -96,7 +96,7 @@ export function TrendResults({
               <Button
                 type="button"
                 variant="outline"
-                className="h-10 rounded-full border-slate-300/90 bg-white px-6 text-[13px] font-medium text-slate-700 shadow-[0_8px_18px_-16px_rgba(15,23,42,0.55)] transition-all duration-200 hover:-translate-y-0.5 hover:border-slate-400 hover:bg-slate-50 hover:text-slate-900"
+                className="h-10 rounded-full border-slate-300/90 bg-white px-6 text-[13px] font-medium text-slate-700 shadow-[0_8px_18px_-16px_rgba(15,23,42,0.55)] transition-all duration-200 hover:-translate-y-0.5 hover:border-slate-400 hover:bg-slate-50 hover:text-slate-900 dark:border-white/12 dark:bg-[#0b0f16] dark:text-slate-200 dark:hover:border-white/22 dark:hover:bg-[#121722] dark:hover:text-white"
                 aria-label="加载更多（即将上线）"
               >
                 <ChevronDown className="size-3.5" strokeWidth={2} />
@@ -108,7 +108,7 @@ export function TrendResults({
 
       {!items.length
         ? (
-            <div className="rounded-[30px] border border-white/90 bg-white/78 px-4 py-12 text-center text-slate-500 shadow-[0_24px_55px_-45px_rgba(15,23,42,0.22)] ring-1 ring-slate-200/55">
+            <div className="rounded-[30px] border border-white/90 bg-white/78 px-4 py-12 text-center text-slate-500 shadow-[0_24px_55px_-45px_rgba(15,23,42,0.22)] ring-1 ring-slate-200/55 dark:border-white/10 dark:bg-[#0b0f16] dark:text-slate-400 dark:ring-white/10">
               当前筛选条件下暂无热点项目，请调整筛选后重试。
             </div>
           )

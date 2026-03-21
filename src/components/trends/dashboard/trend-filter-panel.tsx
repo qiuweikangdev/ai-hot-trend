@@ -28,7 +28,7 @@ export function TrendFilterPanel({
   onReset,
 }: TrendFilterPanelProps) {
   return (
-    <section className="border-b border-slate-200/80 bg-[#f7f9fc] pb-6">
+    <section className="border-b border-slate-200/80 bg-[#f7f9fc] pb-6 dark:border-white/8 dark:bg-[#020407]">
       <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
         <TrendSearchBox
           uiScale={uiScale}

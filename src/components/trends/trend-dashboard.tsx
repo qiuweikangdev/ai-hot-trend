@@ -2,6 +2,7 @@
 
 import type { CSSProperties } from 'react'
 import type { AuthSessionSnapshot } from '@/lib/auth-session'
+import { useEffect, useState } from 'react'
 import { FavoritesPanel } from '@/components/trends/dashboard/favorites-panel'
 import { LoginModal } from '@/components/trends/dashboard/login-modal'
 import { TrendDashboardHeader } from '@/components/trends/dashboard/trend-dashboard-header'
@@ -13,9 +14,10 @@ import { cn } from '@/lib/utils'
 
 interface TrendDashboardProps {
   initialSession: AuthSessionSnapshot
+  initialIsDarkTheme: boolean
 }
 
-export function TrendDashboard({ initialSession }: TrendDashboardProps) {
+export function TrendDashboard({ initialSession, initialIsDarkTheme }: TrendDashboardProps) {
   const {
     uiScale,
     session,
@@ -25,13 +27,27 @@ export function TrendDashboard({ initialSession }: TrendDashboardProps) {
     derived,
     actions,
   } = useTrendDashboard(initialSession)
+  const [isDarkTheme, setIsDarkTheme] = useState(initialIsDarkTheme)
+
+  function handleToggleTheme() {
+    setIsDarkTheme((value) => {
+      const nextValue = !value
+      document.cookie = `trend-theme=${nextValue ? 'dark' : 'light'}; Path=/; Max-Age=31536000; SameSite=Lax`
+      return nextValue
+    })
+  }
+
+  useEffect(() => {
+    document.documentElement.classList.toggle('dark', isDarkTheme)
+    document.documentElement.style.colorScheme = isDarkTheme ? 'dark' : 'light'
+  }, [isDarkTheme])
 
   const stickyFilterStyle: CSSProperties = {
     top: `${TREND_DASHBOARD_LAYOUT.headerStickyOffsetPx + TREND_DASHBOARD_LAYOUT.filterStickyGapPx}px`,
   }
 
   return (
-    <div className="min-h-screen bg-[#f7f9fc] text-slate-800">
+    <div className="min-h-screen bg-[#f7f9fc] text-slate-800 dark:bg-[#020407] dark:text-slate-100">
       <TrendDashboardHeader
         uiScale={uiScale}
         sourceOptions={sourceOptions}
@@ -40,6 +56,7 @@ export function TrendDashboard({ initialSession }: TrendDashboardProps) {
         isSignedIn={Boolean(session.data?.user)}
         isSessionPending={derived.isSessionPending}
         userDisplayName={derived.userDisplayName}
+        onToggleTheme={handleToggleTheme}
         onSelectSource={actions.handleSelectSource}
         onToggleFavorites={actions.handleToggleFavoritesPanel}
         onOpenLogin={() => actions.setIsLoginOpen(true)}
@@ -47,7 +64,7 @@ export function TrendDashboard({ initialSession }: TrendDashboardProps) {
       />
 
       <main className={cn('mx-auto w-full max-w-[1360px] px-4 sm:px-6 lg:px-8', uiScale.pagePadding)}>
-        <div style={stickyFilterStyle} className="md:sticky md:z-20 md:-mx-2 md:relative md:isolate md:bg-[#f7f9fc] md:px-2 md:py-2 md:before:absolute md:before:inset-0 md:before:-z-10 md:before:bg-[#f7f9fc] md:before:content-[''] md:after:absolute md:after:-top-4 md:after:inset-x-0 md:after:h-4 md:after:bg-[#f7f9fc] md:after:content-['']">
+        <div style={stickyFilterStyle} className="md:sticky md:z-20 md:-mx-2 md:relative md:isolate md:bg-[#f7f9fc] md:px-2 md:py-2 dark:md:bg-[#020407] md:before:absolute md:before:inset-0 md:before:-z-10 md:before:bg-[#f7f9fc] dark:md:before:bg-[#020407] md:before:content-[''] md:after:absolute md:after:-top-4 md:after:inset-x-0 md:after:h-4 md:after:bg-[#f7f9fc] dark:md:after:bg-[#020407] md:after:content-['']">
           <TrendFilterPanel
             uiScale={uiScale}
             periodOptions={periodOptions}
@@ -62,7 +79,7 @@ export function TrendDashboard({ initialSession }: TrendDashboardProps) {
 
         {state.notice
           ? (
-              <div className={cn('mt-4 rounded-2xl border border-blue-100 bg-blue-50 px-4 py-3 text-blue-700', uiScale.noticeText)}>
+              <div className={cn('mt-4 rounded-2xl border border-blue-100 bg-blue-50 px-4 py-3 text-blue-700 dark:border-blue-500/30 dark:bg-blue-500/15 dark:text-blue-200', uiScale.noticeText)}>
                 {state.notice}
               </div>
             )

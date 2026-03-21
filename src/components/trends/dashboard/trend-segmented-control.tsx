@@ -68,13 +68,13 @@ export function TrendSegmentedControl({
   if (showEdgeControls) {
     return (
       <div
-        className="grid w-full min-w-0 max-w-full grid-cols-[1.9rem_minmax(0,1fr)_1.9rem] items-center gap-1 overflow-hidden rounded-full border border-slate-200/85 bg-white p-1"
+        className="grid w-full min-w-0 max-w-full grid-cols-[1.9rem_minmax(0,1fr)_1.9rem] items-center gap-1 overflow-hidden rounded-full border border-slate-200/85 bg-white p-1 dark:border-white/10 dark:bg-[#0a0d12]"
         role="tablist"
         aria-label={label}
       >
         <button
           type="button"
-          className="inline-flex size-7.5 items-center justify-center rounded-full border border-slate-200/85 bg-white text-slate-500 shadow-[0_8px_16px_-12px_rgba(15,23,42,0.16)] transition hover:text-slate-800 focus-visible:ring-blue-200"
+          className="inline-flex size-7.5 items-center justify-center rounded-full border border-slate-200/85 bg-white text-slate-500 shadow-[0_8px_16px_-12px_rgba(15,23,42,0.16)] transition hover:text-slate-800 focus-visible:ring-blue-200 dark:border-white/15 dark:bg-[#111722] dark:text-slate-300 dark:hover:text-white"
           aria-label="向左滚动"
           onClick={() => scrollByStep('left')}
         >
@@ -87,7 +87,7 @@ export function TrendSegmentedControl({
         >
           <div className="inline-flex w-max items-center gap-1 pr-1">
             {prefixLabel
-              ? <span className="shrink-0 px-2.5 text-[11px] text-slate-400">{prefixLabel}</span>
+              ? <span className="shrink-0 px-2.5 text-[11px] text-slate-400 dark:text-slate-500">{prefixLabel}</span>
               : null}
 
             {items.map((item) => {
@@ -103,9 +103,9 @@ export function TrendSegmentedControl({
                     'inline-flex h-8 shrink-0 snap-start items-center justify-center rounded-full px-3 text-xs font-medium transition sm:px-3.5',
                     textClassName,
                     isEnabled
-                      ? 'text-slate-600 hover:bg-slate-200/60 hover:text-slate-900'
-                      : 'cursor-not-allowed text-slate-300',
-                    isActive && 'bg-blue-600 text-white shadow-[0_12px_20px_-14px_rgba(37,99,235,0.95)] hover:bg-blue-600 hover:text-white',
+                      ? 'text-slate-600 hover:bg-slate-200/60 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white'
+                      : 'cursor-not-allowed text-slate-300 dark:text-slate-700',
+                    isActive && 'bg-blue-600 text-white shadow-[0_12px_20px_-14px_rgba(37,99,235,0.95)] hover:bg-blue-600 hover:text-white dark:bg-white dark:text-[#0a0d12] dark:hover:bg-white',
                   )}
                   role="tab"
                   aria-selected={isActive}
@@ -120,7 +120,7 @@ export function TrendSegmentedControl({
 
         <button
           type="button"
-          className="inline-flex size-7.5 items-center justify-center rounded-full border border-slate-200/85 bg-white text-slate-500 shadow-[0_8px_16px_-12px_rgba(15,23,42,0.16)] transition hover:text-slate-800 focus-visible:ring-blue-200"
+          className="inline-flex size-7.5 items-center justify-center rounded-full border border-slate-200/85 bg-white text-slate-500 shadow-[0_8px_16px_-12px_rgba(15,23,42,0.16)] transition hover:text-slate-800 focus-visible:ring-blue-200 dark:border-white/15 dark:bg-[#111722] dark:text-slate-300 dark:hover:text-white"
           aria-label="向右滚动"
           onClick={() => scrollByStep('right')}
         >
@@ -134,14 +134,14 @@ export function TrendSegmentedControl({
     <div className="overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
       <div
         className={cn(
-          'inline-flex items-center gap-1 rounded-full border border-slate-200/85 bg-[#eef2f7] p-1',
+          'inline-flex items-center gap-1 rounded-full border border-slate-200/85 bg-[#eef2f7] p-1 dark:border-white/10 dark:bg-[#0a0d12]',
           stretch ? 'min-w-full' : 'min-w-max',
         )}
         role="tablist"
         aria-label={label}
       >
         {prefixLabel
-          ? <span className="shrink-0 px-2.5 text-[11px] text-slate-400">{prefixLabel}</span>
+          ? <span className="shrink-0 px-2.5 text-[11px] text-slate-400 dark:text-slate-500">{prefixLabel}</span>
           : null}
 
         {items.map((item) => {
@@ -156,9 +156,9 @@ export function TrendSegmentedControl({
                 'inline-flex h-10 shrink-0 items-center justify-center rounded-full px-5 text-sm font-semibold transition sm:px-6',
                 textClassName,
                 isEnabled
-                  ? 'text-slate-600 hover:bg-white/85 hover:text-slate-900'
-                  : 'cursor-not-allowed text-slate-300',
-                isActive && 'bg-blue-500 text-white shadow-[0_12px_20px_-14px_rgba(37,99,235,0.85)] hover:bg-blue-500 hover:text-white',
+                  ? 'text-slate-600 hover:bg-white/85 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white'
+                  : 'cursor-not-allowed text-slate-300 dark:text-slate-700',
+                isActive && 'bg-blue-500 text-white shadow-[0_12px_20px_-14px_rgba(37,99,235,0.85)] hover:bg-blue-500 hover:text-white dark:bg-white dark:text-[#0a0d12] dark:hover:bg-white',
               )}
               role="tab"
               aria-selected={isActive}

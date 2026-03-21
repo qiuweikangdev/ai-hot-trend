@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { Geist, Geist_Mono } from 'next/font/google'
+import { cookies } from 'next/headers'
 import './globals.css'
 
 const geistSans = Geist({
@@ -17,13 +18,17 @@ export const metadata: Metadata = {
   description: '支持模块化扩展的热点趋势与收藏系统',
 }
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode
 }>) {
+  const cookieStore = await cookies()
+  const themeValue = cookieStore.get('trend-theme')?.value
+  const isDarkTheme = themeValue === 'dark'
+
   return (
-    <html lang="zh-CN">
+    <html lang="zh-CN" className={isDarkTheme ? 'dark' : ''} style={{ colorScheme: isDarkTheme ? 'dark' : 'light' }} suppressHydrationWarning>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
