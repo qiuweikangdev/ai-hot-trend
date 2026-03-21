@@ -26,12 +26,12 @@ export const DEFAULT_TREND_SOURCE_LABEL = '趋势源'
 // stay aligned when we add new sources.
 export const TREND_SOURCE_OPTIONS: TrendSourceOption[] = [
   { value: 'hot', label: '热点聚合', enabled: false, description: '聚合多站点热度排行' },
+  { value: 'ai', label: 'AI', enabled: true, description: 'Best of JS 的 AI 生态增星趋势' },
   { value: 'github', label: 'GitHub', enabled: true, description: '代码仓库热点趋势' },
   { value: 'npm', label: 'npm', enabled: true, description: '包生态下载与讨论热度' },
-  { value: 'vue', label: 'Vue 生态', enabled: true, description: 'Best of JS 的 Vue 生态增星趋势' },
-  { value: 'react', label: 'React 生态', enabled: true, description: 'Best of JS 的 React 生态增星趋势' },
-  { value: 'node', label: 'Node 生态', enabled: true, description: 'Best of JS 的 Node 生态增星趋势' },
-  { value: 'ai', label: 'AI 生态', enabled: true, description: 'Best of JS 的 AI 生态增星趋势' },
+  { value: 'vue', label: 'Vue', enabled: true, description: 'Best of JS 的 Vue 生态增星趋势' },
+  { value: 'react', label: 'React', enabled: true, description: 'Best of JS 的 React 生态增星趋势' },
+  { value: 'node', label: 'Node', enabled: true, description: 'Best of JS 的 Node 生态增星趋势' },
   { value: 'component', label: '组件库', enabled: true, description: 'Best of JS 的 UI 组件库增星趋势' },
   { value: 'weibo', label: '微博', enabled: false, description: '中文社区实时热榜' },
   { value: 'zhihu', label: '知乎', enabled: false, description: '问答社区讨论趋势' },
