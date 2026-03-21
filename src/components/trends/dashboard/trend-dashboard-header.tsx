@@ -36,7 +36,7 @@ export function TrendDashboardHeader({
   onOpenLogin,
   onSignOut,
 }: TrendDashboardHeaderProps) {
-  const primarySourceOptions = sourceOptions.filter(option => ['github', 'npm', 'vue', 'react'].includes(option.value)).slice(0, 4)
+  const primarySourceOptions = sourceOptions.filter(option => ['github', 'npm', 'vue', 'node'].includes(option.value)).slice(0, 4)
 
   return (
     <header style={{ minHeight: `${TREND_DASHBOARD_LAYOUT.headerStickyOffsetPx}px` }} className="sticky top-0 z-30 border-b border-slate-200 bg-white dark:border-white/8 dark:bg-[#020407]/96">

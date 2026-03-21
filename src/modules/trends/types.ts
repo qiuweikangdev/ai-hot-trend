@@ -1,4 +1,4 @@
-export const TREND_SOURCE_VALUES = ['github', 'npm', 'vue', 'react'] as const
+export const TREND_SOURCE_VALUES = ['github', 'npm', 'vue', 'react', 'node'] as const
 
 export type TrendSource = (typeof TREND_SOURCE_VALUES)[number]
 
