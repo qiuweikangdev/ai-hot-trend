@@ -10,7 +10,7 @@ import { useTrendDashboard } from '@/components/trends/dashboard/use-trend-dashb
 import { cn } from '@/lib/utils'
 
 interface TrendDashboardProps {
-  initialSession: AuthSessionSnapshot | null
+  initialSession: AuthSessionSnapshot
 }
 
 export function TrendDashboard({ initialSession }: TrendDashboardProps) {

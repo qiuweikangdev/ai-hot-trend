@@ -14,7 +14,7 @@ import { useTrendFeed } from './use-trend-feed'
 import { useTrendQueryState } from './use-trend-query-state'
 import { collectQuickLanguages, getDisplayName } from './utils'
 
-export function useTrendDashboard(initialSession: AuthSessionSnapshot | null) {
+export function useTrendDashboard(initialSession: AuthSessionSnapshot) {
   const uiScale = TREND_UI_SCALE_PRESETS[trendUiConfig.activeScalePreset]
   const { notice, setNotice } = useDashboardNotice(trendUiConfig.noticeDurationMs)
   const { clientSession, session, sessionUser, sessionUserId } = useDashboardSession(initialSession)

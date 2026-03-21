@@ -6,5 +6,5 @@ export interface AuthSessionUser {
 }
 
 export interface AuthSessionSnapshot {
-  user: AuthSessionUser
+  user: AuthSessionUser | null
 }

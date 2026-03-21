@@ -13,7 +13,7 @@ interface BetterAuthSessionPayload {
   } | null
 }
 
-export const getServerSessionSnapshot = cache(async (): Promise<AuthSessionSnapshot | null> => {
+export const getServerSessionSnapshot = cache(async (): Promise<AuthSessionSnapshot> => {
   const requestHeaders = await headers()
   const session = await getAuth().api.getSession({
     headers: requestHeaders,
@@ -23,7 +23,9 @@ export const getServerSessionSnapshot = cache(async (): Promise<AuthSessionSnaps
   }) as BetterAuthSessionPayload | null
 
   if (!session?.user?.id) {
-    return null
+    return {
+      user: null,
+    }
   }
 
   return {
