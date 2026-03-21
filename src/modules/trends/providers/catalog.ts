@@ -1,4 +1,5 @@
 import type { TrendSourceModule } from '@/modules/trends/sources/module'
+import { aiTrendSourceModule } from '@/modules/trends/sources/ai'
 import { githubTrendSourceModule } from '@/modules/trends/sources/github'
 import { nodeTrendSourceModule } from '@/modules/trends/sources/node'
 import { npmTrendSourceModule } from '@/modules/trends/sources/npm'
@@ -11,4 +12,5 @@ export const trendSourceModules: TrendSourceModule[] = [
   nodeTrendSourceModule,
   reactTrendSourceModule,
   vueTrendSourceModule,
+  aiTrendSourceModule,
 ]

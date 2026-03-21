@@ -11,6 +11,7 @@ const TREND_CACHE_VERSION_MAP: Record<TrendSource, string> = {
   vue: 'v1',
   react: 'v1',
   node: 'v1',
+  ai: 'v1',
 }
 
 function buildTrendCacheKey(query: TrendQuery) {
