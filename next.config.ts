@@ -8,6 +8,14 @@ const nextConfig: NextConfig = {
         protocol: 'https',
         hostname: 'avatars.githubusercontent.com',
       },
+      {
+        protocol: 'https',
+        hostname: 'pica.zhimg.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'static.zhihu.com',
+      },
     ],
   },
 }

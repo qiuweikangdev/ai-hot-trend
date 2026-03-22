@@ -6,6 +6,7 @@ import { nodeTrendSourceModule } from '@/modules/trends/sources/node'
 import { npmTrendSourceModule } from '@/modules/trends/sources/npm'
 import { reactTrendSourceModule } from '@/modules/trends/sources/react'
 import { vueTrendSourceModule } from '@/modules/trends/sources/vue'
+import { zhihuTrendSourceModule } from '@/modules/trends/sources/zhihu'
 
 export const trendSourceModules: TrendSourceModule[] = [
   githubTrendSourceModule,
@@ -15,4 +16,5 @@ export const trendSourceModules: TrendSourceModule[] = [
   vueTrendSourceModule,
   aiTrendSourceModule,
   componentTrendSourceModule,
+  zhihuTrendSourceModule,
 ]
