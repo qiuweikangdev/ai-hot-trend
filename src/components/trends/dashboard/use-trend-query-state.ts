@@ -16,6 +16,7 @@ import { trimText } from './utils'
 
 interface UseTrendQueryStateOptions {
   onNotice: (message: string) => void
+  initialSource?: TrendSource
 }
 
 interface TrendQueryState {
@@ -41,8 +42,9 @@ interface TrendQueryStateActions {
 
 export function useTrendQueryState({
   onNotice,
+  initialSource,
 }: UseTrendQueryStateOptions) {
-  const [source, setSource] = useState<TrendSource>(DEFAULT_TREND_SOURCE)
+  const [source, setSource] = useState<TrendSource>(initialSource ?? DEFAULT_TREND_SOURCE)
   const [period, setPeriod] = useState<TrendPeriod>(DEFAULT_TREND_PERIOD)
   const [searchInput, setSearchInput] = useState('')
   const [keyword, setKeyword] = useState('')

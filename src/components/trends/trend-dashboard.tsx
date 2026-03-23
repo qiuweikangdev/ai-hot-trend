@@ -2,6 +2,7 @@
 
 import type { CSSProperties } from 'react'
 import type { AuthSessionSnapshot } from '@/lib/auth-session'
+import type { TrendSource } from '@/modules/trends/types'
 import { useEffect, useState } from 'react'
 import { FavoritesPanel } from '@/components/trends/dashboard/favorites-panel'
 import { LoginModal } from '@/components/trends/dashboard/login-modal'
@@ -15,9 +16,10 @@ import { cn } from '@/lib/utils'
 interface TrendDashboardProps {
   initialSession: AuthSessionSnapshot
   initialIsDarkTheme: boolean
+  initialSource?: TrendSource
 }
 
-export function TrendDashboard({ initialSession, initialIsDarkTheme }: TrendDashboardProps) {
+export function TrendDashboard({ initialSession, initialIsDarkTheme, initialSource }: TrendDashboardProps) {
   const {
     uiScale,
     session,
@@ -26,7 +28,7 @@ export function TrendDashboard({ initialSession, initialIsDarkTheme }: TrendDash
     state,
     derived,
     actions,
-  } = useTrendDashboard(initialSession)
+  } = useTrendDashboard(initialSession, initialSource)
   const [isDarkTheme, setIsDarkTheme] = useState(initialIsDarkTheme)
 
   function handleToggleTheme() {

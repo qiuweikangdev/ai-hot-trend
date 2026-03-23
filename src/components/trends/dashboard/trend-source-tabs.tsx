@@ -2,9 +2,11 @@
 
 import type { TrendSourceOption } from '@/modules/trends/catalog'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { usePathname, useRouter } from 'next/navigation'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
+import { isTrendSource } from '@/modules/trends/types'
 
 interface TrendSourceTabsProps {
   sourceOptions: TrendSourceOption[]
@@ -17,6 +19,8 @@ export function TrendSourceTabs({
   sourceValue,
   onSelectSource,
 }: TrendSourceTabsProps) {
+  const router = useRouter()
+  const pathname = usePathname()
   const tabsRef = useRef<HTMLElement | null>(null)
   const [overflowState, setOverflowState] = useState({
     hasOverflow: false,
@@ -90,6 +94,20 @@ export function TrendSourceTabs({
     })
   }, [])
 
+  const handleSelectWithRoute = useCallback((value: string, enabled: boolean, label: string) => {
+    onSelectSource(value, enabled, label)
+
+    if (!enabled || !isTrendSource(value)) {
+      return
+    }
+
+    const nextPath = `/${value}`
+
+    if (pathname !== nextPath) {
+      router.push(nextPath)
+    }
+  }, [onSelectSource, pathname, router])
+
   return (
     <div className="relative min-w-0">
       {overflowState.hasOverflow
@@ -123,7 +141,7 @@ export function TrendSourceTabs({
                   : 'cursor-not-allowed text-slate-300 dark:text-slate-700',
                 isActive && 'text-slate-900 dark:text-white font-semibold',
               )}
-              onClick={() => onSelectSource(option.value, isEnabled, option.label)}
+              onClick={() => handleSelectWithRoute(option.value, isEnabled, option.label)}
               disabled={!isEnabled}
             >
               {option.label}

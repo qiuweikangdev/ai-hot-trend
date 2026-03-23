@@ -1,7 +1,7 @@
 'use client'
 
 import type { AuthSessionSnapshot } from '@/lib/auth-session'
-import type { TrendItem } from '@/modules/trends/types'
+import type { TrendItem, TrendSource } from '@/modules/trends/types'
 import { useMemo, useState } from 'react'
 import { TREND_UI_SCALE_PRESETS, trendUiConfig } from '@/config/trends'
 import { authClient } from '@/lib/auth-client'
@@ -14,7 +14,7 @@ import { useTrendFeed } from './use-trend-feed'
 import { useTrendQueryState } from './use-trend-query-state'
 import { collectQuickLanguages, getDisplayName } from './utils'
 
-export function useTrendDashboard(initialSession: AuthSessionSnapshot) {
+export function useTrendDashboard(initialSession: AuthSessionSnapshot, initialSource?: TrendSource) {
   const uiScale = TREND_UI_SCALE_PRESETS[trendUiConfig.activeScalePreset]
   const { notice, setNotice } = useDashboardNotice(trendUiConfig.noticeDurationMs)
   const { clientSession, session, sessionUser, sessionUserId } = useDashboardSession(initialSession)
@@ -29,6 +29,7 @@ export function useTrendDashboard(initialSession: AuthSessionSnapshot) {
 
   const trendQuery = useTrendQueryState({
     onNotice: setNotice,
+    initialSource,
   })
 
   const trendFeed = useTrendFeed({
