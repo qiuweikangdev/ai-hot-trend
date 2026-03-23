@@ -16,6 +16,14 @@ const nextConfig: NextConfig = {
         protocol: 'https',
         hostname: 'static.zhihu.com',
       },
+      {
+        protocol: 'https',
+        hostname: '**.byteacctimg.com',
+      },
+      {
+        protocol: 'https',
+        hostname: '**.byteimg.com',
+      },
     ],
   },
 }

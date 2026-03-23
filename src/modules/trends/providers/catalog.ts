@@ -2,6 +2,7 @@ import type { TrendSourceModule } from '@/modules/trends/sources/module'
 import { aiTrendSourceModule } from '@/modules/trends/sources/ai'
 import { componentTrendSourceModule } from '@/modules/trends/sources/component'
 import { githubTrendSourceModule } from '@/modules/trends/sources/github'
+import { juejinTrendSourceModule } from '@/modules/trends/sources/juejin'
 import { nodeTrendSourceModule } from '@/modules/trends/sources/node'
 import { npmTrendSourceModule } from '@/modules/trends/sources/npm'
 import { reactTrendSourceModule } from '@/modules/trends/sources/react'
@@ -17,4 +18,5 @@ export const trendSourceModules: TrendSourceModule[] = [
   aiTrendSourceModule,
   componentTrendSourceModule,
   zhihuTrendSourceModule,
+  juejinTrendSourceModule,
 ]
