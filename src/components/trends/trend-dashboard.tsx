@@ -50,14 +50,11 @@ export function TrendDashboard({ initialSession, initialIsDarkTheme }: TrendDash
     <div className="min-h-screen bg-[#f7f9fc] text-slate-800 dark:bg-[#020407] dark:text-slate-100">
       <TrendDashboardHeader
         uiScale={uiScale}
-        sourceOptions={sourceOptions}
-        sourceValue={state.source}
         favoriteCount={derived.favoriteCount}
         isSignedIn={Boolean(session.data?.user)}
         isSessionPending={derived.isSessionPending}
         userDisplayName={derived.userDisplayName}
         onToggleTheme={handleToggleTheme}
-        onSelectSource={actions.handleSelectSource}
         onToggleFavorites={actions.handleToggleFavoritesPanel}
         onOpenLogin={() => actions.setIsLoginOpen(true)}
         onSignOut={actions.handleSignOut}
@@ -67,9 +64,12 @@ export function TrendDashboard({ initialSession, initialIsDarkTheme }: TrendDash
         <div style={stickyFilterStyle} className="md:sticky md:z-20 md:-mx-2 md:relative md:isolate md:bg-[#f7f9fc] md:px-2 md:py-2 dark:md:bg-[#020407] md:before:absolute md:before:inset-0 md:before:-z-10 md:before:bg-[#f7f9fc] dark:md:before:bg-[#020407] md:before:content-[''] md:after:absolute md:after:-top-4 md:after:inset-x-0 md:after:h-4 md:after:bg-[#f7f9fc] dark:md:after:bg-[#020407] md:after:content-['']">
           <TrendFilterPanel
             uiScale={uiScale}
+            sourceOptions={sourceOptions}
+            sourceValue={state.source}
             periodOptions={periodOptions}
             period={state.period}
             searchInput={state.searchInput}
+            onSelectSource={actions.handleSelectSource}
             onSearchInputChange={actions.setSearchInput}
             onSelectPeriod={actions.setPeriod}
             onSearch={actions.handleSearch}
