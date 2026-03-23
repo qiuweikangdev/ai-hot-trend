@@ -15,6 +15,7 @@ const TREND_CACHE_VERSION_MAP: Record<TrendSource, string> = {
   component: 'v1',
   zhihu: 'v1',
   juejin: 'v1',
+  v2ex: 'v1',
 }
 
 function buildTrendCacheKey(query: TrendQuery) {

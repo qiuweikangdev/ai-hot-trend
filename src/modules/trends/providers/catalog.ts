@@ -6,6 +6,7 @@ import { juejinTrendSourceModule } from '@/modules/trends/sources/juejin'
 import { nodeTrendSourceModule } from '@/modules/trends/sources/node'
 import { npmTrendSourceModule } from '@/modules/trends/sources/npm'
 import { reactTrendSourceModule } from '@/modules/trends/sources/react'
+import { v2exTrendSourceModule } from '@/modules/trends/sources/v2ex'
 import { vueTrendSourceModule } from '@/modules/trends/sources/vue'
 import { zhihuTrendSourceModule } from '@/modules/trends/sources/zhihu'
 
@@ -19,4 +20,5 @@ export const trendSourceModules: TrendSourceModule[] = [
   componentTrendSourceModule,
   zhihuTrendSourceModule,
   juejinTrendSourceModule,
+  v2exTrendSourceModule,
 ]

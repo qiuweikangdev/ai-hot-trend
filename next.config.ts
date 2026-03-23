@@ -24,6 +24,14 @@ const nextConfig: NextConfig = {
         protocol: 'https',
         hostname: '**.byteimg.com',
       },
+      {
+        protocol: 'https',
+        hostname: 'cdn.v2ex.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'www.v2ex.com',
+      },
     ],
   },
 }

@@ -1,6 +1,6 @@
 import type { TrendPeriod, TrendSource } from '@/modules/trends/types'
 
-export type PlannedTrendSource = 'hot' | 'weibo' | 'v2ex'
+export type PlannedTrendSource = 'hot' | 'weibo'
 
 export type TrendSourceOptionValue = TrendSource | PlannedTrendSource
 
@@ -35,7 +35,7 @@ export const TREND_SOURCE_OPTIONS: TrendSourceOption[] = [
   { value: 'component', label: '组件库', enabled: true, description: 'Best of JS 的 UI 组件库增星趋势' },
   { value: 'zhihu', label: '知乎', enabled: true, description: '知乎全站热门问答与讨论' },
   { value: 'juejin', label: '掘金', enabled: true, description: '掘金社区开发者内容热点' },
-  { value: 'v2ex', label: 'V2EX', enabled: false, description: '技术社区节点热帖' },
+  { value: 'v2ex', label: 'V2EX', enabled: true, description: 'V2EX 社区热门话题' },
 ]
 
 export const TREND_PERIOD_OPTIONS: TrendPeriodOption[] = [
