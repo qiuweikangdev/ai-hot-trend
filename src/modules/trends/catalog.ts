@@ -16,7 +16,7 @@ export interface TrendPeriodOption {
   label: string
 }
 
-export const DEFAULT_TREND_SOURCE: TrendSource = 'github'
+export const DEFAULT_TREND_SOURCE: TrendSource = 'ai'
 export const DEFAULT_TREND_PERIOD: TrendPeriod = 'week'
 export const DEFAULT_TREND_LIMIT = 18
 export const MAX_TREND_LIMIT = 30
