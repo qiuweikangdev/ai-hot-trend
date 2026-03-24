@@ -79,14 +79,6 @@ export function TrendDashboard({ initialSession, initialIsDarkTheme, initialSour
           />
         </div>
 
-        {state.notice
-          ? (
-              <div className={cn('mt-4 rounded-2xl border border-blue-100 bg-blue-50 px-4 py-3 text-blue-700 dark:border-blue-500/30 dark:bg-blue-500/15 dark:text-blue-200', uiScale.noticeText)}>
-                {state.notice}
-              </div>
-            )
-          : null}
-
         <section className="mt-5 pb-8 sm:pb-10">
           <TrendResults
             uiScale={uiScale}

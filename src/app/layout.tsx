@@ -1,6 +1,8 @@
 import type { Metadata } from 'next'
 import { Geist, Geist_Mono } from 'next/font/google'
 import { cookies } from 'next/headers'
+import { Toaster } from '@/components/ui/sonner'
+import { trendUiConfig } from '@/config/trends'
 import './globals.css'
 
 const geistSans = Geist({
@@ -33,6 +35,7 @@ export default async function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         {children}
+        <Toaster closeButton position="bottom-right" duration={trendUiConfig.noticeDurationMs} />
       </body>
     </html>
   )

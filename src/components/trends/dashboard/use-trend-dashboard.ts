@@ -3,10 +3,10 @@
 import type { AuthSessionSnapshot } from '@/lib/auth-session'
 import type { TrendItem, TrendSource } from '@/modules/trends/types'
 import { useMemo, useState } from 'react'
+import { toast } from 'sonner'
 import { TREND_UI_SCALE_PRESETS, trendUiConfig } from '@/config/trends'
 import { authClient } from '@/lib/auth-client'
 import { PRESET_TREND_LANGUAGES } from '@/modules/trends/catalog'
-import { useDashboardNotice } from './use-dashboard-notice'
 import { useDashboardSession } from './use-dashboard-session'
 import { useFavoritesManager } from './use-favorites-manager'
 import { useSearchHistory } from './use-search-history'
@@ -14,21 +14,41 @@ import { useTrendFeed } from './use-trend-feed'
 import { useTrendQueryState } from './use-trend-query-state'
 import { collectQuickLanguages, getDisplayName } from './utils'
 
+type DashboardNoticeLevel = 'success' | 'error' | 'info' | 'warning'
+
 export function useTrendDashboard(initialSession: AuthSessionSnapshot, initialSource?: TrendSource) {
   const uiScale = TREND_UI_SCALE_PRESETS[trendUiConfig.activeScalePreset]
-  const { notice, setNotice } = useDashboardNotice(trendUiConfig.noticeDurationMs)
   const { clientSession, session, sessionUser, sessionUserId } = useDashboardSession(initialSession)
   const searchHistory = useSearchHistory()
   const [isLoginOpen, setIsLoginOpen] = useState(false)
   const [isFavoritesOpen, setIsFavoritesOpen] = useState(false)
 
+  function pushNotice(message: string, level: DashboardNoticeLevel = 'info') {
+    if (level === 'success') {
+      toast.success(message)
+      return
+    }
+
+    if (level === 'error') {
+      toast.error(message)
+      return
+    }
+
+    if (level === 'warning') {
+      toast.warning(message)
+      return
+    }
+
+    toast(message)
+  }
+
   function openLoginWithNotice(message: string) {
     setIsLoginOpen(true)
-    setNotice(message)
+    pushNotice(message, 'warning')
   }
 
   const trendQuery = useTrendQueryState({
-    onNotice: setNotice,
+    onNotice: pushNotice,
     initialSource,
   })
 
@@ -52,7 +72,7 @@ export function useTrendDashboard(initialSession: AuthSessionSnapshot, initialSo
   const favoritesManager = useFavoritesManager({
     sessionUser,
     sessionUserId,
-    onNotice: setNotice,
+    onNotice: pushNotice,
     onRequireLogin: openLoginWithNotice,
   })
 
@@ -73,16 +93,16 @@ export function useTrendDashboard(initialSession: AuthSessionSnapshot, initialSo
     setIsLoginOpen(false)
     setIsFavoritesOpen(false)
     favoritesManager.actions.setFavorites([])
-    setNotice('已退出登录')
+    pushNotice('已退出登录', 'success')
   }
 
   async function handleCopyName(item: TrendItem) {
     try {
-      await navigator.clipboard.writeText(item.fullName)
-      setNotice(`已复制 ${item.fullName}`)
+      await navigator.clipboard.writeText(item.url)
+      pushNotice(`已复制「${item.title}」链接`, 'success')
     }
     catch {
-      setNotice('复制失败，请手动复制')
+      pushNotice('复制链接失败，请手动复制', 'error')
     }
   }
 
@@ -132,7 +152,6 @@ export function useTrendDashboard(initialSession: AuthSessionSnapshot, initialSo
       favorites: favoritesManager.state.favorites,
       isFavoriteLoading: favoritesManager.state.isFavoriteLoading,
       favoriteBusyKey: favoritesManager.state.favoriteBusyKey,
-      notice,
       isLoginOpen,
       isFavoritesOpen,
     },

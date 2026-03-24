@@ -284,7 +284,7 @@ export function TrendCard({
             size="icon"
             className="size-9 rounded-xl border-slate-300/75 bg-white text-slate-500 transition-all duration-200 hover:border-blue-200 hover:bg-blue-50 hover:text-blue-600 dark:border-white/15 dark:bg-[#151a24] dark:text-slate-300 dark:hover:border-blue-300/40 dark:hover:bg-blue-300/10 dark:hover:text-blue-200"
             onClick={() => onCopyName(item)}
-            aria-label="复制仓库名"
+            aria-label="复制热点链接"
           >
             <Copy className="size-4" />
           </Button>

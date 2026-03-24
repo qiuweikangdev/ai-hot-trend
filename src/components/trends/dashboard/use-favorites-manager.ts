@@ -18,7 +18,7 @@ function getErrorMessage(error: unknown, fallback: string) {
 interface UseFavoritesManagerOptions {
   sessionUser: AuthSessionUser | null
   sessionUserId: string
-  onNotice: (message: string) => void
+  onNotice: (message: string, level?: 'success' | 'error' | 'info' | 'warning') => void
   onRequireLogin: (message: string) => void
 }
 
@@ -91,7 +91,7 @@ export function useFavoritesManager({
         : await createFavorite(item)
 
       setFavorites(data.items)
-      onNotice(isFavorite ? `已取消收藏 ${item.title}` : `已收藏 ${item.title}`)
+      onNotice(isFavorite ? `已取消收藏 ${item.title}` : `已收藏 ${item.title}`, 'success')
     }
     catch (error) {
       const message = getErrorMessage(error, '收藏操作失败')
@@ -100,7 +100,7 @@ export function useFavoritesManager({
         onRequireLogin('请先登录后再收藏')
       }
       else {
-        onNotice(message)
+        onNotice(message, 'error')
       }
     }
     finally {
@@ -115,7 +115,7 @@ export function useFavoritesManager({
     try {
       const data = await removeFavorite(item.source, item.trendId)
       setFavorites(data.items)
-      onNotice(`已取消收藏 ${item.title}`)
+      onNotice(`已取消收藏 ${item.title}`, 'success')
     }
     catch (error) {
       const message = getErrorMessage(error, '取消收藏失败')
@@ -124,7 +124,7 @@ export function useFavoritesManager({
         onRequireLogin('登录状态已失效，请重新登录')
       }
       else {
-        onNotice(message)
+        onNotice(message, 'error')
       }
     }
     finally {

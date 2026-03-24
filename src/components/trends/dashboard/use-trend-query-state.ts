@@ -15,7 +15,7 @@ import { isTrendSource } from '@/modules/trends/types'
 import { trimText } from './utils'
 
 interface UseTrendQueryStateOptions {
-  onNotice: (message: string) => void
+  onNotice: (message: string, level?: 'success' | 'error' | 'info' | 'warning') => void
   initialSource?: TrendSource
 }
 
@@ -71,7 +71,7 @@ export function useTrendQueryState({
 
   function handleSelectSource(value: string, enabled: boolean, label: string) {
     if (!enabled || !isTrendSource(value)) {
-      onNotice(`${label} 模块即将上线`)
+      onNotice(`${label} 模块即将上线`, 'info')
       return
     }
 
