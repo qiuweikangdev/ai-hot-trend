@@ -8,6 +8,7 @@ import { npmTrendSourceModule } from '@/modules/trends/sources/npm'
 import { reactTrendSourceModule } from '@/modules/trends/sources/react'
 import { v2exTrendSourceModule } from '@/modules/trends/sources/v2ex'
 import { vueTrendSourceModule } from '@/modules/trends/sources/vue'
+import { weiboTrendSourceModule } from '@/modules/trends/sources/weibo'
 import { zhihuTrendSourceModule } from '@/modules/trends/sources/zhihu'
 
 export const trendSourceModules: TrendSourceModule[] = [
@@ -21,4 +22,5 @@ export const trendSourceModules: TrendSourceModule[] = [
   zhihuTrendSourceModule,
   juejinTrendSourceModule,
   v2exTrendSourceModule,
+  weiboTrendSourceModule,
 ]

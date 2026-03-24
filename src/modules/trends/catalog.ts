@@ -1,6 +1,6 @@
 import type { TrendPeriod, TrendSource } from '@/modules/trends/types'
 
-export type PlannedTrendSource = 'hot' | 'weibo'
+export type PlannedTrendSource = 'hot'
 
 export type TrendSourceOptionValue = TrendSource | PlannedTrendSource
 
@@ -36,6 +36,7 @@ export const TREND_SOURCE_OPTIONS: TrendSourceOption[] = [
   { value: 'zhihu', label: '知乎', enabled: true, description: '知乎全站热门问答与讨论' },
   { value: 'juejin', label: '掘金', enabled: true, description: '掘金社区开发者内容热点' },
   { value: 'v2ex', label: 'V2EX', enabled: true, description: 'V2EX 社区热门话题' },
+  { value: 'weibo', label: '微博', enabled: true, description: '微博实时热搜话题' },
 ]
 
 export const TREND_PERIOD_OPTIONS: TrendPeriodOption[] = [

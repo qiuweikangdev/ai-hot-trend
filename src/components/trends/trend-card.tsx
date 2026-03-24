@@ -89,10 +89,11 @@ export function TrendCard({
   const isZhihuSource = item.source === 'zhihu'
   const isJuejinSource = item.source === 'juejin'
   const isV2exSource = item.source === 'v2ex'
+  const isWeiboSource = item.source === 'weibo'
   const avatarFallback = isV2exSource ? 'https://www.v2ex.com/static/img/v2ex@2x.png' : item.ownerAvatarUrl
   const hasLanguage = Boolean(item.language?.trim())
   const updateTimeLabel = formatRelativeUpdateTime(item.updatedAt)
-  const primaryMetricLabel = isNpmSource ? '下载' : (isVueSource || isReactSource || isNodeSource || isAiSource || isComponentSource) ? '增星' : isZhihuSource ? '关注' : isJuejinSource ? '热度' : isV2exSource ? '回复' : 'Star'
+  const primaryMetricLabel = isNpmSource ? '下载' : (isVueSource || isReactSource || isNodeSource || isAiSource || isComponentSource) ? '增星' : isZhihuSource ? '关注' : isJuejinSource ? '热度' : isV2exSource ? '回复' : isWeiboSource ? '热度' : 'Star'
 
   return (
     <article
@@ -123,7 +124,7 @@ export function TrendCard({
           alt={item.owner}
           width={44}
           height={44}
-          unoptimized={isV2exSource}
+          unoptimized={isV2exSource || isWeiboSource}
           onError={(event) => {
             const target = event.currentTarget as HTMLImageElement
 
@@ -149,7 +150,7 @@ export function TrendCard({
           className="border-amber-300/70 bg-amber-50/80 text-amber-700 dark:border-amber-300/35 dark:bg-amber-300/10 dark:text-amber-200"
           sizeClassName="px-2.5 py-1.5 text-xs"
         />
-        {isNpmSource || isVueSource || isReactSource || isNodeSource || isAiSource || isComponentSource || isZhihuSource || isJuejinSource || isV2exSource
+        {isNpmSource || isVueSource || isReactSource || isNodeSource || isAiSource || isComponentSource || isZhihuSource || isJuejinSource || isV2exSource || isWeiboSource
           ? null
           : (
               <TrendMetricItem
