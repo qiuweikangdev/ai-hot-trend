@@ -33,7 +33,11 @@ function mapOAuthErrorMessage(errorCode: string | null) {
   }
 
   if (errorCode === 'invalid_code') {
-    return 'GitHub 授权码无效或已过期，请确认 OAuth 回调地址与当前域名一致后重试。'
+    return 'OAuth 授权码无效或已过期，请确认回调地址与当前域名一致后重试。'
+  }
+
+  if (errorCode === 'access_denied') {
+    return '你已取消本次授权，请重新点击登录并确认授权。'
   }
 
   return `登录失败：${errorCode}`
