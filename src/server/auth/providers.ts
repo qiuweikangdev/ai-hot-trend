@@ -11,7 +11,7 @@ export function getSocialProviders() {
             clientId: authEnv.githubClientId,
             clientSecret: authEnv.githubClientSecret,
             redirectURI: authEnv.githubRedirectURI,
-            prompt: 'select_account' as const,
+            // prompt: 'select_account' as const,
           },
         }
       : {}),
@@ -21,6 +21,7 @@ export function getSocialProviders() {
             clientId: authEnv.googleClientId,
             clientSecret: authEnv.googleClientSecret,
             redirectURI: authEnv.googleRedirectURI,
+            // prompt: 'consent' as const, // 每次重新授权
           },
         }
       : {}),
