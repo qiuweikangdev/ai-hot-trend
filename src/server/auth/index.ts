@@ -21,6 +21,15 @@ function createAuth() {
         maxAge: 60 * 60 * 24,
       },
     },
+    advanced: {
+      cookies: {
+        state: {
+          attributes: {
+            sameSite: 'Lax',
+          },
+        },
+      },
+    },
   })
 }
 
