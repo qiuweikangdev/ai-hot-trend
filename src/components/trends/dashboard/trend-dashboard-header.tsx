@@ -3,6 +3,7 @@
 import type { TrendUiScale } from '@/config/trends'
 import { Heart, LoaderCircle, LogIn, LogOut, Moon, Sparkles, Sun, UserCircle2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { TREND_DASHBOARD_LAYOUT } from '@/config/trends'
 import { cn } from '@/lib/utils'
 
@@ -12,6 +13,7 @@ interface TrendDashboardHeaderProps {
   isSignedIn: boolean
   isSessionPending: boolean
   userDisplayName: string
+  userAvatarUrl: string
   onToggleTheme: () => void
   onToggleFavorites: () => void
   onOpenLogin: () => void
@@ -24,6 +26,7 @@ export function TrendDashboardHeader({
   isSignedIn,
   isSessionPending,
   userDisplayName,
+  userAvatarUrl,
   onToggleTheme,
   onToggleFavorites,
   onOpenLogin,
@@ -82,16 +85,33 @@ export function TrendDashboardHeader({
 
             {isSignedIn
               ? (
-                  <>
-                    <div className={cn('hidden items-center gap-2 rounded-full border border-slate-200/85 bg-white px-3 py-2 text-slate-700 dark:border-white/15 dark:bg-[#0c1118] dark:text-slate-200 lg:flex', uiScale.userInfo)}>
-                      <UserCircle2 className="size-4 text-slate-500" />
-                      <span className="max-w-32 truncate">{userDisplayName}</span>
-                    </div>
-                    <Button type="button" variant="outline" className="h-10 rounded-full border-slate-200/85 bg-white px-3 dark:border-white/15 dark:bg-[#0c1118] dark:text-slate-200 sm:h-11 sm:px-4" onClick={onSignOut}>
-                      <LogOut className="size-4" />
-                      退出
-                    </Button>
-                  </>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        className="h-10 w-10 rounded-full border-slate-200/85 bg-white p-0 dark:border-white/15 dark:bg-[#0c1118] sm:h-11 sm:w-11"
+                      >
+                        {userAvatarUrl
+                          ? (
+                              <img
+                                src={userAvatarUrl}
+                                alt={userDisplayName}
+                                className="size-full rounded-full object-cover"
+                              />
+                            )
+                          : (
+                              <UserCircle2 className="size-5 text-slate-500" />
+                            )}
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-40">
+                      <DropdownMenuItem onClick={onSignOut}>
+                        <LogOut className="size-4 mr-2" />
+                        退出登录
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 )
               : (
                   <Button type="button" className="h-10 rounded-full bg-[#0f2345] px-4 text-white hover:bg-[#0c1d3a] dark:border dark:border-white/15 dark:bg-[#0d121b] dark:hover:bg-[#161d2a] sm:h-11 sm:px-5" onClick={onOpenLogin}>

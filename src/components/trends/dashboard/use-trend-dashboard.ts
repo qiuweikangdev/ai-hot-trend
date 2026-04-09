@@ -81,6 +81,7 @@ export function useTrendDashboard(initialSession: AuthSessionSnapshot, initialSo
   const selectedKeywordLabel = trendQuery.derived.selectedKeywordLabel
   const favoriteCount = favoritesManager.derived.favoriteCount
   const userDisplayName = sessionUser ? getDisplayName(sessionUser) : ''
+  const userAvatarUrl = sessionUser?.image ?? ''
 
   async function handleSignOut() {
     await fetch('/api/user/revoke-github', {
@@ -164,6 +165,7 @@ export function useTrendDashboard(initialSession: AuthSessionSnapshot, initialSo
       favoriteKeySet: favoritesManager.derived.favoriteKeySet,
       isSessionPending: session.isPending,
       userDisplayName,
+      userAvatarUrl,
     },
     actions: {
       setSearchInput: trendQuery.actions.setSearchInput,

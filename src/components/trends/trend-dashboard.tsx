@@ -56,6 +56,7 @@ export function TrendDashboard({ initialSession, initialIsDarkTheme, initialSour
         isSignedIn={Boolean(session.data?.user)}
         isSessionPending={derived.isSessionPending}
         userDisplayName={derived.userDisplayName}
+        userAvatarUrl={derived.userAvatarUrl}
         onToggleTheme={handleToggleTheme}
         onToggleFavorites={actions.handleToggleFavoritesPanel}
         onOpenLogin={() => actions.setIsLoginOpen(true)}
