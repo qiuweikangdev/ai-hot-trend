@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "pnpm run db:migrate && prisma generate && next build",
+    "db:migrate": "tsx lib/db/migrate.ts",
     "start": "next start",
     "commit": "cz",
     "lint": "eslint",
@@ -50,6 +51,7 @@
     "lint-staged": "^16.3.2",
     "prisma": "^6.17.1",
     "tailwindcss": "^4",
+    "tsx": "^4.21.0",
     "typescript": "^5"
   },
   "lint-staged": {
