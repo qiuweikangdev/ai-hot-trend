@@ -27,6 +27,7 @@ export const DEFAULT_TREND_SOURCE_LABEL = '趋势源'
 export const TREND_SOURCE_OPTIONS: TrendSourceOption[] = [
   { value: 'hot', label: '热点聚合', enabled: false, description: '聚合多站点热度排行' },
   { value: 'ai', label: 'AI', enabled: true, description: 'Best of JS 的 AI 生态增星趋势' },
+  { value: 'python', label: 'Python', enabled: true, description: 'GitHub Python 热门开源项目趋势' },
   { value: 'github', label: 'GitHub', enabled: true, description: '代码仓库热点趋势' },
   { value: 'npm', label: 'npm', enabled: true, description: '包生态下载与讨论热度' },
   { value: 'vue', label: 'Vue', enabled: true, description: 'Best of JS 的 Vue 生态增星趋势' },
