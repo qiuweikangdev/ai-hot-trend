@@ -7,6 +7,7 @@ import 'server-only'
 interface BetterAuthSessionPayload {
   user?: {
     id?: string
+    username?: string | null
     name?: string | null
     email?: string | null
     image?: string | null
@@ -31,6 +32,7 @@ export const getServerSessionSnapshot = cache(async (): Promise<AuthSessionSnaps
   return {
     user: {
       id: session.user.id,
+      username: session.user.username ?? null,
       name: session.user.name ?? null,
       email: session.user.email ?? null,
       image: session.user.image ?? null,

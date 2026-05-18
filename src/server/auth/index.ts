@@ -12,6 +12,15 @@ function createAuth() {
     database: prismaAdapter(getPrisma(), {
       provider: 'mysql',
     }),
+    user: {
+      additionalFields: {
+        username: {
+          type: 'string',
+          required: false,
+          input: false,
+        },
+      },
+    },
     secret: authEnv.secret,
     socialProviders: getSocialProviders(),
     trustedOrigins: authEnv.trustedOrigins,
