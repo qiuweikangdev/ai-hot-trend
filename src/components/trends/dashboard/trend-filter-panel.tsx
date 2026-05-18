@@ -34,7 +34,7 @@ export function TrendFilterPanel({
   onSearch,
   onReset,
 }: TrendFilterPanelProps) {
-  const primarySourceOptions = sourceOptions.filter(option => ['github', 'npm', 'vue', 'react', 'node', 'ai', 'component', 'zhihu', 'juejin', 'v2ex', 'weibo'].includes(option.value))
+  const primarySourceOptions = sourceOptions.filter(option => ['github', 'npm', 'vue', 'react', 'node', 'ai', 'python', 'component', 'zhihu', 'juejin', 'v2ex', 'weibo'].includes(option.value))
 
   return (
     <section className="border-b border-slate-200/80 bg-[#f7f9fc] pb-6 dark:border-white/8 dark:bg-[#020407]">
