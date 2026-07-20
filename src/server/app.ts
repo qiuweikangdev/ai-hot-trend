@@ -2,6 +2,7 @@ import { Hono } from 'hono'
 import { logger } from 'hono/logger'
 import { registerAuthRoutes } from '@/server/routes/auth'
 import favoritesRoute from '@/server/routes/favorites'
+import notifyRoute from '@/server/routes/notify'
 import trendsRoute from '@/server/routes/trends'
 import userRoute from '@/server/routes/user'
 
@@ -20,6 +21,7 @@ registerAuthRoutes(app)
 app.route('/user', userRoute)
 app.route('/trends', trendsRoute)
 app.route('/favorites', favoritesRoute)
+app.route('/notify', notifyRoute)
 
 app.notFound((c) => {
   return c.json(
