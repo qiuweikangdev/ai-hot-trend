@@ -14,7 +14,9 @@
     "prisma:migrate": "prisma migrate dev",
     "prisma:studio": "prisma studio",
     "prepare": "husky",
-    "lint-staged": "lint-staged"
+    "lint-staged": "lint-staged",
+    "test": "node --import tsx --test src/**/*.test.ts",
+    "test:watch": "node --import tsx --test --watch src/**/*.test.ts"
   },
   "dependencies": {
     "@prisma/client": "^6.17.1",

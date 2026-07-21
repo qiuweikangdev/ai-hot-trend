@@ -4,6 +4,7 @@ import type { CSSProperties } from 'react'
 import type { AuthSessionSnapshot } from '@/lib/auth-session'
 import type { TrendSource } from '@/modules/trends/types'
 import { useEffect, useState } from 'react'
+import { NotificationSettingsModal } from '@/components/notifications/notification-settings-modal'
 import { FavoritesPanel } from '@/components/trends/dashboard/favorites-panel'
 import { LoginModal } from '@/components/trends/dashboard/login-modal'
 import { TrendDashboardHeader } from '@/components/trends/dashboard/trend-dashboard-header'
@@ -30,6 +31,7 @@ export function TrendDashboard({ initialSession, initialIsDarkTheme, initialSour
     actions,
   } = useTrendDashboard(initialSession, initialSource)
   const [isDarkTheme, setIsDarkTheme] = useState(initialIsDarkTheme)
+  const [isNotificationSettingsOpen, setIsNotificationSettingsOpen] = useState(false)
 
   function handleToggleTheme() {
     setIsDarkTheme((value) => {
@@ -60,6 +62,7 @@ export function TrendDashboard({ initialSession, initialIsDarkTheme, initialSour
         onToggleTheme={handleToggleTheme}
         onToggleFavorites={actions.handleToggleFavoritesPanel}
         onOpenLogin={() => actions.setIsLoginOpen(true)}
+        onOpenNotifications={() => setIsNotificationSettingsOpen(true)}
         onSignOut={actions.handleSignOut}
       />
 
@@ -96,6 +99,8 @@ export function TrendDashboard({ initialSession, initialIsDarkTheme, initialSour
           />
         </section>
       </main>
+
+      <NotificationSettingsModal isOpen={isNotificationSettingsOpen} onClose={() => setIsNotificationSettingsOpen(false)} />
 
       <FavoritesPanel
         isOpen={state.isFavoritesOpen}

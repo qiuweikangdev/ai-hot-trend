@@ -1,0 +1,12 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "ai-hot-trend-notification-scheduler",
+  "main": "src/cloudflare-notification-worker.ts",
+  "compatibility_date": "2026-07-20",
+  "triggers": {
+    "crons": ["*/5 * * * *"]
+  },
+  "vars": {
+    "APP_BASE_URL": "https://your-app.example.com"
+  }
+}

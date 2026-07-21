@@ -1,7 +1,7 @@
 {
   "crons": [
     {
-      "path": "/api/notify/feishu/daily",
+      "path": "/api/internal/notifications/dispatch/vercel",
       "schedule": "0 1 * * *"
     }
   ]

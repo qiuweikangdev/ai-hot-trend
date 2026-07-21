@@ -35,42 +35,77 @@ The easiest way to deploy your Next.js app is to use the [Vercel Platform](https
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
 
-## Feishu Daily Trend Push
+## User Feishu Notifications
 
-This project now supports daily Feishu bot push via:
+Each signed-in user can configure one Feishu group robot at /settings/notifications.
+The application stores the robot webhook and optional signing secret with AES-256-GCM
+encryption. Responses return only a masked webhook target.
 
-- API endpoint: `GET/POST /api/notify/feishu/daily`
-- Cron schedule: configured in `vercel.json`
+### User flow
 
-### 1) Environment variables
+1. Create a Feishu group bot and copy its webhook.
+2. Open Notification settings after signing in.
+3. Choose trend sources, period, result limit, enabled state, and delivery time.
+4. Save, then use Send test to verify the robot.
 
-Add the following to `.env`:
+A successful scheduled delivery is recorded per subscription and China calendar day, so
+a retry or an accidental duplicate scheduler invocation cannot send the same daily digest twice.
 
-```bash
-FEISHU_BOT_WEBHOOK_URL=https://open.feishu.cn/open-apis/bot/v2/hook/xxxx
-FEISHU_BOT_SECRET=
-FEISHU_PUSH_CRON_TOKEN=replace-with-a-long-random-token
-FEISHU_DAILY_SOURCES=ai,github,npm,weibo,zhihu
-FEISHU_DAILY_PERIOD=today
-FEISHU_DAILY_LIMIT=5
-FEISHU_DAILY_TIMEZONE=Asia/Shanghai
-```
+### Vercel deployment
 
-Notes:
+Use this profile when Vercel is the active scheduler for the production database:
 
-- `FEISHU_BOT_SECRET` is optional. Fill it only if the Feishu bot enables signature verification.
-- In production, route auth requires `FEISHU_PUSH_CRON_TOKEN` or `CRON_SECRET`.
+~~~env
+NOTIFICATION_SCHEDULER_PROVIDER=vercel
+NOTIFICATION_FIXED_DELIVERY_TIME=09:00
+CRON_SECRET=replace-with-a-long-random-token
+NOTIFICATION_ENCRYPTION_KEY_BASE64=replace-with-base64-encoded-32-bytes
+~~~
 
-### 2) Trigger manually
+vercel.json calls /api/internal/notifications/dispatch/vercel daily at 01:00 UTC
+(09:00 Asia/Shanghai). Vercel Hobby permits one Cron invocation per day, so every user
+receives the digest at the fixed China time. The settings page shows this as read-only.
 
-```bash
-curl -X POST "http://localhost:3000/api/notify/feishu/daily" \
-  -H "Authorization: Bearer replace-with-a-long-random-token"
-```
+### Cloudflare Workers deployment
 
-### 3) Daily cron
+Use this profile when Cloudflare is the only active scheduler for the production database:
 
-`vercel.json` contains:
+~~~env
+NOTIFICATION_SCHEDULER_PROVIDER=cloudflare
+NOTIFICATION_DISPATCH_TOKEN=replace-with-a-long-random-token
+NOTIFICATION_ENCRYPTION_KEY_BASE64=replace-with-base64-encoded-32-bytes
+~~~
 
-- `path`: `/api/notify/feishu/daily`
-- `schedule`: `0 1 * * *` (UTC), which is 09:00 in `Asia/Shanghai`.
+Configure APP_BASE_URL in wrangler.jsonc to the deployed application URL, then set the
+secret without placing it in the file:
+
+~~~bash
+npx wrangler secret put NOTIFICATION_DISPATCH_TOKEN
+npx wrangler deploy
+~~~
+
+The Worker Cron runs every five minutes and calls
+/api/internal/notifications/dispatch/cloudflare. Users can choose any five-minute slot
+in Asia/Shanghai.
+
+### Important deployment rule
+
+For a given production database, enable exactly one scheduler: Vercel or Cloudflare.
+The dispatcher compares the incoming scheduler identifier with
+NOTIFICATION_SCHEDULER_PROVIDER and rejects the other platform. This prevents duplicate
+delivery during a migration.
+
+### Required secrets
+
+Generate the encryption key once and retain it for the lifetime of stored settings:
+
+~~~bash
+openssl rand -base64 32
+~~~
+
+Changing this key makes existing encrypted robot credentials unreadable. Do not expose
+NOTIFICATION_ENCRYPTION_KEY_BASE64, NOTIFICATION_DISPATCH_TOKEN, or CRON_SECRET in
+browser variables.
+
+Feishu group bots do not require a paid application API plan for standard webhook messages;
+hosting, database, and platform quotas remain separate concerns.
