@@ -46,7 +46,7 @@ export const TREND_CARD_CLASS_MAP: Record<TrendCardSize, TrendCardClassTokens> =
     title: 'text-[15px]/5',
     fullName: 'text-xs',
     description: 'min-h-15 text-[13px]/5',
-    metricWrap: 'mt-4 text-xs',
+    metricWrap: 'text-xs',
     metricItem: 'gap-1.5',
     actionWrap: 'mt-3 pt-3',
   },

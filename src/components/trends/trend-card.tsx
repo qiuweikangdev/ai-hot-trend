@@ -105,7 +105,7 @@ export function TrendCard({
   return (
     <article
       className={cn(
-        'group flex min-h-[224px] flex-col rounded-xl border border-border bg-card transition-[transform,border-color,box-shadow] duration-200 hover:-translate-y-px hover:border-foreground/20 hover:shadow-[0_2px_8px_rgba(0,0,0,0.06)] dark:hover:shadow-[0_2px_8px_rgba(0,0,0,0.24)]',
+        'group flex h-full min-h-[224px] flex-col rounded-xl border border-border bg-card transition-[border-color,box-shadow] duration-200 hover:border-foreground/30 hover:shadow-[0_2px_8px_rgba(0,0,0,0.06)] dark:hover:shadow-[0_2px_8px_rgba(0,0,0,0.24)]',
         scale.root,
       )}
     >
@@ -129,8 +129,8 @@ export function TrendCard({
         <p className={cn('line-clamp-3 text-muted-foreground', scale.description)}>{item.description || '暂无简介'}</p>
       </div>
 
-      <div className="mt-auto flex items-end justify-between gap-3 pt-4">
-        <div className={cn('flex min-w-0 flex-wrap items-center gap-x-3 gap-y-1', scale.metricWrap)}>
+      <div className="mt-auto flex min-h-11 items-center justify-between gap-3 border-t border-border/70 pt-3">
+        <div className={cn('flex min-w-0 flex-nowrap items-center gap-3 overflow-hidden whitespace-nowrap', scale.metricWrap)}>
           <TrendMetricItem icon={Activity} label={metricMeta.primary} value={item.stars} />
           {metricMeta.secondary ? <TrendMetricItem icon={SecondaryMetricIcon} label={metricMeta.secondary} value={item.forks} /> : null}
           {item.language?.trim() ? <TrendMetricItem icon={Languages} label="" value={item.language} /> : null}
