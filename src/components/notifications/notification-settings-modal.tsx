@@ -9,7 +9,7 @@ import { Label } from '@/components/ui/label'
 import { TREND_PERIOD_VALUES, TREND_SOURCE_VALUES } from '@/modules/trends/types'
 
 interface SettingsData {
-  capabilities: { provider: 'vercel' | 'cloudflare', fixedDeliveryMinute?: number }
+  capabilities: { provider: 'vercel' | 'cloudflare' | 'local', fixedDeliveryMinute?: number }
   channel: null | {
     isEnabled: boolean
     summary: { maskedTarget: string }

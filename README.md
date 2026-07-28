@@ -51,6 +51,25 @@ encryption. Responses return only a masked webhook target.
 A successful scheduled delivery is recorded per subscription and China calendar day, so
 a retry or an accidental duplicate scheduler invocation cannot send the same daily digest twice.
 
+### Local development
+
+Local development uses the local profile automatically when NOTIFICATION_SCHEDULER_PROVIDER is
+unset. It does not emulate Vercel or Cloudflare.
+
+~~~env
+NOTIFICATION_ENCRYPTION_KEY_BASE64=replace-with-base64-encoded-32-bytes
+NOTIFICATION_DISPATCH_TOKEN=local-test-token
+~~~
+
+Use the Send test button after entering a Feishu webhook to verify the real robot
+immediately. To exercise the scheduled-dispatch path, choose an upcoming five-minute slot
+and call:
+
+~~~powershell
+Invoke-RestMethod -Method POST -Uri "http://localhost:3000/api/internal/notifications/dispatch/local" -Headers @{ Authorization = "Bearer local-test-token" }
+~~~
+
+The local profile is only for development. Do not use it for a deployed environment.
 ### Vercel deployment
 
 Use this profile when Vercel is the active scheduler for the production database:

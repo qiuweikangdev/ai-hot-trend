@@ -8,6 +8,7 @@ export function parseFeishuConfig(value: unknown): FeishuConfig {
   const input = value as Record<string, unknown>
   if (typeof input.webhookUrl !== 'string')
     throw new Error('Invalid Feishu configuration')
+  // 严格限制为飞书官方机器人地址，避免用户把服务器请求转向任意内网或第三方地址。
   const url = new URL(input.webhookUrl.trim())
   if (url.protocol !== 'https:' || url.hostname !== 'open.feishu.cn' || !url.pathname.startsWith('/open-apis/bot/v2/hook/'))
     throw new Error('Invalid Feishu webhook URL')
@@ -23,6 +24,7 @@ export function getFeishuPublicSummary(config: FeishuConfig) {
 
 export async function sendFeishuText(config: FeishuConfig, text: string) {
   const payload: { msg_type: 'text', content: { text: string }, timestamp?: string, sign?: string } = { msg_type: 'text', content: { text } }
+  // 飞书启用签名校验时，按官方规则计算 timestamp 和 HMAC-SHA256 签名。
   if (config.secret) {
     payload.timestamp = String(Math.floor(Date.now() / 1000))
     payload.sign = createHmac('sha256', `${payload.timestamp}\n${config.secret}`).digest('base64')
