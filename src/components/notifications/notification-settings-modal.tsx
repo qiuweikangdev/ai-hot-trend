@@ -1,7 +1,7 @@
 'use client'
 
 import type { TrendPeriod, TrendSource } from '@/modules/trends/types'
-import { Bell, Check, Loader2, Save, Send, X } from 'lucide-react'
+import { Check, Loader2, Save, Send, X } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -36,7 +36,8 @@ const NOTIFICATION_SOURCE_OPTIONS = TREND_SOURCE_OPTIONS.flatMap(option => (
     : []
 ))
 
-const SELECT_CLASS_NAME = 'mt-2 h-9 w-full rounded-md border border-input bg-background px-3 text-sm text-foreground outline-none transition focus:border-ring focus:ring-2 focus:ring-ring/30'
+const SELECT_CLASS_NAME = 'mt-1.5 h-8 w-full rounded-md border border-input bg-background px-2.5 text-xs text-foreground outline-none transition focus:border-ring focus:ring-2 focus:ring-ring/30'
+const FIELD_LABEL_CLASS_NAME = 'text-xs font-medium'
 
 function formatTime(minute: number) {
   return `${String(Math.floor(minute / 60)).padStart(2, '0')}:${String(minute % 60).padStart(2, '0')}`
@@ -162,22 +163,17 @@ export function NotificationSettingsModal({ isOpen, onClose }: NotificationSetti
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/45 p-3 sm:p-6" onClick={onClose}>
-      <section role="dialog" aria-modal="true" aria-labelledby="notification-settings-title" className="flex max-h-[min(780px,calc(100vh-1.5rem))] w-full max-w-2xl flex-col overflow-hidden rounded-xl border border-border bg-background shadow-[0_8px_24px_rgba(0,0,0,0.18)]" onClick={event => event.stopPropagation()}>
-        <header className="flex h-14 shrink-0 items-center justify-between border-b border-border px-4 sm:px-5">
-          <div className="flex items-center gap-2.5">
-            <span className="grid size-7 place-items-center rounded-md bg-muted text-muted-foreground">
-              <Bell className="size-4" strokeWidth={1.75} />
-            </span>
-            <h2 id="notification-settings-title" className="text-sm font-semibold text-foreground">推送设置</h2>
-          </div>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/55 p-3 sm:p-6" onClick={onClose}>
+      <section role="dialog" aria-modal="true" aria-labelledby="notification-settings-title" className="flex max-h-[min(680px,calc(100vh-1.5rem))] w-full max-w-[620px] flex-col overflow-hidden rounded-xl border border-border bg-card" onClick={event => event.stopPropagation()}>
+        <header className="flex h-12 shrink-0 items-center justify-between border-b border-border px-4 sm:px-5">
+          <h2 id="notification-settings-title" className="text-sm font-semibold tracking-[-0.01em] text-foreground">推送设置</h2>
           <Button type="button" variant="ghost" size="icon" className="size-8 rounded-md text-muted-foreground" onClick={onClose} aria-label="关闭推送设置">
             <X className="size-4" strokeWidth={1.75} />
           </Button>
         </header>
 
         <div className="shrink-0 border-b border-border px-4 sm:px-5">
-          <div className="flex h-10 items-end gap-5" role="tablist" aria-label="推送渠道">
+          <div className="flex h-9 items-end gap-5" role="tablist" aria-label="推送渠道">
             {CHANNEL_OPTIONS.map(channel => (
               <button
                 key={channel.value}
@@ -186,63 +182,57 @@ export function NotificationSettingsModal({ isOpen, onClose }: NotificationSetti
                 aria-selected={channel.value === 'feishu'}
                 disabled={!channel.enabled}
                 className={cn(
-                  'relative flex h-10 items-center gap-2 border-b-2 border-transparent text-xs font-medium text-muted-foreground transition-colors',
-                  channel.enabled ? 'hover:text-foreground' : 'cursor-not-allowed opacity-45',
+                  'flex h-9 items-center border-b-2 border-transparent text-xs font-medium text-muted-foreground transition-colors',
+                  channel.enabled ? 'hover:text-foreground' : 'cursor-not-allowed opacity-35',
                   channel.value === 'feishu' && 'border-foreground text-foreground',
                 )}
               >
                 {channel.label}
-                {!channel.enabled ? <span className="text-[10px] font-normal">即将支持</span> : null}
               </button>
             ))}
           </div>
         </div>
 
-        <div className="min-h-0 flex-1 overflow-y-auto px-4 py-5 sm:px-5">
+        <div className="minimal-scrollbar min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 sm:px-5">
           {isLoading
             ? (
-                <div className="space-y-3" aria-label="正在加载设置">
-                  <div className="h-9 animate-pulse rounded-md bg-muted" />
-                  <div className="h-9 animate-pulse rounded-md bg-muted" />
-                  <div className="h-24 animate-pulse rounded-md bg-muted" />
+                <div className="space-y-3 py-5" aria-label="正在加载设置">
+                  <div className="h-8 animate-pulse rounded-md bg-muted" />
+                  <div className="h-8 animate-pulse rounded-md bg-muted" />
+                  <div className="h-20 animate-pulse rounded-md bg-muted" />
                 </div>
               )
             : (
                 <div>
-                  <section className="border-b border-border pb-5">
-                    <div className="mb-4 flex items-start justify-between gap-4">
-                      <div>
-                        <h3 className="text-sm font-medium text-foreground">飞书机器人</h3>
-                        {data?.channel
-                          ? <p className="mt-1 text-xs text-muted-foreground">{data.channel.summary.maskedTarget}</p>
-                          : <p className="mt-1 text-xs text-muted-foreground">连接群机器人 Webhook</p>}
-                      </div>
+                  <section className="border-b border-border py-4">
+                    <div className="flex items-center justify-between gap-4">
+                      <h3 className="text-xs font-semibold text-foreground">连接</h3>
                       {hasSavedChannel
                         ? (
-                            <span className="inline-flex items-center gap-1 rounded-md bg-muted px-2 py-1 text-xs text-foreground">
+                            <span className="inline-flex items-center gap-1.5 text-[11px] text-muted-foreground">
                               <Check className="size-3" strokeWidth={1.75} />
-                              已连接
+                              {data?.channel?.summary.maskedTarget}
                             </span>
                           )
                         : null}
                     </div>
-                    <div className="grid gap-4">
+                    <div className="mt-3 grid gap-3 sm:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]">
                       <div>
-                        <Label htmlFor="feishu-webhook">Webhook</Label>
-                        <Input id="feishu-webhook" className="mt-2 bg-background" value={webhookUrl} onChange={event => setWebhookUrl(event.target.value)} placeholder={hasSavedChannel ? '填写新地址以更新' : 'https://open.feishu.cn/open-apis/bot/v2/hook/...'} />
+                        <Label htmlFor="feishu-webhook" className={FIELD_LABEL_CLASS_NAME}>Webhook</Label>
+                        <Input id="feishu-webhook" className="mt-1.5 h-8 bg-background text-xs" value={webhookUrl} onChange={event => setWebhookUrl(event.target.value)} placeholder={hasSavedChannel ? '填写新地址以更新' : 'https://open.feishu.cn/open-apis/bot/v2/hook/...'} />
                       </div>
                       <div>
-                        <Label htmlFor="feishu-secret">
+                        <Label htmlFor="feishu-secret" className={FIELD_LABEL_CLASS_NAME}>
                           签名密钥
                           <span className="font-normal text-muted-foreground">可选</span>
                         </Label>
-                        <Input id="feishu-secret" className="mt-2 bg-background" type="password" value={secret} onChange={event => setSecret(event.target.value)} placeholder={hasSavedChannel ? '留空则保留当前密钥' : '开启签名校验时填写'} />
+                        <Input id="feishu-secret" className="mt-1.5 h-8 bg-background text-xs" type="password" value={secret} onChange={event => setSecret(event.target.value)} placeholder={hasSavedChannel ? '留空保留' : '选填'} />
                       </div>
                     </div>
                   </section>
 
-                  <section className="border-b border-border py-5">
-                    <h3 className="text-sm font-medium text-foreground">推送内容</h3>
+                  <section className="border-b border-border py-4">
+                    <h3 className="text-xs font-semibold text-foreground">来源</h3>
                     <div className="mt-3 flex flex-wrap gap-1.5">
                       {NOTIFICATION_SOURCE_OPTIONS.map(source => (
                         <button
@@ -250,7 +240,7 @@ export function NotificationSettingsModal({ isOpen, onClose }: NotificationSetti
                           type="button"
                           aria-pressed={sources.includes(source.value)}
                           className={cn(
-                            'h-8 rounded-md border px-2.5 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50',
+                            'h-7 rounded-md border px-2.5 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50',
                             sources.includes(source.value)
                               ? 'border-foreground bg-foreground text-background'
                               : 'border-border bg-background text-muted-foreground hover:bg-muted hover:text-foreground',
@@ -261,15 +251,25 @@ export function NotificationSettingsModal({ isOpen, onClose }: NotificationSetti
                         </button>
                       ))}
                     </div>
-                    <div className="mt-4 grid gap-4 sm:grid-cols-2">
+                  </section>
+
+                  <section className="py-4">
+                    <div className="flex items-center justify-between gap-4">
+                      <h3 className="text-xs font-semibold text-foreground">规则</h3>
+                      <label className="flex shrink-0 items-center gap-2 text-xs font-medium text-foreground">
+                        <input type="checkbox" className="size-3.5 accent-foreground" checked={isEnabled} onChange={event => setIsEnabled(event.target.checked)} />
+                        启用
+                      </label>
+                    </div>
+                    <div className="mt-3 grid gap-3 sm:grid-cols-3">
                       <div>
-                        <Label htmlFor="notification-period">热点周期</Label>
+                        <Label htmlFor="notification-period" className={FIELD_LABEL_CLASS_NAME}>周期</Label>
                         <select id="notification-period" className={SELECT_CLASS_NAME} value={period} onChange={event => setPeriod(event.target.value as TrendPeriod)}>
                           {TREND_PERIOD_VALUES.map(value => <option key={value} value={value}>{value === 'today' ? '今日' : value === 'week' ? '本周' : '本月'}</option>)}
                         </select>
                       </div>
                       <div>
-                        <Label htmlFor="notification-limit">每个来源</Label>
+                        <Label htmlFor="notification-limit" className={FIELD_LABEL_CLASS_NAME}>每个来源</Label>
                         <select id="notification-limit" className={SELECT_CLASS_NAME} value={limit} onChange={event => setLimit(Number(event.target.value))}>
                           {Array.from({ length: 10 }, (_, index) => index + 1).map(value => (
                             <option key={value} value={value}>
@@ -280,46 +280,29 @@ export function NotificationSettingsModal({ isOpen, onClose }: NotificationSetti
                           ))}
                         </select>
                       </div>
-                    </div>
-                  </section>
-
-                  <section className="pt-5">
-                    <div className="flex items-start justify-between gap-4">
                       <div>
-                        <h3 className="text-sm font-medium text-foreground">推送时间</h3>
-                        <p className="mt-1 text-xs text-muted-foreground">Asia/Shanghai</p>
+                        <Label htmlFor="notification-time" className={FIELD_LABEL_CLASS_NAME}>时间</Label>
+                        {fixedMinute === undefined
+                          ? <select id="notification-time" className={SELECT_CLASS_NAME} value={scheduledMinute} onChange={event => setScheduledMinute(Number(event.target.value))}>{timeOptions.map(value => <option key={value} value={value}>{formatTime(value)}</option>)}</select>
+                          : <div id="notification-time" className="mt-1.5 flex h-8 items-center rounded-md border border-input bg-muted/50 px-2.5 text-xs text-foreground">{formatTime(fixedMinute)}</div>}
                       </div>
-                      <label className="flex shrink-0 items-center gap-2 text-xs font-medium text-foreground">
-                        <input type="checkbox" className="size-4 accent-foreground" checked={isEnabled} onChange={event => setIsEnabled(event.target.checked)} />
-                        启用
-                      </label>
                     </div>
-                    {fixedMinute === undefined
-                      ? <select aria-label="推送时间" className={SELECT_CLASS_NAME} value={scheduledMinute} onChange={event => setScheduledMinute(Number(event.target.value))}>{timeOptions.map(value => <option key={value} value={value}>{formatTime(value)}</option>)}</select>
-                      : (
-                          <p className="mt-3 rounded-md bg-muted px-3 py-2 text-xs leading-5 text-muted-foreground">
-                            当前部署每天
-                            {' '}
-                            <strong className="font-medium text-foreground">{formatTime(fixedMinute)}</strong>
-                            {' '}
-                            推送
-                          </p>
-                        )}
+                    <p className="mt-2 text-[11px] text-muted-foreground">Asia/Shanghai</p>
                   </section>
                 </div>
               )}
         </div>
 
-        <footer className="flex min-h-16 shrink-0 items-center justify-between gap-3 border-t border-border bg-background px-4 py-3 sm:px-5">
+        <footer className="flex min-h-14 shrink-0 items-center justify-between gap-3 border-t border-border bg-card px-4 py-2.5 sm:px-5">
           <p aria-live="polite" className="min-w-0 truncate text-xs text-muted-foreground">{message}</p>
           <div className="flex shrink-0 gap-2">
             <Button type="button" variant="outline" size="sm" onClick={sendTest} disabled={isLoading || isTesting || isSaving}>
               {isTesting ? <Loader2 className="size-3.5 animate-spin" /> : <Send className="size-3.5" strokeWidth={1.75} />}
-              发送测试
+              测试
             </Button>
             <Button type="button" size="sm" onClick={saveSettings} disabled={isLoading || isTesting || isSaving}>
               {isSaving ? <Loader2 className="size-3.5 animate-spin" /> : <Save className="size-3.5" strokeWidth={1.75} />}
-              保存设置
+              保存
             </Button>
           </div>
         </footer>
