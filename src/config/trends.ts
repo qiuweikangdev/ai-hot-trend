@@ -41,13 +41,13 @@ export interface TrendUiScale {
 export const TREND_CARD_CLASS_MAP: Record<TrendCardSize, TrendCardClassTokens> = {
   compact: {
     root: 'p-4',
-    topBadge: 'px-2.5 py-1 text-xs',
-    sourceBadge: 'px-2.5 py-1 text-xs',
-    title: 'text-xl/6',
-    fullName: 'text-sm',
-    description: 'min-h-14 text-sm/6',
-    metricWrap: 'mt-3 text-xs',
-    metricItem: 'px-3 py-2',
+    topBadge: 'text-xs',
+    sourceBadge: 'text-xs',
+    title: 'text-[15px]/5',
+    fullName: 'text-xs',
+    description: 'min-h-15 text-[13px]/5',
+    metricWrap: 'mt-4 text-xs',
+    metricItem: 'gap-1.5',
     actionWrap: 'mt-3 pt-3',
   },
   default: {
@@ -77,7 +77,7 @@ export const TREND_CARD_CLASS_MAP: Record<TrendCardSize, TrendCardClassTokens> =
 export const TREND_UI_SCALE_PRESETS: Record<'compact' | 'default' | 'comfortable', TrendUiScale> = {
   compact: {
     cardSize: 'compact',
-    headerPadding: 'py-3',
+    headerPadding: 'h-14',
     logoSize: 'size-12',
     logoIcon: 'size-6',
     title: 'text-2xl',
@@ -154,6 +154,6 @@ export const trendUiConfig = {
 }
 
 export const TREND_DASHBOARD_LAYOUT = {
-  headerStickyOffsetPx: 65,
-  filterStickyGapPx: 8,
+  headerStickyOffsetPx: 56,
+  filterStickyGapPx: 0,
 } as const

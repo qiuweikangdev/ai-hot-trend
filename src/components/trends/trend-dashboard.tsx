@@ -1,6 +1,5 @@
 'use client'
 
-import type { CSSProperties } from 'react'
 import type { AuthSessionSnapshot } from '@/lib/auth-session'
 import type { TrendSource } from '@/modules/trends/types'
 import { useEffect, useState } from 'react'
@@ -11,7 +10,6 @@ import { TrendDashboardHeader } from '@/components/trends/dashboard/trend-dashbo
 import { TrendFilterPanel } from '@/components/trends/dashboard/trend-filter-panel'
 import { TrendResults } from '@/components/trends/dashboard/trend-results'
 import { useTrendDashboard } from '@/components/trends/dashboard/use-trend-dashboard'
-import { TREND_DASHBOARD_LAYOUT } from '@/config/trends'
 import { cn } from '@/lib/utils'
 
 interface TrendDashboardProps {
@@ -46,12 +44,8 @@ export function TrendDashboard({ initialSession, initialIsDarkTheme, initialSour
     document.documentElement.style.colorScheme = isDarkTheme ? 'dark' : 'light'
   }, [isDarkTheme])
 
-  const stickyFilterStyle: CSSProperties = {
-    top: `${TREND_DASHBOARD_LAYOUT.headerStickyOffsetPx + TREND_DASHBOARD_LAYOUT.filterStickyGapPx}px`,
-  }
-
   return (
-    <div className="min-h-screen bg-[#f7f9fc] text-slate-800 dark:bg-[#020407] dark:text-slate-100">
+    <div className="min-h-screen bg-background text-foreground">
       <TrendDashboardHeader
         uiScale={uiScale}
         favoriteCount={derived.favoriteCount}
@@ -66,8 +60,8 @@ export function TrendDashboard({ initialSession, initialIsDarkTheme, initialSour
         onSignOut={actions.handleSignOut}
       />
 
-      <main className={cn('mx-auto w-full max-w-[1360px] px-4 sm:px-6 lg:px-8', uiScale.pagePadding)}>
-        <div style={stickyFilterStyle} className="md:sticky md:z-20 md:-mx-2 md:relative md:isolate md:bg-[#f7f9fc] md:px-2 md:py-2 dark:md:bg-[#020407] md:before:absolute md:before:inset-0 md:before:-z-10 md:before:bg-[#f7f9fc] dark:md:before:bg-[#020407] md:before:content-[''] md:after:absolute md:after:-top-4 md:after:inset-x-0 md:after:h-4 md:after:bg-[#f7f9fc] dark:md:after:bg-[#020407] md:after:content-['']">
+      <main className={cn('mx-auto w-full max-w-[1200px] px-4 sm:px-6', uiScale.pagePadding)}>
+        <div className="md:sticky md:top-14 md:z-20 md:-mx-2 md:bg-background/95 md:px-2 md:py-2 md:backdrop-blur-sm">
           <TrendFilterPanel
             uiScale={uiScale}
             sourceOptions={sourceOptions}
@@ -83,7 +77,7 @@ export function TrendDashboard({ initialSession, initialIsDarkTheme, initialSour
           />
         </div>
 
-        <section className="mt-5 pb-8 sm:pb-10">
+        <section className="mt-4 pb-8 sm:pb-10">
           <TrendResults
             uiScale={uiScale}
             trendData={state.trendData}
