@@ -34,28 +34,28 @@ export function TrendFilterPanel({
   onSearch,
   onReset,
 }: TrendFilterPanelProps) {
-  const primarySourceOptions = sourceOptions.filter(option => ['github', 'npm', 'vue', 'react', 'node', 'ai', 'python', 'component', 'zhihu', 'juejin', 'v2ex', 'weibo'].includes(option.value))
+  const enabledSourceOptions = sourceOptions.filter(option => option.enabled)
 
   return (
-    <section className="border-b border-slate-200/80 bg-[#f7f9fc] pb-6 dark:border-white/8 dark:bg-[#020407]">
-      <div className="mb-3">
-        <TrendSourceTabs
-          sourceOptions={primarySourceOptions}
-          sourceValue={sourceValue}
-          onSelectSource={onSelectSource}
-        />
-      </div>
+    <section className="border-b border-border/80 bg-background pb-4">
+      <TrendSourceTabs
+        sourceOptions={enabledSourceOptions}
+        sourceValue={sourceValue}
+        onSelectSource={onSelectSource}
+      />
 
-      <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
-        <TrendSearchBox
-          uiScale={uiScale}
-          value={searchInput}
-          onChange={onSearchInputChange}
-          onSearch={onSearch}
-          onReset={onReset}
-        />
+      <div className="mt-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="w-full sm:max-w-lg">
+          <TrendSearchBox
+            uiScale={uiScale}
+            value={searchInput}
+            onChange={onSearchInputChange}
+            onSearch={onSearch}
+            onReset={onReset}
+          />
+        </div>
 
-        <div className="min-w-0 overflow-x-auto lg:justify-self-end [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        <div className="min-w-0 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           <TrendSegmentedControl
             label="时间范围"
             items={periodOptions}

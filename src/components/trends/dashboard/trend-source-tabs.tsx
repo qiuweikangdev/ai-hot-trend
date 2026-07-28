@@ -36,14 +36,11 @@ export function TrendSourceTabs({
     }
 
     const maxScrollLeft = container.scrollWidth - container.clientWidth
-    const hasOverflow = maxScrollLeft > 2
-    const canScrollLeft = container.scrollLeft > 2
-    const canScrollRight = container.scrollLeft < maxScrollLeft - 2
 
     setOverflowState({
-      hasOverflow,
-      canScrollLeft,
-      canScrollRight,
+      hasOverflow: maxScrollLeft > 2,
+      canScrollLeft: container.scrollLeft > 2,
+      canScrollRight: container.scrollLeft < maxScrollLeft - 2,
     })
   }, [])
 
@@ -54,42 +51,26 @@ export function TrendSourceTabs({
       return
     }
 
-    const frameId = window.requestAnimationFrame(() => {
-      updateOverflowState()
-    })
-
-    const onScroll = () => {
-      updateOverflowState()
-    }
-
-    container.addEventListener('scroll', onScroll, { passive: true })
-    window.addEventListener('resize', updateOverflowState)
-
+    const frameId = window.requestAnimationFrame(updateOverflowState)
     const observer = typeof ResizeObserver !== 'undefined'
-      ? new ResizeObserver(() => {
-          updateOverflowState()
-        })
+      ? new ResizeObserver(updateOverflowState)
       : null
 
+    container.addEventListener('scroll', updateOverflowState, { passive: true })
+    window.addEventListener('resize', updateOverflowState)
     observer?.observe(container)
 
     return () => {
       window.cancelAnimationFrame(frameId)
-      container.removeEventListener('scroll', onScroll)
+      container.removeEventListener('scroll', updateOverflowState)
       window.removeEventListener('resize', updateOverflowState)
       observer?.disconnect()
     }
   }, [sourceOptions.length, updateOverflowState])
 
   const handleScrollTabs = useCallback((direction: 'left' | 'right') => {
-    const container = tabsRef.current
-
-    if (!container) {
-      return
-    }
-
-    container.scrollBy({
-      left: direction === 'left' ? -220 : 220,
+    tabsRef.current?.scrollBy({
+      left: direction === 'left' ? -240 : 240,
       behavior: 'smooth',
     })
   }, [])
@@ -109,21 +90,13 @@ export function TrendSourceTabs({
   }, [onSelectSource, pathname, router])
 
   return (
-    <div className="relative min-w-0">
-      {overflowState.hasOverflow
-        ? (
-            <>
-              <div className="pointer-events-none absolute left-0 top-0 z-10 h-full w-10 bg-gradient-to-r from-[#f7f9fc] via-[#f7f9fc]/95 to-transparent dark:from-[#020407] dark:via-[#020407]/95" />
-              <div className="pointer-events-none absolute right-0 top-0 z-10 h-full w-10 bg-gradient-to-l from-[#f7f9fc] via-[#f7f9fc]/95 to-transparent dark:from-[#020407] dark:via-[#020407]/95" />
-            </>
-          )
-        : null}
-
+    <div className="relative min-w-0 border-b border-border/80">
       <nav
         ref={tabsRef}
+        aria-label="热点来源"
         className={cn(
-          'flex min-w-0 items-center gap-4 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden',
-          overflowState.hasOverflow && 'px-10',
+          'flex min-w-0 items-center gap-5 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden',
+          overflowState.hasOverflow && 'px-9',
         )}
       >
         {sourceOptions.map((option) => {
@@ -135,23 +108,17 @@ export function TrendSourceTabs({
               key={option.value}
               type="button"
               className={cn(
-                'group/tab relative shrink-0 text-[13px] font-medium transition-all duration-150',
+                'relative h-10 shrink-0 border-b-2 border-transparent px-0.5 text-[13px] font-medium transition-colors',
                 isEnabled
-                  ? 'text-slate-400 hover:text-slate-800 dark:text-slate-500 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-white/8 rounded-lg px-2 py-1'
-                  : 'cursor-not-allowed text-slate-300 dark:text-slate-700',
-                isActive && 'text-slate-900 dark:text-white font-semibold',
+                  ? 'text-muted-foreground hover:text-foreground'
+                  : 'cursor-not-allowed text-muted-foreground/40',
+                isActive && 'border-foreground text-foreground',
               )}
+              aria-current={isActive ? 'page' : undefined}
               onClick={() => handleSelectWithRoute(option.value, isEnabled, option.label)}
               disabled={!isEnabled}
             >
               {option.label}
-              <span className={cn(
-                'absolute -bottom-0.5 left-1/2 -translate-x-1/2 h-[2px] rounded-full transition-all duration-200',
-                isActive
-                  ? 'w-full -translate-x-1/2 bg-blue-600 dark:bg-white'
-                  : 'w-0 bg-slate-400 dark:bg-slate-500 group-hover/tab:w-5',
-              )}
-              />
             </button>
           )
         })}
@@ -162,25 +129,25 @@ export function TrendSourceTabs({
             <>
               <Button
                 type="button"
-                variant="outline"
+                variant="ghost"
                 size="icon"
-                className="absolute left-1 top-1/2 z-20 size-8 -translate-y-1/2 rounded-full border-slate-200/90 bg-white/95 text-slate-500 backdrop-blur hover:border-slate-300 hover:text-slate-800 disabled:opacity-35 dark:border-white/15 dark:bg-[#0b1018]/95 dark:text-slate-300 dark:hover:border-white/25 dark:hover:text-white"
+                className="absolute left-0 top-1/2 size-8 -translate-y-1/2 rounded-md bg-background text-muted-foreground shadow-[4px_0_8px_var(--background)] disabled:opacity-30"
                 disabled={!overflowState.canScrollLeft}
                 onClick={() => handleScrollTabs('left')}
-                aria-label="向左滚动趋势源"
+                aria-label="向左滚动来源"
               >
-                <ChevronLeft className="size-4" />
+                <ChevronLeft className="size-4" strokeWidth={1.75} />
               </Button>
               <Button
                 type="button"
-                variant="outline"
+                variant="ghost"
                 size="icon"
-                className="absolute right-1 top-1/2 z-20 size-8 -translate-y-1/2 rounded-full border-slate-200/90 bg-white/95 text-slate-500 backdrop-blur hover:border-slate-300 hover:text-slate-800 disabled:opacity-35 dark:border-white/15 dark:bg-[#0b1018]/95 dark:text-slate-300 dark:hover:border-white/25 dark:hover:text-white"
+                className="absolute right-0 top-1/2 size-8 -translate-y-1/2 rounded-md bg-background text-muted-foreground shadow-[-4px_0_8px_var(--background)] disabled:opacity-30"
                 disabled={!overflowState.canScrollRight}
                 onClick={() => handleScrollTabs('right')}
-                aria-label="向右滚动趋势源"
+                aria-label="向右滚动来源"
               >
-                <ChevronRight className="size-4" />
+                <ChevronRight className="size-4" strokeWidth={1.75} />
               </Button>
             </>
           )

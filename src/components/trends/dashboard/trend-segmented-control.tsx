@@ -35,29 +35,22 @@ export function TrendSegmentedControl({
 
   const scrollByStep = (direction: 'left' | 'right') => {
     const container = listRef.current
+
     if (!container) {
       return
     }
 
     const distance = Math.max(120, Math.floor(container.clientWidth * 0.6))
-    const maxScrollLeft = Math.max(0, container.scrollWidth - container.clientWidth)
-    const nextLeft = direction === 'left'
-      ? Math.max(0, container.scrollLeft - distance)
-      : Math.min(maxScrollLeft, container.scrollLeft + distance)
 
-    container.scrollTo({
-      left: nextLeft,
+    container.scrollBy({
+      left: direction === 'left' ? -distance : distance,
       behavior: 'smooth',
     })
   }
 
   useEffect(() => {
-    const container = listRef.current
-    if (!container) {
-      return
-    }
+    const activeTab = listRef.current?.querySelector<HTMLButtonElement>(`button[data-segment-value="${activeValue}"]`)
 
-    const activeTab = container.querySelector<HTMLButtonElement>(`button[data-segment-value="${activeValue}"]`)
     activeTab?.scrollIntoView({
       behavior: 'smooth',
       block: 'nearest',
@@ -65,66 +58,49 @@ export function TrendSegmentedControl({
     })
   }, [activeValue])
 
+  const segmentItems = (
+    <>
+      {prefixLabel ? <span className="shrink-0 px-2 text-[11px] text-muted-foreground">{prefixLabel}</span> : null}
+      {items.map((item) => {
+        const isEnabled = item.enabled ?? true
+        const isActive = isEnabled && item.value === activeValue
+
+        return (
+          <button
+            key={item.value}
+            type="button"
+            data-segment-value={item.value}
+            className={cn(
+              'inline-flex h-7 shrink-0 items-center justify-center rounded-md px-2.5 text-xs font-medium transition-colors',
+              textClassName,
+              isEnabled
+                ? 'text-muted-foreground hover:text-foreground'
+                : 'cursor-not-allowed text-muted-foreground/40',
+              isActive && 'bg-card text-foreground shadow-[0_1px_2px_rgba(0,0,0,0.08)] hover:text-foreground dark:bg-accent',
+            )}
+            role="tab"
+            aria-selected={isActive}
+            disabled={!isEnabled}
+            onClick={() => onSelect(item)}
+          >
+            {item.label}
+          </button>
+        )
+      })}
+    </>
+  )
+
   if (showEdgeControls) {
     return (
-      <div
-        className="grid w-full min-w-0 max-w-full grid-cols-[1.9rem_minmax(0,1fr)_1.9rem] items-center gap-1 overflow-hidden rounded-full border border-slate-200/85 bg-white p-1 dark:border-white/10 dark:bg-[#0a0d12]"
-        role="tablist"
-        aria-label={label}
-      >
-        <button
-          type="button"
-          className="inline-flex size-7.5 items-center justify-center rounded-full border border-slate-200/85 bg-white text-slate-500 shadow-[0_8px_16px_-12px_rgba(15,23,42,0.16)] transition hover:text-slate-800 focus-visible:ring-blue-200 dark:border-white/15 dark:bg-[#111722] dark:text-slate-300 dark:hover:text-white"
-          aria-label="向左滚动"
-          onClick={() => scrollByStep('left')}
-        >
-          <ChevronLeft className="size-4" />
+      <div className="grid w-full min-w-0 grid-cols-[1.75rem_minmax(0,1fr)_1.75rem] items-center gap-0.5 rounded-lg border border-border bg-muted p-0.5" role="tablist" aria-label={label}>
+        <button type="button" className="grid size-7 place-items-center rounded-md text-muted-foreground hover:bg-card hover:text-foreground" aria-label="向左滚动" onClick={() => scrollByStep('left')}>
+          <ChevronLeft className="size-3.5" strokeWidth={1.75} />
         </button>
-
-        <div
-          ref={listRef}
-          className="min-w-0 max-w-full overflow-x-auto overscroll-x-contain scroll-smooth touch-pan-x [scrollbar-width:none] [-webkit-overflow-scrolling:touch] [&::-webkit-scrollbar]:hidden"
-        >
-          <div className="inline-flex w-max items-center gap-1 pr-1">
-            {prefixLabel
-              ? <span className="shrink-0 px-2.5 text-[11px] text-slate-400 dark:text-slate-500">{prefixLabel}</span>
-              : null}
-
-            {items.map((item) => {
-              const isEnabled = item.enabled ?? true
-              const isActive = isEnabled && item.value === activeValue
-
-              return (
-                <button
-                  key={item.value}
-                  type="button"
-                  data-segment-value={item.value}
-                  className={cn(
-                    'inline-flex h-8 shrink-0 snap-start items-center justify-center rounded-full px-3 text-xs font-medium transition sm:px-3.5',
-                    textClassName,
-                    isEnabled
-                      ? 'text-slate-600 hover:bg-slate-200/60 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white'
-                      : 'cursor-not-allowed text-slate-300 dark:text-slate-700',
-                    isActive && 'bg-blue-600 text-white shadow-[0_12px_20px_-14px_rgba(37,99,235,0.95)] hover:bg-blue-600 hover:text-white dark:bg-white dark:text-[#0a0d12] dark:hover:bg-white',
-                  )}
-                  role="tab"
-                  aria-selected={isActive}
-                  onClick={() => onSelect(item)}
-                >
-                  {item.label}
-                </button>
-              )
-            })}
-          </div>
+        <div ref={listRef} className="min-w-0 overflow-x-auto scroll-smooth [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          <div className="inline-flex w-max items-center gap-0.5">{segmentItems}</div>
         </div>
-
-        <button
-          type="button"
-          className="inline-flex size-7.5 items-center justify-center rounded-full border border-slate-200/85 bg-white text-slate-500 shadow-[0_8px_16px_-12px_rgba(15,23,42,0.16)] transition hover:text-slate-800 focus-visible:ring-blue-200 dark:border-white/15 dark:bg-[#111722] dark:text-slate-300 dark:hover:text-white"
-          aria-label="向右滚动"
-          onClick={() => scrollByStep('right')}
-        >
-          <ChevronRight className="size-4" />
+        <button type="button" className="grid size-7 place-items-center rounded-md text-muted-foreground hover:bg-card hover:text-foreground" aria-label="向右滚动" onClick={() => scrollByStep('right')}>
+          <ChevronRight className="size-3.5" strokeWidth={1.75} />
         </button>
       </div>
     )
@@ -133,41 +109,15 @@ export function TrendSegmentedControl({
   return (
     <div className="overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
       <div
+        ref={listRef}
         className={cn(
-          'inline-flex items-center gap-1 rounded-full border border-slate-200/85 bg-[#eef2f7] p-1 dark:border-white/10 dark:bg-[#0a0d12]',
+          'inline-flex items-center gap-0.5 rounded-lg border border-border bg-muted p-0.5',
           stretch ? 'min-w-full' : 'min-w-max',
         )}
         role="tablist"
         aria-label={label}
       >
-        {prefixLabel
-          ? <span className="shrink-0 px-2.5 text-[11px] text-slate-400 dark:text-slate-500">{prefixLabel}</span>
-          : null}
-
-        {items.map((item) => {
-          const isEnabled = item.enabled ?? true
-          const isActive = isEnabled && item.value === activeValue
-
-          return (
-            <button
-              key={item.value}
-              type="button"
-              className={cn(
-                'inline-flex h-10 shrink-0 items-center justify-center rounded-full px-5 text-sm font-semibold transition sm:px-6',
-                textClassName,
-                isEnabled
-                  ? 'text-slate-600 hover:bg-white/85 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white'
-                  : 'cursor-not-allowed text-slate-300 dark:text-slate-700',
-                isActive && 'bg-blue-500 text-white shadow-[0_12px_20px_-14px_rgba(37,99,235,0.85)] hover:bg-blue-500 hover:text-white dark:bg-white dark:text-[#0a0d12] dark:hover:bg-white',
-              )}
-              role="tab"
-              aria-selected={isActive}
-              onClick={() => onSelect(item)}
-            >
-              {item.label}
-            </button>
-          )
-        })}
+        {segmentItems}
       </div>
     </div>
   )
