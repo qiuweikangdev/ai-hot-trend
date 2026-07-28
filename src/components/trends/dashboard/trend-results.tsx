@@ -2,22 +2,13 @@
 
 import type { TrendUiScale } from '@/config/trends'
 import type { TrendItem, TrendResult } from '@/modules/trends/types'
-import { ChevronDown } from 'lucide-react'
+import { ArrowDown, LoaderCircle } from 'lucide-react'
 import { TrendCard } from '@/components/trends/trend-card'
 import { Button } from '@/components/ui/button'
 import { getTrendSourceMeta } from '@/modules/trends/catalog'
 import { buildFavoriteKey } from './utils'
 
-const TREND_RESULT_SKELETON_KEYS = [
-  'skeleton-1',
-  'skeleton-2',
-  'skeleton-3',
-  'skeleton-4',
-  'skeleton-5',
-  'skeleton-6',
-  'skeleton-7',
-  'skeleton-8',
-]
+const TREND_RESULT_SKELETON_KEYS = Array.from({ length: 9 }, (_, index) => `skeleton-${index + 1}`)
 
 interface TrendResultsProps {
   uiScale: TrendUiScale
@@ -48,12 +39,9 @@ export function TrendResults({
 }: TrendResultsProps) {
   if (isTrendLoading) {
     return (
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {TREND_RESULT_SKELETON_KEYS.map(key => (
-          <div
-            key={key}
-            className="h-[296px] animate-pulse rounded-[18px] border border-slate-200/80 bg-slate-100/80 dark:border-white/10 dark:bg-[#0b0f16]"
-          />
+          <div key={key} className="h-56 animate-pulse rounded-xl border border-border bg-muted/70" />
         ))}
       </div>
     )
@@ -61,7 +49,7 @@ export function TrendResults({
 
   if (trendError) {
     return (
-      <div className="rounded-[30px] border border-rose-200 bg-rose-50 px-4 py-8 text-rose-700 shadow-[0_24px_55px_-45px_rgba(244,63,94,0.25)] dark:border-rose-500/30 dark:bg-rose-500/10 dark:text-rose-200">
+      <div className="rounded-lg border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive">
         {trendError}
       </div>
     )
@@ -74,15 +62,15 @@ export function TrendResults({
     <>
       {trendData?.stale
         ? (
-            <div className="mb-4 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-700 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-200">
-              当前展示缓存数据，
+            <div className="mb-3 rounded-lg border border-border bg-muted/50 px-3 py-2 text-xs text-muted-foreground">
+              数据可能已过期 ·
+              {' '}
               {staleSourceLabel}
-              接口暂时不可用。
             </div>
           )
         : null}
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 [content-visibility:auto]">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 [content-visibility:auto]">
         {items.map(item => (
           <TrendCard
             key={item.id}
@@ -96,28 +84,33 @@ export function TrendResults({
         ))}
       </div>
 
-      {items.length && hasMore
+      {items.length > 0 && hasMore
         ? (
-            <div className="mt-8 flex justify-center sm:mt-10">
+            <div className="mt-6 flex items-center gap-3 sm:mt-8">
+              <span className="h-px flex-1 bg-border/70" />
               <Button
                 type="button"
                 variant="outline"
+                size="icon"
                 disabled={isLoadingMore}
                 onClick={onLoadMore}
-                className="h-10 rounded-full border-slate-300/90 bg-white px-6 text-[13px] font-medium text-slate-700 shadow-[0_8px_18px_-16px_rgba(15,23,42,0.55)] transition-all duration-200 hover:-translate-y-0.5 hover:border-slate-400 hover:bg-slate-50 hover:text-slate-900 dark:border-white/12 dark:bg-[#0b0f16] dark:text-slate-200 dark:hover:border-white/22 dark:hover:bg-[#121722] dark:hover:text-white disabled:opacity-50"
+                className="size-9 shrink-0 rounded-lg border-border bg-background text-muted-foreground shadow-none hover:border-foreground/20 hover:bg-muted hover:text-foreground disabled:opacity-50"
                 aria-label="加载更多"
+                title="加载更多"
               >
-                <ChevronDown className={`size-3.5 ${isLoadingMore ? 'animate-spin' : ''}`} strokeWidth={2} />
-                {isLoadingMore ? '加载中...' : '查看更多'}
+                {isLoadingMore
+                  ? <LoaderCircle className="size-4 animate-spin" strokeWidth={1.75} />
+                  : <ArrowDown className="size-4" strokeWidth={1.75} />}
               </Button>
+              <span className="h-px flex-1 bg-border/70" />
             </div>
           )
         : null}
 
-      {!items.length
+      {items.length === 0
         ? (
-            <div className="rounded-[30px] border border-white/90 bg-white/78 px-4 py-12 text-center text-slate-500 shadow-[0_24px_55px_-45px_rgba(15,23,42,0.22)] ring-1 ring-slate-200/55 dark:border-white/10 dark:bg-[#0b0f16] dark:text-slate-400 dark:ring-white/10">
-              当前筛选条件下暂无热点项目，请调整筛选后重试。
+            <div className="rounded-xl border border-dashed border-border px-4 py-12 text-center text-sm text-muted-foreground">
+              暂无结果
             </div>
           )
         : null}
