@@ -15,6 +15,32 @@ interface UseTrendFeedOptions {
   keyword: string
   limit: number
   refreshTick: number
+  initialTrendData?: TrendResult
+}
+
+type TrendFeedRequest = Omit<UseTrendFeedOptions, 'initialTrendData'>
+
+function isTrendResultForRequest(data: TrendResult, request: TrendFeedRequest) {
+  return data.source === request.source
+    && data.period === request.period
+    && (data.language ?? '') === request.language
+    && (data.keyword ?? '') === request.keyword
+}
+
+export function shouldRequestTrendFeed(
+  currentRequest: TrendFeedRequest,
+  previousRequest: TrendFeedRequest | null,
+) {
+  if (!previousRequest) {
+    return true
+  }
+
+  return currentRequest.source !== previousRequest.source
+    || currentRequest.period !== previousRequest.period
+    || currentRequest.language !== previousRequest.language
+    || currentRequest.keyword !== previousRequest.keyword
+    || currentRequest.limit !== previousRequest.limit
+    || currentRequest.refreshTick !== previousRequest.refreshTick
 }
 
 export function useTrendFeed({
@@ -24,9 +50,14 @@ export function useTrendFeed({
   keyword,
   limit,
   refreshTick,
+  initialTrendData,
 }: UseTrendFeedOptions) {
-  const [trendData, setTrendData] = useState<TrendResult | null>(null)
-  const [isTrendLoading, setIsTrendLoading] = useState(true)
+  const initialRequest = { source, period, language, keyword, limit, refreshTick }
+  const matchingInitialTrendData = initialTrendData && isTrendResultForRequest(initialTrendData, initialRequest)
+    ? initialTrendData
+    : null
+  const [trendData, setTrendData] = useState<TrendResult | null>(matchingInitialTrendData)
+  const [isTrendLoading, setIsTrendLoading] = useState(!matchingInitialTrendData)
   const [trendError, setTrendError] = useState('')
   const [offset, setOffset] = useState(0)
   const [isLoadingMore, setIsLoadingMore] = useState(false)
@@ -34,6 +65,9 @@ export function useTrendFeed({
 
   const paramsRef = useRef({ source, period, language, keyword, limit })
 
+  const previousRequestRef = useRef<TrendFeedRequest | null>(
+    matchingInitialTrendData ? initialRequest : null,
+  )
   useEffect(() => {
     paramsRef.current = { source, period, language, keyword, limit }
   }, [source, period, language, keyword, limit])
@@ -95,6 +129,13 @@ export function useTrendFeed({
   useEffect(() => {
     setOffset(0)
     setHasMore(true)
+    const currentRequest = { source, period, language, keyword, limit, refreshTick }
+
+    if (!shouldRequestTrendFeed(currentRequest, previousRequestRef.current)) {
+      return
+    }
+
+    previousRequestRef.current = currentRequest
     fetchTrends(0)
   }, [keyword, language, limit, period, refreshTick, source, fetchTrends])
 

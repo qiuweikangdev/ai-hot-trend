@@ -1,7 +1,7 @@
 'use client'
 
 import type { AuthSessionSnapshot } from '@/lib/auth-session'
-import type { TrendItem, TrendSource } from '@/modules/trends/types'
+import type { TrendItem, TrendResult, TrendSource } from '@/modules/trends/types'
 import { useMemo, useState } from 'react'
 import { toast } from 'sonner'
 import { TREND_UI_SCALE_PRESETS, trendUiConfig } from '@/config/trends'
@@ -16,7 +16,11 @@ import { collectQuickLanguages, getDisplayName } from './utils'
 
 type DashboardNoticeLevel = 'success' | 'error' | 'info' | 'warning'
 
-export function useTrendDashboard(initialSession: AuthSessionSnapshot, initialSource?: TrendSource) {
+export function useTrendDashboard(
+  initialSession: AuthSessionSnapshot,
+  initialSource: TrendSource | undefined,
+  initialTrendData: TrendResult,
+) {
   const uiScale = TREND_UI_SCALE_PRESETS[trendUiConfig.activeScalePreset]
   const { clientSession, session, sessionUser, sessionUserId } = useDashboardSession(initialSession)
   const searchHistory = useSearchHistory()
@@ -59,6 +63,7 @@ export function useTrendDashboard(initialSession: AuthSessionSnapshot, initialSo
     keyword: trendQuery.state.keyword,
     limit: trendUiConfig.trendLimit,
     refreshTick: trendQuery.state.refreshTick,
+    initialTrendData,
   })
 
   const quickLanguages = useMemo(() => {

@@ -1,7 +1,7 @@
 'use client'
 
 import type { AuthSessionSnapshot } from '@/lib/auth-session'
-import type { TrendSource } from '@/modules/trends/types'
+import type { TrendResult, TrendSource } from '@/modules/trends/types'
 import { useEffect, useState } from 'react'
 import { NotificationSettingsModal } from '@/components/notifications/notification-settings-modal'
 import { FavoritesPanel } from '@/components/trends/dashboard/favorites-panel'
@@ -16,9 +16,15 @@ interface TrendDashboardProps {
   initialSession: AuthSessionSnapshot
   initialIsDarkTheme: boolean
   initialSource?: TrendSource
+  initialTrendData: TrendResult
 }
 
-export function TrendDashboard({ initialSession, initialIsDarkTheme, initialSource }: TrendDashboardProps) {
+export function TrendDashboard({
+  initialSession,
+  initialIsDarkTheme,
+  initialSource,
+  initialTrendData,
+}: TrendDashboardProps) {
   const {
     uiScale,
     session,
@@ -27,7 +33,7 @@ export function TrendDashboard({ initialSession, initialIsDarkTheme, initialSour
     state,
     derived,
     actions,
-  } = useTrendDashboard(initialSession, initialSource)
+  } = useTrendDashboard(initialSession, initialSource, initialTrendData)
   const [isDarkTheme, setIsDarkTheme] = useState(initialIsDarkTheme)
   const [isNotificationSettingsOpen, setIsNotificationSettingsOpen] = useState(false)
 
