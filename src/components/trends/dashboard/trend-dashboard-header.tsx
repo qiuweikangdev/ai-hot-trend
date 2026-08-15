@@ -38,9 +38,15 @@ export function TrendDashboardHeader({
     <header className="sticky top-0 z-30 min-h-14 border-b border-border/80 bg-background/95 backdrop-blur-sm">
       <div className={cn('mx-auto flex w-full max-w-[1200px] items-center justify-between gap-4 px-4 sm:px-6', uiScale.headerPadding)}>
         <div className="flex min-w-0 items-center gap-2.5">
-          <span aria-hidden className="grid size-7 shrink-0 place-items-center rounded-md bg-foreground text-[10px] font-semibold tracking-[-0.04em] text-background">
-            HT
-          </span>
+          <Image
+            src="/icon.png"
+            alt=""
+            width={28}
+            height={28}
+            priority
+            aria-hidden="true"
+            className="size-7 shrink-0 rounded-md object-cover"
+          />
           <h1 className="truncate text-sm font-medium tracking-[-0.01em] text-foreground">热点趋势</h1>
         </div>
 
