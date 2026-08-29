@@ -22,7 +22,9 @@ interface NotificationChannelSettings {
   id: string
   type: NotificationChannelType
   isEnabled: boolean
-  summary: { label: string, maskedTarget: string }
+  summary: { label: string, maskedTarget: string, target?: string }
+  email?: string
+  recipientEmail?: string
   subscription: { sources: TrendSource[], period: TrendPeriod, limit: number, scheduledMinute: number, isEnabled: boolean } | null
   lastTestedAt: Date | null
   lastTestStatus: string | null
@@ -166,6 +168,12 @@ export async function getNotificationSettings(userId: string) {
       type,
       isEnabled: channel.isEnabled,
       summary,
+      ...(type === 'email'
+        ? {
+            email: (config as QqEmailConfig).email,
+            recipientEmail: (config as QqEmailConfig).recipientEmail,
+          }
+        : {}),
       subscription: channel.subscription && {
         sources: channel.subscription.sources as TrendSource[],
         period: channel.subscription.period as TrendPeriod,
@@ -249,7 +257,7 @@ export async function saveQqEmailSettings(userId: string, value: unknown) {
   })
   const isEnabled = typeof input.isEnabled === 'boolean' ? input.isEnabled : true
   const channel = await saveChannelConfig({ userId, type: 'email', config, isEnabled, rawSubscription: input.subscription })
-  return { ...channel, summary: getQqEmailPublicSummary(config) }
+  return { ...channel, summary: getQqEmailPublicSummary(config), email: config.email, recipientEmail: config.recipientEmail }
 }
 
 export async function testQqEmailSettings(userId: string, value: unknown) {

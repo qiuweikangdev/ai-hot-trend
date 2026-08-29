@@ -15,7 +15,9 @@ type ChannelType = 'feishu' | 'email'
 
 interface ChannelData {
   isEnabled: boolean
-  summary: { label: string, maskedTarget: string }
+  summary: { label: string, maskedTarget: string, target?: string }
+  email?: string
+  recipientEmail?: string
   subscription: { sources: TrendSource[], period: TrendPeriod, limit: number, scheduledMinute: number, isEnabled: boolean } | null
   lastTestMessage: string | null
 }
@@ -156,12 +158,17 @@ export function NotificationSettingsModal({ isOpen, onClose }: NotificationSetti
         if (isCancelled)
           return
         setData(result.data)
-        const subscription = result.data.channels[activeChannelRef.current]?.subscription
+        const channelData = result.data.channels[activeChannelRef.current]
+        const subscription = channelData?.subscription
         setSources(subscription?.sources ?? ['ai', 'github'])
         setPeriod(subscription?.period ?? 'today')
         setLimit(subscription?.limit ?? 5)
         setScheduledMinute(subscription?.scheduledMinute ?? 540)
         setIsEnabled(subscription?.isEnabled ?? true)
+        if (activeChannelRef.current === 'email') {
+          setEmail(channelData?.email ?? '')
+          setRecipientEmail(channelData?.recipientEmail ?? '')
+        }
       })
       .catch((error: unknown) => {
         if (!isCancelled)
@@ -188,12 +195,17 @@ export function NotificationSettingsModal({ isOpen, onClose }: NotificationSetti
   function selectChannel(channel: ChannelType) {
     activeChannelRef.current = channel
     setActiveChannel(channel)
-    const subscription = data?.channels[channel]?.subscription
+    const channelData = data?.channels[channel]
+    const subscription = channelData?.subscription
     setSources(subscription?.sources ?? ['ai', 'github'])
     setPeriod(subscription?.period ?? 'today')
     setLimit(subscription?.limit ?? 5)
     setScheduledMinute(subscription?.scheduledMinute ?? 540)
     setIsEnabled(subscription?.isEnabled ?? true)
+    if (channel === 'email') {
+      setEmail(channelData?.email ?? '')
+      setRecipientEmail(channelData?.recipientEmail ?? '')
+    }
   }
 
   function toggleSource(source: TrendSource) {
@@ -216,6 +228,24 @@ export function NotificationSettingsModal({ isOpen, onClose }: NotificationSetti
       })
       if (!response.ok)
         throw new Error(activeChannel === 'feishu' ? '保存失败，请检查 Webhook 地址和内容选择。' : '保存失败，请检查邮箱地址、收件邮箱和授权码。')
+      const result = await response.json() as { data: { summary: ChannelData['summary'], email?: string, recipientEmail?: string } }
+      setData(current => current
+        ? {
+            ...current,
+            channels: {
+              ...current.channels,
+              [activeChannel]: {
+                isEnabled,
+                summary: result.data.summary,
+                subscription: { sources, period, limit, scheduledMinute: deliveryMinute, isEnabled },
+                lastTestMessage: current.channels[activeChannel]?.lastTestMessage ?? null,
+                ...(activeChannel === 'email'
+                  ? { email: result.data.email ?? email.trim(), recipientEmail: result.data.recipientEmail ?? recipientEmail.trim() }
+                  : {}),
+              },
+            },
+          }
+        : current)
       setSecret('')
       setAuthorizationCode('')
       setMessage('设置已保存')
@@ -279,7 +309,7 @@ export function NotificationSettingsModal({ isOpen, onClose }: NotificationSetti
                 className={cn(
                   'flex h-8 items-center border-b-2 border-transparent text-xs font-medium text-muted-foreground transition-colors',
                   channel.enabled ? 'hover:text-foreground' : 'cursor-not-allowed opacity-35',
-                  channel.value === activeChannel && 'border-foreground text-foreground dark:border-primary',
+                  channel.value === activeChannel && 'border-foreground text-foreground dark:border-ring',
                 )}
                 onClick={() => selectChannel(channel.value)}
               >
@@ -307,7 +337,7 @@ export function NotificationSettingsModal({ isOpen, onClose }: NotificationSetti
                         ? (
                             <span className="inline-flex items-center gap-1.5 text-[11px] text-muted-foreground">
                               <Check className="size-3" strokeWidth={1.75} />
-                              {activeChannelData?.summary.maskedTarget}
+                              {activeChannelData?.summary.target ?? activeChannelData?.summary.maskedTarget}
                             </span>
                           )
                         : null}
@@ -372,7 +402,7 @@ export function NotificationSettingsModal({ isOpen, onClose }: NotificationSetti
                             className={cn(
                               'inline-flex h-7 items-center justify-center gap-1 rounded-md border px-2.5 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60 focus-visible:ring-offset-2',
                               isSelected
-                                ? 'border-foreground bg-foreground text-background shadow-xs hover:bg-foreground/90 dark:border-primary dark:bg-primary dark:text-primary-foreground dark:hover:bg-primary/90'
+                                ? 'border-foreground bg-foreground text-background shadow-xs hover:bg-foreground/90 dark:border-ring/70 dark:bg-accent dark:text-foreground dark:hover:bg-accent/90'
                                 : 'border-transparent bg-muted/40 text-muted-foreground hover:border-border hover:bg-muted hover:text-foreground',
                             )}
                             onClick={() => toggleSource(source.value)}

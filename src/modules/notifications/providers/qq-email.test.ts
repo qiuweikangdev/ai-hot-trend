@@ -20,6 +20,7 @@ test('parses QQ email credentials and recipient', () => {
   assert.deepEqual(getQqEmailPublicSummary(config), {
     label: 'QQ邮箱',
     maskedTarget: '12****@qq.com → al****@example.com',
+    target: '123456@qq.com → alerts@example.com',
   })
 })
 

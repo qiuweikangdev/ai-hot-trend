@@ -68,6 +68,7 @@ export function getQqEmailPublicSummary(config: QqEmailConfig) {
   return {
     label: 'QQ邮箱',
     maskedTarget: `${maskEmail(config.email)} → ${maskEmail(config.recipientEmail)}`,
+    target: `${config.email} → ${config.recipientEmail}`,
   }
 }
 
