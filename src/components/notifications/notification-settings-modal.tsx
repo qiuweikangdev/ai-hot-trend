@@ -1,14 +1,15 @@
 'use client'
 
 import type { TrendPeriod, TrendSource } from '@/modules/trends/types'
-import { Check, Loader2, Save, Send, X } from 'lucide-react'
-import { useEffect, useMemo, useState } from 'react'
+import { Check, ChevronDown, Loader2, Save, Send, X } from 'lucide-react'
+import { useEffect, useRef, useState } from 'react'
 import { Button } from '@/components/ui/button'
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { cn } from '@/lib/utils'
 import { TREND_SOURCE_OPTIONS } from '@/modules/trends/catalog'
-import { isTrendSource, TREND_PERIOD_VALUES } from '@/modules/trends/types'
+import { isTrendSource } from '@/modules/trends/types'
 
 type ChannelType = 'feishu' | 'email'
 
@@ -42,9 +43,80 @@ const NOTIFICATION_SOURCE_OPTIONS = TREND_SOURCE_OPTIONS.flatMap(option => (
 
 const SELECT_CLASS_NAME = 'mt-1.5 h-8 w-full rounded-md border border-input bg-background px-2.5 text-xs text-foreground outline-none transition focus:border-ring focus:ring-2 focus:ring-ring/30'
 const FIELD_LABEL_CLASS_NAME = 'text-xs font-medium'
+const TIME_OPTIONS = Array.from({ length: 288 }, (_, index) => index * 5)
+const PERIOD_OPTIONS = [
+  { value: 'today', label: '今日' },
+  { value: 'week', label: '本周' },
+  { value: 'month', label: '本月' },
+] satisfies SelectOption[]
+const LIMIT_OPTIONS = Array.from({ length: 10 }, (_, index) => {
+  const value = index + 1
+  return { value, label: `${value} 条` }
+}) satisfies SelectOption[]
+const TIME_SELECT_OPTIONS = TIME_OPTIONS.map(value => ({ value, label: formatTime(value) }))
 
 function formatTime(minute: number) {
   return `${String(Math.floor(minute / 60)).padStart(2, '0')}:${String(minute % 60).padStart(2, '0')}`
+}
+
+interface SelectOption {
+  value: string | number
+  label: string
+}
+
+interface SettingsSelectProps {
+  id: string
+  options: SelectOption[]
+  value: string | number
+  onChange: (value: string | number) => void
+  scrollable?: boolean
+}
+
+function SettingsSelect({ id, options, value, onChange, scrollable = false }: SettingsSelectProps) {
+  const [isOpen, setIsOpen] = useState(false)
+  const selectedItemRef = useRef<HTMLDivElement>(null)
+  const selectedOption = options.find(option => option.value === value)
+
+  useEffect(() => {
+    if (isOpen)
+      selectedItemRef.current?.scrollIntoView({ block: 'center' })
+  }, [isOpen, value])
+
+  return (
+    <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
+      <DropdownMenuTrigger asChild>
+        <button
+          id={id}
+          type="button"
+          aria-haspopup="menu"
+          aria-expanded={isOpen}
+          className={cn(SELECT_CLASS_NAME, 'flex items-center justify-between gap-2 text-left')}
+        >
+          <span>{selectedOption?.label}</span>
+          <ChevronDown className="size-3.5 shrink-0 text-muted-foreground" strokeWidth={1.75} />
+        </button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent
+        align="start"
+        className={cn(
+          'minimal-scrollbar max-h-[calc(100vh-2rem)] w-[var(--radix-dropdown-menu-trigger-width)] overflow-y-auto p-1',
+          scrollable ? 'h-56' : 'max-h-56',
+        )}
+      >
+        {options.map(option => (
+          <DropdownMenuItem
+            key={String(option.value)}
+            ref={option.value === value ? selectedItemRef : undefined}
+            className="h-7 justify-between px-2.5 text-xs"
+            onSelect={() => onChange(option.value)}
+          >
+            <span>{option.label}</span>
+            {option.value === value ? <Check className="size-3.5" strokeWidth={2} /> : <span className="size-3.5" aria-hidden="true" />}
+          </DropdownMenuItem>
+        ))}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  )
 }
 
 export function NotificationSettingsModal({ isOpen, onClose }: NotificationSettingsModalProps) {
@@ -64,8 +136,6 @@ export function NotificationSettingsModal({ isOpen, onClose }: NotificationSetti
   const [isSaving, setIsSaving] = useState(false)
   const [isTesting, setIsTesting] = useState(false)
   const [message, setMessage] = useState('')
-  const timeOptions = useMemo(() => Array.from({ length: 288 }, (_, index) => index * 5), [])
-
   useEffect(() => {
     if (!isOpen)
       return
@@ -302,26 +372,16 @@ export function NotificationSettingsModal({ isOpen, onClose }: NotificationSetti
                     <div className="mt-3 grid gap-3 sm:grid-cols-3">
                       <div>
                         <Label htmlFor="notification-period" className={FIELD_LABEL_CLASS_NAME}>周期</Label>
-                        <select id="notification-period" className={SELECT_CLASS_NAME} value={period} onChange={event => setPeriod(event.target.value as TrendPeriod)}>
-                          {TREND_PERIOD_VALUES.map(value => <option key={value} value={value}>{value === 'today' ? '今日' : value === 'week' ? '本周' : '本月'}</option>)}
-                        </select>
+                        <SettingsSelect id="notification-period" options={PERIOD_OPTIONS} value={period} onChange={value => setPeriod(value as TrendPeriod)} />
                       </div>
                       <div>
                         <Label htmlFor="notification-limit" className={FIELD_LABEL_CLASS_NAME}>每个来源</Label>
-                        <select id="notification-limit" className={SELECT_CLASS_NAME} value={limit} onChange={event => setLimit(Number(event.target.value))}>
-                          {Array.from({ length: 10 }, (_, index) => index + 1).map(value => (
-                            <option key={value} value={value}>
-                              {value}
-                              {' '}
-                              条
-                            </option>
-                          ))}
-                        </select>
+                        <SettingsSelect id="notification-limit" options={LIMIT_OPTIONS} value={limit} onChange={value => setLimit(Number(value))} />
                       </div>
                       <div>
                         <Label htmlFor="notification-time" className={FIELD_LABEL_CLASS_NAME}>时间</Label>
                         {fixedMinute === undefined
-                          ? <select id="notification-time" className={SELECT_CLASS_NAME} value={scheduledMinute} onChange={event => setScheduledMinute(Number(event.target.value))}>{timeOptions.map(value => <option key={value} value={value}>{formatTime(value)}</option>)}</select>
+                          ? <SettingsSelect id="notification-time" options={TIME_SELECT_OPTIONS} value={scheduledMinute} onChange={value => setScheduledMinute(Number(value))} scrollable />
                           : <div id="notification-time" className="mt-1.5 flex h-8 items-center rounded-md border border-input bg-muted/50 px-2.5 text-xs text-foreground">{formatTime(fixedMinute)}</div>}
                       </div>
                     </div>
