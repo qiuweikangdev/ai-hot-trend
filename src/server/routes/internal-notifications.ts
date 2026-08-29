@@ -17,7 +17,7 @@ function isAuthorized(value: string) {
   return a.length === b.length && timingSafeEqual(a, b)
 }
 
-internalNotificationsRoute.post('/dispatch/:provider?', async (c) => {
+internalNotificationsRoute.on(['GET', 'POST'], '/dispatch/:provider?', async (c) => {
   if (!isAuthorized(c.req.header('authorization') || ''))
     return c.json({ success: false, message: 'Unauthorized' }, 401)
   // 路径中的来源用于和运行环境比对，例如 dispatch/local 只能在 local 模式执行。

@@ -35,18 +35,24 @@ The easiest way to deploy your Next.js app is to use the [Vercel Platform](https
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
 
-## User Feishu Notifications
+## User Notifications
 
-Each signed-in user can configure one Feishu group robot at /settings/notifications.
-The application stores the robot webhook and optional signing secret with AES-256-GCM
-encryption. Responses return only a masked webhook target.
+Each signed-in user can configure one Feishu group robot or one QQ email channel at
+/settings/notifications. The application stores channel credentials with AES-256-GCM
+encryption. Responses return only masked channel targets.
 
 ### User flow
 
-1. Create a Feishu group bot and copy its webhook.
-2. Open Notification settings after signing in.
-3. Choose trend sources, period, result limit, enabled state, and delivery time.
-4. Save, then use Send test to verify the robot.
+1. Create a Feishu group bot or prepare a QQ mailbox with SMTP enabled.
+2. Open Notification settings after signing in and choose a channel.
+3. For QQ Mail, enter the mailbox address, recipient address, and the QQ SMTP
+   authorization code (not the login password).
+4. Choose trend sources, period, result limit, enabled state, and delivery time.
+5. Save, then use Send test to verify the channel.
+
+QQ Mail uses the secure `smtp.qq.com:465` SMTP endpoint. The authorization code is
+created in QQ Mail settings under the account's POP3/IMAP/SMTP service options. It is
+encrypted with the rest of the channel configuration and is never returned to the UI.
 
 A successful scheduled delivery is recorded per subscription and China calendar day, so
 a retry or an accidental duplicate scheduler invocation cannot send the same daily digest twice.
@@ -63,7 +69,7 @@ NOTIFICATION_ENCRYPTION_KEY_BASE64=replace-with-base64-encoded-32-bytes
 NOTIFICATION_DISPATCH_TOKEN=local-test-token
 ~~~
 
-Use the Send test button after entering a Feishu webhook to verify the real robot
+Use the Send test button after entering a channel configuration to verify delivery
 immediately. To exercise the scheduled-dispatch path manually, choose an upcoming
 five-minute slot and call:
 

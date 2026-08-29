@@ -41,7 +41,8 @@ export function isSubscriptionDue({ now, scheduledMinute, resolutionMinutes, fix
   if (resolutionMinutes === 1440) {
     return fixedDeliveryMinute !== undefined
       && scheduledMinute === fixedDeliveryMinute
-      && currentMinute === fixedDeliveryMinute
+      // Vercel Hobby may invoke a daily Cron at any minute within the configured UTC hour.
+      && Math.floor(currentMinute / 60) === Math.floor(fixedDeliveryMinute / 60)
   }
 
   if (currentMinute % resolutionMinutes !== 0) {

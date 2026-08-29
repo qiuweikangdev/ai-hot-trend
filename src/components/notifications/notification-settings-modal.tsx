@@ -10,14 +10,18 @@ import { cn } from '@/lib/utils'
 import { TREND_SOURCE_OPTIONS } from '@/modules/trends/catalog'
 import { isTrendSource, TREND_PERIOD_VALUES } from '@/modules/trends/types'
 
+type ChannelType = 'feishu' | 'email'
+
+interface ChannelData {
+  isEnabled: boolean
+  summary: { label: string, maskedTarget: string }
+  subscription: { sources: TrendSource[], period: TrendPeriod, limit: number, scheduledMinute: number, isEnabled: boolean } | null
+  lastTestMessage: string | null
+}
+
 interface SettingsData {
   capabilities: { provider: 'vercel' | 'cloudflare' | 'local', fixedDeliveryMinute?: number }
-  channel: null | {
-    isEnabled: boolean
-    summary: { maskedTarget: string }
-    subscription: { sources: TrendSource[], period: TrendPeriod, limit: number, scheduledMinute: number, isEnabled: boolean }
-    lastTestMessage: string | null
-  }
+  channels: Record<ChannelType, ChannelData | null>
 }
 
 interface NotificationSettingsModalProps {
@@ -27,7 +31,7 @@ interface NotificationSettingsModalProps {
 
 const CHANNEL_OPTIONS = [
   { value: 'feishu', label: '飞书', enabled: true },
-  { value: 'email', label: '邮箱', enabled: false },
+  { value: 'email', label: 'QQ邮箱', enabled: true },
 ] as const
 
 const NOTIFICATION_SOURCE_OPTIONS = TREND_SOURCE_OPTIONS.flatMap(option => (
@@ -45,8 +49,12 @@ function formatTime(minute: number) {
 
 export function NotificationSettingsModal({ isOpen, onClose }: NotificationSettingsModalProps) {
   const [data, setData] = useState<SettingsData | null>(null)
+  const [activeChannel, setActiveChannel] = useState<ChannelType>('feishu')
   const [webhookUrl, setWebhookUrl] = useState('')
   const [secret, setSecret] = useState('')
+  const [email, setEmail] = useState('')
+  const [recipientEmail, setRecipientEmail] = useState('')
+  const [authorizationCode, setAuthorizationCode] = useState('')
   const [sources, setSources] = useState<TrendSource[]>(['ai', 'github'])
   const [period, setPeriod] = useState<TrendPeriod>('today')
   const [limit, setLimit] = useState(5)
@@ -76,14 +84,12 @@ export function NotificationSettingsModal({ isOpen, onClose }: NotificationSetti
         if (isCancelled)
           return
         setData(result.data)
-        const subscription = result.data.channel?.subscription
-        if (!subscription)
-          return
-        setSources(subscription.sources)
-        setPeriod(subscription.period)
-        setLimit(subscription.limit)
-        setScheduledMinute(subscription.scheduledMinute)
-        setIsEnabled(subscription.isEnabled)
+        const subscription = result.data.channels[activeChannel]?.subscription
+        setSources(subscription?.sources ?? ['ai', 'github'])
+        setPeriod(subscription?.period ?? 'today')
+        setLimit(subscription?.limit ?? 5)
+        setScheduledMinute(subscription?.scheduledMinute ?? 540)
+        setIsEnabled(subscription?.isEnabled ?? true)
       })
       .catch((error: unknown) => {
         if (!isCancelled)
@@ -97,14 +103,25 @@ export function NotificationSettingsModal({ isOpen, onClose }: NotificationSetti
     return () => {
       isCancelled = true
     }
-  }, [isOpen])
+  }, [activeChannel, isOpen])
 
   if (!isOpen)
     return null
 
   const fixedMinute = data?.capabilities.fixedDeliveryMinute
   const deliveryMinute = fixedMinute ?? scheduledMinute
-  const hasSavedChannel = Boolean(data?.channel)
+  const activeChannelData = data?.channels[activeChannel] ?? null
+  const hasSavedChannel = Boolean(activeChannelData)
+
+  function selectChannel(channel: ChannelType) {
+    setActiveChannel(channel)
+    const subscription = data?.channels[channel]?.subscription
+    setSources(subscription?.sources ?? ['ai', 'github'])
+    setPeriod(subscription?.period ?? 'today')
+    setLimit(subscription?.limit ?? 5)
+    setScheduledMinute(subscription?.scheduledMinute ?? 540)
+    setIsEnabled(subscription?.isEnabled ?? true)
+  }
 
   function toggleSource(source: TrendSource) {
     setSources(current => current.includes(source)
@@ -117,19 +134,17 @@ export function NotificationSettingsModal({ isOpen, onClose }: NotificationSetti
     setMessage('')
 
     try {
-      const response = await fetch('/api/notification-settings/feishu', {
+      const response = await fetch(`/api/notification-settings/${activeChannel}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          webhookUrl,
-          secret,
-          isEnabled,
-          subscription: { sources, period, limit, scheduledMinute: deliveryMinute },
-        }),
+        body: JSON.stringify(activeChannel === 'feishu'
+          ? { webhookUrl, secret, isEnabled, subscription: { sources, period, limit, scheduledMinute: deliveryMinute } }
+          : { email, recipientEmail, authorizationCode, isEnabled, subscription: { sources, period, limit, scheduledMinute: deliveryMinute } }),
       })
       if (!response.ok)
-        throw new Error('保存失败，请检查 Webhook 地址和内容选择。')
+        throw new Error(activeChannel === 'feishu' ? '保存失败，请检查 Webhook 地址和内容选择。' : '保存失败，请检查邮箱地址、收件邮箱和授权码。')
       setSecret('')
+      setAuthorizationCode('')
       setMessage('设置已保存')
     }
     catch (error) {
@@ -145,13 +160,13 @@ export function NotificationSettingsModal({ isOpen, onClose }: NotificationSetti
     setMessage('')
 
     try {
-      const response = await fetch('/api/notification-settings/feishu/test', {
+      const response = await fetch(`/api/notification-settings/${activeChannel}/test`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ webhookUrl, secret }),
+        body: JSON.stringify(activeChannel === 'feishu' ? { webhookUrl, secret } : { email, recipientEmail, authorizationCode }),
       })
       if (!response.ok)
-        throw new Error('测试消息发送失败，请检查机器人 Webhook。')
+        throw new Error(activeChannel === 'feishu' ? '测试消息发送失败，请检查机器人 Webhook。' : '测试消息发送失败，请检查 QQ 邮箱授权码。')
       setMessage('测试消息已发送')
     }
     catch (error) {
@@ -179,13 +194,14 @@ export function NotificationSettingsModal({ isOpen, onClose }: NotificationSetti
                 key={channel.value}
                 type="button"
                 role="tab"
-                aria-selected={channel.value === 'feishu'}
+                aria-selected={channel.value === activeChannel}
                 disabled={!channel.enabled}
                 className={cn(
                   'flex h-9 items-center border-b-2 border-transparent text-xs font-medium text-muted-foreground transition-colors',
                   channel.enabled ? 'hover:text-foreground' : 'cursor-not-allowed opacity-35',
-                  channel.value === 'feishu' && 'border-foreground text-foreground',
+                  channel.value === activeChannel && 'border-foreground text-foreground',
                 )}
+                onClick={() => selectChannel(channel.value)}
               >
                 {channel.label}
               </button>
@@ -211,24 +227,46 @@ export function NotificationSettingsModal({ isOpen, onClose }: NotificationSetti
                         ? (
                             <span className="inline-flex items-center gap-1.5 text-[11px] text-muted-foreground">
                               <Check className="size-3" strokeWidth={1.75} />
-                              {data?.channel?.summary.maskedTarget}
+                              {activeChannelData?.summary.maskedTarget}
                             </span>
                           )
                         : null}
                     </div>
-                    <div className="mt-3 grid gap-3 sm:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]">
-                      <div>
-                        <Label htmlFor="feishu-webhook" className={FIELD_LABEL_CLASS_NAME}>Webhook</Label>
-                        <Input id="feishu-webhook" className="mt-1.5 h-8 bg-background text-xs" value={webhookUrl} onChange={event => setWebhookUrl(event.target.value)} placeholder={hasSavedChannel ? '填写新地址以更新' : 'https://open.feishu.cn/open-apis/bot/v2/hook/...'} />
-                      </div>
-                      <div>
-                        <Label htmlFor="feishu-secret" className={FIELD_LABEL_CLASS_NAME}>
-                          签名密钥
-                          <span className="font-normal text-muted-foreground">可选</span>
-                        </Label>
-                        <Input id="feishu-secret" className="mt-1.5 h-8 bg-background text-xs" type="password" value={secret} onChange={event => setSecret(event.target.value)} placeholder={hasSavedChannel ? '已保存，留空保留' : '选填'} />
-                      </div>
-                    </div>
+                    {activeChannel === 'feishu'
+                      ? (
+                          <div className="mt-3 grid gap-3 sm:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]">
+                            <div>
+                              <Label htmlFor="feishu-webhook" className={FIELD_LABEL_CLASS_NAME}>Webhook</Label>
+                              <Input id="feishu-webhook" className="mt-1.5 h-8 bg-background text-xs" value={webhookUrl} onChange={event => setWebhookUrl(event.target.value)} placeholder={hasSavedChannel ? '填写新地址以更新' : 'https://open.feishu.cn/open-apis/bot/v2/hook/...'} />
+                            </div>
+                            <div>
+                              <Label htmlFor="feishu-secret" className={FIELD_LABEL_CLASS_NAME}>
+                                签名密钥
+                                <span className="font-normal text-muted-foreground">可选</span>
+                              </Label>
+                              <Input id="feishu-secret" className="mt-1.5 h-8 bg-background text-xs" type="password" value={secret} onChange={event => setSecret(event.target.value)} placeholder={hasSavedChannel ? '已保存，留空保留' : '选填'} />
+                            </div>
+                          </div>
+                        )
+                      : (
+                          <div className="mt-3 space-y-3">
+                            <div className="grid gap-3 sm:grid-cols-2">
+                              <div>
+                                <Label htmlFor="qq-email" className={FIELD_LABEL_CLASS_NAME}>QQ邮箱地址</Label>
+                                <Input id="qq-email" className="mt-1.5 h-8 bg-background text-xs" type="email" value={email} onChange={event => setEmail(event.target.value)} placeholder={hasSavedChannel ? '填写新地址以更新' : '例如 123456@qq.com'} autoComplete="email" />
+                              </div>
+                              <div>
+                                <Label htmlFor="qq-recipient-email" className={FIELD_LABEL_CLASS_NAME}>收件邮箱</Label>
+                                <Input id="qq-recipient-email" className="mt-1.5 h-8 bg-background text-xs" type="email" value={recipientEmail} onChange={event => setRecipientEmail(event.target.value)} placeholder={hasSavedChannel ? '填写新地址以更新' : '接收热点日报的邮箱'} autoComplete="email" />
+                              </div>
+                            </div>
+                            <div>
+                              <Label htmlFor="qq-authorization-code" className={FIELD_LABEL_CLASS_NAME}>QQ邮箱授权码</Label>
+                              <Input id="qq-authorization-code" className="mt-1.5 h-8 bg-background text-xs" type="password" value={authorizationCode} onChange={event => setAuthorizationCode(event.target.value)} placeholder={hasSavedChannel ? '已保存，留空保留' : '不是 QQ 登录密码'} autoComplete="new-password" />
+                            </div>
+                            <p className="text-[11px] text-muted-foreground">请在 QQ 邮箱设置中开启 SMTP，并使用生成的授权码。邮件通过 smtp.qq.com 安全发送。</p>
+                          </div>
+                        )}
                   </section>
 
                   <section className="border-b border-border py-4">

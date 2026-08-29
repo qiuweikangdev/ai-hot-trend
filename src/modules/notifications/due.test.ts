@@ -20,5 +20,7 @@ test('matches the exact five-minute daily slot and supports a fifteen-minute cat
 
 test('uses the platform fixed slot for daily Vercel scheduling', () => {
   assert.equal(isSubscriptionDue({ now: new Date('2026-07-20T01:00:00.000Z'), scheduledMinute: 540, resolutionMinutes: 1440, fixedDeliveryMinute: 540 }), true)
+  assert.equal(isSubscriptionDue({ now: new Date('2026-07-20T01:35:00.000Z'), scheduledMinute: 540, resolutionMinutes: 1440, fixedDeliveryMinute: 540 }), true)
+  assert.equal(isSubscriptionDue({ now: new Date('2026-07-20T02:00:00.000Z'), scheduledMinute: 540, resolutionMinutes: 1440, fixedDeliveryMinute: 540 }), false)
   assert.equal(isSubscriptionDue({ now: new Date('2026-07-20T01:00:00.000Z'), scheduledMinute: 545, resolutionMinutes: 1440, fixedDeliveryMinute: 540 }), false)
 })

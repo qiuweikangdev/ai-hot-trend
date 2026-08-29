@@ -1,10 +1,12 @@
 import type { FeishuConfig } from '@/modules/notifications/providers/feishu'
+import type { QqEmailConfig } from '@/modules/notifications/providers/qq-email'
 import type { TrendPeriod, TrendSource } from '@/modules/trends/types'
 import process from 'node:process'
 import { getPrisma } from '@/lib/prisma'
 import { decryptNotificationConfig } from '@/modules/notifications/crypto'
 import { getChinaDateKey, isSubscriptionDue } from '@/modules/notifications/due'
 import { sendFeishuText } from '@/modules/notifications/providers/feishu'
+import { sendQqEmail } from '@/modules/notifications/providers/qq-email'
 import { queryTrendItems } from '@/modules/trends/service'
 
 // 调度来源必须和当前运行环境一致，避免迁移期间 Vercel 与 Cloudflare 同时投递。
@@ -37,8 +39,8 @@ export async function dispatchDueNotifications(requestProvider: 'vercel' | 'clou
     throw new Error('Scheduler provider mismatch')
   const now = new Date()
   const today = getChinaDateKey(now)
-  // 只扫描启用的飞书订阅，并限制单次批量，避免一次定时调用占用过长。
-  const candidates = await getPrisma().notificationSubscription.findMany({ where: { isEnabled: true, channel: { isEnabled: true, type: 'feishu' } }, include: { channel: true }, take: 100 })
+  // 扫描启用的飞书和邮箱订阅，并限制单次批量，避免一次定时调用占用过长。
+  const candidates = await getPrisma().notificationSubscription.findMany({ where: { isEnabled: true, channel: { isEnabled: true, type: { in: ['feishu', 'email'] } } }, include: { channel: true }, take: 100 })
   let sent = 0
   let failed = 0
   for (const subscription of candidates) {
@@ -50,11 +52,20 @@ export async function dispatchDueNotifications(requestProvider: 'vercel' | 'clou
     }
     catch { continue }
     try {
-      const channelConfig = await decryptNotificationConfig<FeishuConfig>({ ciphertext: subscription.channel.encryptedConfig, iv: subscription.channel.encryptionIv, tag: subscription.channel.encryptionTag })
       const sources = subscription.sources as TrendSource[]
       const message = await buildDigest(sources, subscription.period as TrendPeriod, subscription.limit)
       // 只有成功抢占投递权后才访问外部 Webhook，避免重复消息。
-      await sendFeishuText(channelConfig, message)
+      if (subscription.channel.type === 'feishu') {
+        const channelConfig = await decryptNotificationConfig<FeishuConfig>({ ciphertext: subscription.channel.encryptedConfig, iv: subscription.channel.encryptionIv, tag: subscription.channel.encryptionTag })
+        await sendFeishuText(channelConfig, message)
+      }
+      else if (subscription.channel.type === 'email') {
+        const channelConfig = await decryptNotificationConfig<QqEmailConfig>({ ciphertext: subscription.channel.encryptedConfig, iv: subscription.channel.encryptionIv, tag: subscription.channel.encryptionTag })
+        await sendQqEmail(channelConfig, message)
+      }
+      else {
+        throw new Error('Unsupported notification channel')
+      }
       await getPrisma().notificationDelivery.updateMany({ where: { subscriptionId: subscription.id, deliveryDate: today }, data: { status: 'sent', finishedAt: new Date() } })
       sent++
     }

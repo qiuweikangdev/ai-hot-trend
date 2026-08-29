@@ -1,6 +1,6 @@
 import type { Context } from 'hono'
 import { Hono } from 'hono'
-import { deleteFeishuSettings, getNotificationCapabilities, getNotificationSettings, saveFeishuSettings, testFeishuSettings } from '@/modules/notifications/service'
+import { deleteFeishuSettings, deleteQqEmailSettings, getNotificationCapabilities, getNotificationSettings, saveFeishuSettings, saveQqEmailSettings, testFeishuSettings, testQqEmailSettings } from '@/modules/notifications/service'
 import { getAuth } from '@/server/auth'
 
 const notificationSettingsRoute = new Hono()
@@ -38,6 +38,18 @@ notificationSettingsRoute.put('/feishu', async (c) => {
     return c.json({ success: false, message: error instanceof Error ? error.message : 'Invalid settings' }, 400)
   }
 })
+notificationSettingsRoute.put('/email', async (c) => {
+  const userId = await requireUser(c)
+  if (!userId)
+    return c.json({ success: false, message: 'Unauthorized' }, 401)
+  try {
+    const data = await saveQqEmailSettings(userId, await c.req.json())
+    return c.json({ success: true, data })
+  }
+  catch (error) {
+    return c.json({ success: false, message: error instanceof Error ? error.message : 'Invalid settings' }, 400)
+  }
+})
 notificationSettingsRoute.post('/feishu/test', async (c) => {
   const userId = await requireUser(c)
   if (!userId)
@@ -50,11 +62,30 @@ notificationSettingsRoute.post('/feishu/test', async (c) => {
     return c.json({ success: false, message: 'Feishu test failed' }, 502)
   }
 })
+notificationSettingsRoute.post('/email/test', async (c) => {
+  const userId = await requireUser(c)
+  if (!userId)
+    return c.json({ success: false, message: 'Unauthorized' }, 401)
+  try {
+    const data = await testQqEmailSettings(userId, await c.req.json())
+    return c.json({ success: true, data })
+  }
+  catch {
+    return c.json({ success: false, message: 'QQ邮箱测试失败，请检查邮箱地址和授权码。' }, 502)
+  }
+})
 notificationSettingsRoute.delete('/feishu', async (c) => {
   const userId = await requireUser(c)
   if (!userId)
     return c.json({ success: false, message: 'Unauthorized' }, 401)
   await deleteFeishuSettings(userId)
+  return c.json({ success: true })
+})
+notificationSettingsRoute.delete('/email', async (c) => {
+  const userId = await requireUser(c)
+  if (!userId)
+    return c.json({ success: false, message: 'Unauthorized' }, 401)
+  await deleteQqEmailSettings(userId)
   return c.json({ success: true })
 })
 
