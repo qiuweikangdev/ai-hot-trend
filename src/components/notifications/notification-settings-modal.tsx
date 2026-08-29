@@ -226,7 +226,7 @@ export function NotificationSettingsModal({ isOpen, onClose }: NotificationSetti
                           签名密钥
                           <span className="font-normal text-muted-foreground">可选</span>
                         </Label>
-                        <Input id="feishu-secret" className="mt-1.5 h-8 bg-background text-xs" type="password" value={secret} onChange={event => setSecret(event.target.value)} placeholder={hasSavedChannel ? '留空保留' : '选填'} />
+                        <Input id="feishu-secret" className="mt-1.5 h-8 bg-background text-xs" type="password" value={secret} onChange={event => setSecret(event.target.value)} placeholder={hasSavedChannel ? '已保存，留空保留' : '选填'} />
                       </div>
                     </div>
                   </section>

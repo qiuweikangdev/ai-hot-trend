@@ -22,6 +22,23 @@ function parseFixedMinute(rawValue: string | undefined) {
   return hour * 60 + minute
 }
 
+function hasValue(value: unknown): value is string {
+  return typeof value === 'string' && value.trim().length > 0
+}
+
+async function getSavedFeishuConfig(userId: string) {
+  const channel = await getPrisma().notificationChannel.findUnique({
+    where: { userId_type: { userId, type: 'feishu' } },
+  })
+  if (!channel)
+    return null
+  return decryptNotificationConfig<FeishuConfig>({
+    ciphertext: channel.encryptedConfig,
+    iv: channel.encryptionIv,
+    tag: channel.encryptionTag,
+  })
+}
+
 // 将部署平台能力转换为前端可消费的配置：Vercel 固定每日时段，Cloudflare 与本地可选五分钟时段。
 export function getNotificationCapabilities(): NotificationCapabilities {
   const configuredProvider = process.env.NOTIFICATION_SCHEDULER_PROVIDER?.trim()
@@ -60,20 +77,12 @@ export async function saveFeishuSettings(userId: string, value: unknown) {
   if (!value || typeof value !== 'object')
     throw new Error('Invalid notification settings')
   const input = value as Record<string, unknown>
-  const existing = await getPrisma().notificationChannel.findUnique({
-    where: { userId_type: { userId, type: 'feishu' } },
-  })
   // 编辑时密钥输入框留空代表保留旧密钥，避免前端无法回显密钥时误把它清空。
-  const existingConfig = existing
-    ? await decryptNotificationConfig<FeishuConfig>({
-        ciphertext: existing.encryptedConfig,
-        iv: existing.encryptionIv,
-        tag: existing.encryptionTag,
-      })
-    : null
+  const existingConfig = await getSavedFeishuConfig(userId)
   const config = parseFeishuConfig({
-    webhookUrl: input.webhookUrl,
-    secret: typeof input.secret === 'string' && input.secret.trim()
+    // Webhook 同样支持留空保留，编辑订阅规则时不会因为凭证字段未回显而保存失败。
+    webhookUrl: hasValue(input.webhookUrl) ? input.webhookUrl : existingConfig?.webhookUrl,
+    secret: hasValue(input.secret)
       ? input.secret
       : existingConfig?.secret,
   })
@@ -96,7 +105,15 @@ export async function saveFeishuSettings(userId: string, value: unknown) {
 }
 
 export async function testFeishuSettings(userId: string, value: unknown) {
-  const config = parseFeishuConfig(value)
+  if (!value || typeof value !== 'object')
+    throw new Error('Invalid notification settings')
+  const input = value as Record<string, unknown>
+  // 签名密钥不会回传到前端；测试时输入为空则复用数据库中已加密保存的配置。
+  const existingConfig = await getSavedFeishuConfig(userId)
+  const config = parseFeishuConfig({
+    webhookUrl: hasValue(input.webhookUrl) ? input.webhookUrl : existingConfig?.webhookUrl,
+    secret: hasValue(input.secret) ? input.secret : existingConfig?.secret,
+  })
   try {
     await sendFeishuText(config, 'AI Hot Trend test notification. Your Feishu robot is connected.')
     await getPrisma().notificationChannel.updateMany({ where: { userId, type: 'feishu' }, data: { lastTestedAt: new Date(), lastTestStatus: 'sent', lastTestMessage: 'Test message sent' } })
