@@ -20,7 +20,7 @@ interface TrendResultsProps {
   favoriteBusyKey: string
   favoriteKeySet: Set<string>
   onToggleFavorite: (item: TrendItem) => void
-  onCopyName: (item: TrendItem) => void
+  onCopyTrend: (item: TrendItem) => void
   onLoadMore: () => void
 }
 
@@ -34,7 +34,7 @@ export function TrendResults({
   favoriteBusyKey,
   favoriteKeySet,
   onToggleFavorite,
-  onCopyName,
+  onCopyTrend,
   onLoadMore,
 }: TrendResultsProps) {
   if (isTrendLoading) {
@@ -79,7 +79,7 @@ export function TrendResults({
             isFavorite={favoriteKeySet.has(buildFavoriteKey(item.source, item.id))}
             favoriteDisabled={favoriteBusyKey === buildFavoriteKey(item.source, item.id)}
             onToggleFavorite={onToggleFavorite}
-            onCopyName={onCopyName}
+            onCopyTrend={onCopyTrend}
           />
         ))}
       </div>

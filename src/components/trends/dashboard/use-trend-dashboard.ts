@@ -7,6 +7,7 @@ import { toast } from 'sonner'
 import { TREND_UI_SCALE_PRESETS, trendUiConfig } from '@/config/trends'
 import { authClient } from '@/lib/auth-client'
 import { PRESET_TREND_LANGUAGES } from '@/modules/trends/catalog'
+import { formatTrendCopyContent } from '@/modules/trends/presenters'
 import { useDashboardSession } from './use-dashboard-session'
 import { useFavoritesManager } from './use-favorites-manager'
 import { useSearchHistory } from './use-search-history'
@@ -102,13 +103,13 @@ export function useTrendDashboard(
     pushNotice('已退出登录', 'success')
   }
 
-  async function handleCopyName(item: TrendItem) {
+  async function handleCopyTrend(item: TrendItem) {
     try {
-      await navigator.clipboard.writeText(item.url)
-      pushNotice(`已复制「${item.title}」链接`, 'success')
+      await navigator.clipboard.writeText(formatTrendCopyContent(item))
+      pushNotice(`已复制「${item.title}」内容`, 'success')
     }
     catch {
-      pushNotice('复制链接失败，请手动复制', 'error')
+      pushNotice('复制热点内容失败，请手动复制', 'error')
     }
   }
 
@@ -186,7 +187,7 @@ export function useTrendDashboard(
       handleSelectSource: trendQuery.actions.handleSelectSource,
       handleToggleFavorite: favoritesManager.actions.handleToggleFavorite,
       handleRemoveFavorite: favoritesManager.actions.handleRemoveFavorite,
-      handleCopyName,
+      handleCopyTrend,
       handleToggleFavoritesPanel,
       handleLoadMore: trendFeed.loadMore,
       handleSignOut,

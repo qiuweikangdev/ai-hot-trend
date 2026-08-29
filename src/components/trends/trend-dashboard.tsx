@@ -94,7 +94,7 @@ export function TrendDashboard({
             favoriteBusyKey={state.favoriteBusyKey}
             favoriteKeySet={derived.favoriteKeySet}
             onToggleFavorite={actions.handleToggleFavorite}
-            onCopyName={actions.handleCopyName}
+            onCopyTrend={actions.handleCopyTrend}
             onLoadMore={actions.handleLoadMore}
           />
         </section>

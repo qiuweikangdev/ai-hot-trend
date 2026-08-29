@@ -82,7 +82,7 @@ interface TrendCardProps {
   size: TrendCardSize
   favoriteDisabled?: boolean
   onToggleFavorite: (item: TrendItem) => void
-  onCopyName: (item: TrendItem) => void
+  onCopyTrend: (item: TrendItem) => void
 }
 
 export function TrendCard({
@@ -91,7 +91,7 @@ export function TrendCard({
   size,
   favoriteDisabled,
   onToggleFavorite,
-  onCopyName,
+  onCopyTrend,
 }: TrendCardProps) {
   const scale = TREND_CARD_CLASS_MAP[size]
   const sourceMeta = getTrendSourceMeta(item.source)
@@ -149,7 +149,7 @@ export function TrendCard({
           >
             <Heart className={cn('size-3.5', isFavorite && 'fill-current')} strokeWidth={1.75} />
           </Button>
-          <Button type="button" variant="ghost" size="icon" className="size-8 rounded-md text-muted-foreground hover:text-foreground" onClick={() => onCopyName(item)} aria-label="复制链接" title="复制链接">
+          <Button type="button" variant="ghost" size="icon" className="size-8 rounded-md text-muted-foreground hover:text-foreground" onClick={() => onCopyTrend(item)} aria-label="复制热点内容" title="复制热点内容">
             <Copy className="size-3.5" strokeWidth={1.75} />
           </Button>
           <Button asChild variant="ghost" size="icon" className="size-8 rounded-md text-muted-foreground hover:text-foreground">
