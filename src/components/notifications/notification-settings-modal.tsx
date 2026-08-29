@@ -41,8 +41,9 @@ const NOTIFICATION_SOURCE_OPTIONS = TREND_SOURCE_OPTIONS.flatMap(option => (
     : []
 ))
 
-const SELECT_CLASS_NAME = 'mt-1.5 h-8 w-full rounded-md border border-input bg-background px-2.5 text-xs text-foreground outline-none transition focus:border-ring focus:ring-2 focus:ring-ring/30'
+const SELECT_CLASS_NAME = 'mt-1 h-8 w-full rounded-md border border-input bg-background px-2.5 text-xs text-foreground outline-none transition focus:border-ring focus:ring-2 focus:ring-ring/30'
 const FIELD_LABEL_CLASS_NAME = 'text-xs font-medium'
+const INPUT_CLASS_NAME = 'mt-1 h-8 bg-background !text-xs'
 const TIME_OPTIONS = Array.from({ length: 288 }, (_, index) => index * 5)
 const PERIOD_OPTIONS = [
   { value: 'today', label: '今日' },
@@ -122,6 +123,7 @@ function SettingsSelect({ id, options, value, onChange, scrollable = false }: Se
 export function NotificationSettingsModal({ isOpen, onClose }: NotificationSettingsModalProps) {
   const [data, setData] = useState<SettingsData | null>(null)
   const [activeChannel, setActiveChannel] = useState<ChannelType>('feishu')
+  const activeChannelRef = useRef<ChannelType>('feishu')
   const [webhookUrl, setWebhookUrl] = useState('')
   const [secret, setSecret] = useState('')
   const [email, setEmail] = useState('')
@@ -154,7 +156,7 @@ export function NotificationSettingsModal({ isOpen, onClose }: NotificationSetti
         if (isCancelled)
           return
         setData(result.data)
-        const subscription = result.data.channels[activeChannel]?.subscription
+        const subscription = result.data.channels[activeChannelRef.current]?.subscription
         setSources(subscription?.sources ?? ['ai', 'github'])
         setPeriod(subscription?.period ?? 'today')
         setLimit(subscription?.limit ?? 5)
@@ -173,7 +175,7 @@ export function NotificationSettingsModal({ isOpen, onClose }: NotificationSetti
     return () => {
       isCancelled = true
     }
-  }, [activeChannel, isOpen])
+  }, [isOpen])
 
   if (!isOpen)
     return null
@@ -184,6 +186,7 @@ export function NotificationSettingsModal({ isOpen, onClose }: NotificationSetti
   const hasSavedChannel = Boolean(activeChannelData)
 
   function selectChannel(channel: ChannelType) {
+    activeChannelRef.current = channel
     setActiveChannel(channel)
     const subscription = data?.channels[channel]?.subscription
     setSources(subscription?.sources ?? ['ai', 'github'])
@@ -249,8 +252,8 @@ export function NotificationSettingsModal({ isOpen, onClose }: NotificationSetti
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/55 p-3 sm:p-6" onClick={onClose}>
-      <section role="dialog" aria-modal="true" aria-labelledby="notification-settings-title" className="flex max-h-[min(680px,calc(100vh-1.5rem))] w-full max-w-[620px] flex-col overflow-hidden rounded-xl border border-border bg-card" onClick={event => event.stopPropagation()}>
-        <header className="flex h-12 shrink-0 items-center justify-between border-b border-border px-4 sm:px-5">
+      <section role="dialog" aria-modal="true" aria-labelledby="notification-settings-title" className="flex max-h-[min(640px,calc(100vh-1.5rem))] w-full max-w-[620px] flex-col overflow-hidden rounded-xl border border-border bg-card" onClick={event => event.stopPropagation()}>
+        <header className="flex h-11 shrink-0 items-center justify-between border-b border-border px-4 sm:px-5">
           <h2 id="notification-settings-title" className="text-sm font-semibold tracking-[-0.01em] text-foreground">推送设置</h2>
           <Button type="button" variant="ghost" size="icon" className="size-8 rounded-md text-muted-foreground" onClick={onClose} aria-label="关闭推送设置">
             <X className="size-4" strokeWidth={1.75} />
@@ -258,7 +261,7 @@ export function NotificationSettingsModal({ isOpen, onClose }: NotificationSetti
         </header>
 
         <div className="shrink-0 border-b border-border px-4 sm:px-5">
-          <div className="flex h-9 items-end gap-5" role="tablist" aria-label="推送渠道">
+          <div className="flex h-8 items-end gap-5" role="tablist" aria-label="推送渠道">
             {CHANNEL_OPTIONS.map(channel => (
               <button
                 key={channel.value}
@@ -267,7 +270,7 @@ export function NotificationSettingsModal({ isOpen, onClose }: NotificationSetti
                 aria-selected={channel.value === activeChannel}
                 disabled={!channel.enabled}
                 className={cn(
-                  'flex h-9 items-center border-b-2 border-transparent text-xs font-medium text-muted-foreground transition-colors',
+                  'flex h-8 items-center border-b-2 border-transparent text-xs font-medium text-muted-foreground transition-colors',
                   channel.enabled ? 'hover:text-foreground' : 'cursor-not-allowed opacity-35',
                   channel.value === activeChannel && 'border-foreground text-foreground',
                 )}
@@ -290,7 +293,7 @@ export function NotificationSettingsModal({ isOpen, onClose }: NotificationSetti
               )
             : (
                 <div>
-                  <section className="border-b border-border py-4">
+                  <section className="border-b border-border py-3">
                     <div className="flex items-center justify-between gap-4">
                       <h3 className="text-xs font-semibold text-foreground">连接</h3>
                       {hasSavedChannel
@@ -304,64 +307,78 @@ export function NotificationSettingsModal({ isOpen, onClose }: NotificationSetti
                     </div>
                     {activeChannel === 'feishu'
                       ? (
-                          <div className="mt-3 grid gap-3 sm:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]">
+                          <div className="mt-2.5 grid gap-2.5 sm:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]">
                             <div>
                               <Label htmlFor="feishu-webhook" className={FIELD_LABEL_CLASS_NAME}>Webhook</Label>
-                              <Input id="feishu-webhook" className="mt-1.5 h-8 bg-background text-xs" value={webhookUrl} onChange={event => setWebhookUrl(event.target.value)} placeholder={hasSavedChannel ? '填写新地址以更新' : 'https://open.feishu.cn/open-apis/bot/v2/hook/...'} />
+                              <Input id="feishu-webhook" className={INPUT_CLASS_NAME} value={webhookUrl} onChange={event => setWebhookUrl(event.target.value)} placeholder={hasSavedChannel ? '填写新地址以更新' : 'https://open.feishu.cn/open-apis/bot/v2/hook/...'} />
                             </div>
                             <div>
                               <Label htmlFor="feishu-secret" className={FIELD_LABEL_CLASS_NAME}>
                                 签名密钥
                                 <span className="font-normal text-muted-foreground">可选</span>
                               </Label>
-                              <Input id="feishu-secret" className="mt-1.5 h-8 bg-background text-xs" type="password" value={secret} onChange={event => setSecret(event.target.value)} placeholder={hasSavedChannel ? '已保存，留空保留' : '选填'} />
+                              <Input id="feishu-secret" className={INPUT_CLASS_NAME} type="password" value={secret} onChange={event => setSecret(event.target.value)} placeholder={hasSavedChannel ? '已保存，留空保留' : '选填'} />
                             </div>
                           </div>
                         )
                       : (
-                          <div className="mt-3 space-y-3">
-                            <div className="grid gap-3 sm:grid-cols-2">
+                          <div className="mt-2.5 space-y-2.5">
+                            <div className="grid gap-2.5 sm:grid-cols-2">
                               <div>
                                 <Label htmlFor="qq-email" className={FIELD_LABEL_CLASS_NAME}>QQ邮箱地址</Label>
-                                <Input id="qq-email" className="mt-1.5 h-8 bg-background text-xs" type="email" value={email} onChange={event => setEmail(event.target.value)} placeholder={hasSavedChannel ? '填写新地址以更新' : '例如 123456@qq.com'} autoComplete="email" />
+                                <Input id="qq-email" className={INPUT_CLASS_NAME} type="email" value={email} onChange={event => setEmail(event.target.value)} placeholder={hasSavedChannel ? '填写新地址以更新' : '例如 123456@qq.com'} autoComplete="email" />
                               </div>
                               <div>
                                 <Label htmlFor="qq-recipient-email" className={FIELD_LABEL_CLASS_NAME}>收件邮箱</Label>
-                                <Input id="qq-recipient-email" className="mt-1.5 h-8 bg-background text-xs" type="email" value={recipientEmail} onChange={event => setRecipientEmail(event.target.value)} placeholder={hasSavedChannel ? '填写新地址以更新' : '接收热点日报的邮箱'} autoComplete="email" />
+                                <Input id="qq-recipient-email" className={INPUT_CLASS_NAME} type="email" value={recipientEmail} onChange={event => setRecipientEmail(event.target.value)} placeholder={hasSavedChannel ? '填写新地址以更新' : '接收热点日报的邮箱'} autoComplete="email" />
                               </div>
                             </div>
                             <div>
                               <Label htmlFor="qq-authorization-code" className={FIELD_LABEL_CLASS_NAME}>QQ邮箱授权码</Label>
-                              <Input id="qq-authorization-code" className="mt-1.5 h-8 bg-background text-xs" type="password" value={authorizationCode} onChange={event => setAuthorizationCode(event.target.value)} placeholder={hasSavedChannel ? '已保存，留空保留' : '不是 QQ 登录密码'} autoComplete="new-password" />
+                              <Input id="qq-authorization-code" className={INPUT_CLASS_NAME} type="password" value={authorizationCode} onChange={event => setAuthorizationCode(event.target.value)} placeholder={hasSavedChannel ? '已保存，留空保留' : '不是 QQ 登录密码'} autoComplete="new-password" />
                             </div>
                             <p className="text-[11px] text-muted-foreground">请在 QQ 邮箱设置中开启 SMTP，并使用生成的授权码。邮件通过 smtp.qq.com 安全发送。</p>
                           </div>
                         )}
                   </section>
 
-                  <section className="border-b border-border py-4">
-                    <h3 className="text-xs font-semibold text-foreground">来源</h3>
-                    <div className="mt-3 flex flex-wrap gap-1.5">
-                      {NOTIFICATION_SOURCE_OPTIONS.map(source => (
-                        <button
-                          key={source.value}
-                          type="button"
-                          aria-pressed={sources.includes(source.value)}
-                          className={cn(
-                            'h-7 rounded-md border px-2.5 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50',
-                            sources.includes(source.value)
-                              ? 'border-foreground bg-foreground text-background'
-                              : 'border-border bg-background text-muted-foreground hover:bg-muted hover:text-foreground',
-                          )}
-                          onClick={() => toggleSource(source.value)}
-                        >
-                          {source.label}
-                        </button>
-                      ))}
+                  <section className="border-b border-border py-3" aria-labelledby="notification-sources-title">
+                    <div className="flex items-baseline justify-between gap-3">
+                      <h3 id="notification-sources-title" className="text-xs font-semibold text-foreground">来源</h3>
+                      <span className="text-[11px] tabular-nums text-muted-foreground">
+                        已选
+                        {' '}
+                        {sources.length}
+                        /
+                        {NOTIFICATION_SOURCE_OPTIONS.length}
+                      </span>
                     </div>
+                    <div className="mt-2.5 flex flex-wrap gap-1" role="group" aria-labelledby="notification-sources-title" aria-describedby="notification-sources-hint">
+                      {NOTIFICATION_SOURCE_OPTIONS.map((source) => {
+                        const isSelected = sources.includes(source.value)
+
+                        return (
+                          <button
+                            key={source.value}
+                            type="button"
+                            aria-pressed={isSelected}
+                            className={cn(
+                              'inline-flex h-7 items-center justify-center gap-1 rounded-md border px-2.5 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60 focus-visible:ring-offset-2',
+                              isSelected
+                                ? 'border-foreground bg-foreground text-background shadow-xs hover:bg-foreground/90'
+                                : 'border-transparent bg-muted/40 text-muted-foreground hover:border-border hover:bg-muted hover:text-foreground',
+                            )}
+                            onClick={() => toggleSource(source.value)}
+                          >
+                            {source.label}
+                          </button>
+                        )
+                      })}
+                    </div>
+                    <p id="notification-sources-hint" className="sr-only">来源为多选项，至少选择一个来源。</p>
                   </section>
 
-                  <section className="py-4">
+                  <section className="py-3">
                     <div className="flex items-center justify-between gap-4">
                       <h3 className="text-xs font-semibold text-foreground">规则</h3>
                       <label className="flex shrink-0 items-center gap-2 text-xs font-medium text-foreground">
@@ -369,7 +386,7 @@ export function NotificationSettingsModal({ isOpen, onClose }: NotificationSetti
                         启用
                       </label>
                     </div>
-                    <div className="mt-3 grid gap-3 sm:grid-cols-3">
+                    <div className="mt-2.5 grid gap-2.5 sm:grid-cols-3">
                       <div>
                         <Label htmlFor="notification-period" className={FIELD_LABEL_CLASS_NAME}>周期</Label>
                         <SettingsSelect id="notification-period" options={PERIOD_OPTIONS} value={period} onChange={value => setPeriod(value as TrendPeriod)} />
@@ -382,7 +399,7 @@ export function NotificationSettingsModal({ isOpen, onClose }: NotificationSetti
                         <Label htmlFor="notification-time" className={FIELD_LABEL_CLASS_NAME}>时间</Label>
                         {fixedMinute === undefined
                           ? <SettingsSelect id="notification-time" options={TIME_SELECT_OPTIONS} value={scheduledMinute} onChange={value => setScheduledMinute(Number(value))} scrollable />
-                          : <div id="notification-time" className="mt-1.5 flex h-8 items-center rounded-md border border-input bg-muted/50 px-2.5 text-xs text-foreground">{formatTime(fixedMinute)}</div>}
+                          : <div id="notification-time" className="mt-1 flex h-8 items-center rounded-md border border-input bg-muted/50 px-2.5 text-xs text-foreground">{formatTime(fixedMinute)}</div>}
                       </div>
                     </div>
                     <p className="mt-2 text-[11px] text-muted-foreground">Asia/Shanghai</p>
@@ -391,7 +408,7 @@ export function NotificationSettingsModal({ isOpen, onClose }: NotificationSetti
               )}
         </div>
 
-        <footer className="flex min-h-14 shrink-0 items-center justify-between gap-3 border-t border-border bg-card px-4 py-2.5 sm:px-5">
+        <footer className="flex min-h-12 shrink-0 items-center justify-between gap-3 border-t border-border bg-card px-4 py-2 sm:px-5">
           <p aria-live="polite" className="min-w-0 truncate text-xs text-muted-foreground">{message}</p>
           <div className="flex shrink-0 gap-2">
             <Button type="button" variant="outline" size="sm" onClick={sendTest} disabled={isLoading || isTesting || isSaving}>
