@@ -105,7 +105,7 @@ export function TrendCard({
   return (
     <article
       className={cn(
-        'group flex h-full min-h-[224px] flex-col rounded-xl border border-border bg-card transition-[border-color,box-shadow] duration-200 hover:border-foreground/30 hover:shadow-[0_2px_8px_rgba(0,0,0,0.06)] dark:hover:shadow-[0_2px_8px_rgba(0,0,0,0.24)]',
+        'group flex h-full min-h-[224px] flex-col rounded-xl border border-border/80 bg-card transition-[border-color,box-shadow] duration-200 hover:border-foreground/30 hover:shadow-[0_2px_8px_rgba(0,0,0,0.06)] dark:hover:shadow-[0_2px_8px_rgba(0,0,0,0.24)]',
         scale.root,
       )}
     >

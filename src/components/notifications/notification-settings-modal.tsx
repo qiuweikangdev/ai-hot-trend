@@ -390,7 +390,7 @@ export function NotificationSettingsModal({ isOpen, onClose }: NotificationSetti
                         {NOTIFICATION_SOURCE_OPTIONS.length}
                       </span>
                     </div>
-                    <div className="mt-2.5 flex flex-wrap gap-1" role="group" aria-labelledby="notification-sources-title" aria-describedby="notification-sources-hint">
+                    <div className="mt-2.5 flex flex-wrap gap-1.5" role="group" aria-labelledby="notification-sources-title" aria-describedby="notification-sources-hint">
                       {NOTIFICATION_SOURCE_OPTIONS.map((source) => {
                         const isSelected = sources.includes(source.value)
 
@@ -400,10 +400,10 @@ export function NotificationSettingsModal({ isOpen, onClose }: NotificationSetti
                             type="button"
                             aria-pressed={isSelected}
                             className={cn(
-                              'inline-flex h-7 items-center justify-center gap-1 rounded-md border px-2.5 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60 focus-visible:ring-offset-2',
+                              'inline-flex h-8 items-center justify-center gap-1 rounded-full border px-3 text-xs font-medium transition-[background-color,border-color,color,transform] duration-150 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60 focus-visible:ring-offset-2',
                               isSelected
-                                ? 'border-foreground bg-foreground text-background shadow-xs hover:bg-foreground/90 dark:border-ring/70 dark:bg-accent dark:text-foreground dark:hover:bg-accent/90'
-                                : 'border-transparent bg-muted/40 text-muted-foreground hover:border-border hover:bg-muted hover:text-foreground',
+                                ? 'border-transparent bg-foreground text-background hover:bg-foreground/90 dark:bg-accent dark:text-foreground dark:hover:bg-accent/80'
+                                : 'border-border/70 bg-transparent text-muted-foreground hover:border-ring/70 hover:bg-secondary hover:text-foreground',
                             )}
                             onClick={() => toggleSource(source.value)}
                           >
@@ -418,8 +418,12 @@ export function NotificationSettingsModal({ isOpen, onClose }: NotificationSetti
                   <section className="py-3">
                     <div className="flex items-center justify-between gap-4">
                       <h3 className="text-xs font-semibold text-foreground">规则</h3>
-                      <label className="flex shrink-0 items-center gap-2 text-xs font-medium text-foreground">
-                        <input type="checkbox" className="size-3.5 accent-primary" checked={isEnabled} onChange={event => setIsEnabled(event.target.checked)} />
+                      <label className="group flex shrink-0 cursor-pointer items-center gap-2 text-xs font-medium text-foreground">
+                        <input className="peer sr-only" type="checkbox" checked={isEnabled} onChange={event => setIsEnabled(event.target.checked)} />
+                        <span
+                          aria-hidden="true"
+                          className="relative h-5 w-9 rounded-full border border-input bg-background transition-[background-color,border-color] duration-150 after:absolute after:left-0.5 after:top-0.5 after:size-3.5 after:rounded-full after:bg-muted-foreground after:transition-transform after:duration-150 peer-checked:border-ring peer-checked:bg-accent peer-checked:after:translate-x-4 peer-checked:after:bg-foreground peer-focus-visible:ring-2 peer-focus-visible:ring-ring/60 peer-focus-visible:ring-offset-2 peer-focus-visible:ring-offset-card"
+                        />
                         启用
                       </label>
                     </div>
@@ -445,14 +449,14 @@ export function NotificationSettingsModal({ isOpen, onClose }: NotificationSetti
               )}
         </div>
 
-        <footer className="flex min-h-12 shrink-0 items-center justify-between gap-3 border-t border-border bg-card px-4 py-2 sm:px-5">
+        <footer className="flex min-h-11 shrink-0 items-center justify-between gap-3 border-t border-border bg-card px-4 py-1.5 sm:px-5">
           <p aria-live="polite" className="min-w-0 truncate text-xs text-muted-foreground">{message}</p>
-          <div className="flex shrink-0 gap-2">
-            <Button type="button" variant="outline" size="sm" onClick={sendNotification} disabled={isLoading || isPushing || isSaving}>
+          <div className="flex shrink-0 gap-1">
+            <Button type="button" variant="ghost" size="sm" className="h-8 rounded-md border border-border/80 bg-transparent px-2.5 text-xs text-muted-foreground hover:border-border hover:bg-secondary hover:text-foreground" onClick={sendNotification} disabled={isLoading || isPushing || isSaving}>
               {isPushing ? <Loader2 className="size-3.5 animate-spin" /> : <Send className="size-3.5" strokeWidth={1.75} />}
               推送
             </Button>
-            <Button type="button" size="sm" onClick={saveSettings} disabled={isLoading || isPushing || isSaving}>
+            <Button type="button" size="sm" className="h-8 rounded-md border border-border/70 bg-secondary/80 px-3 text-xs font-medium text-foreground shadow-none hover:border-border hover:bg-secondary" onClick={saveSettings} disabled={isLoading || isPushing || isSaving}>
               {isSaving ? <Loader2 className="size-3.5 animate-spin" /> : <Save className="size-3.5" strokeWidth={1.75} />}
               保存
             </Button>

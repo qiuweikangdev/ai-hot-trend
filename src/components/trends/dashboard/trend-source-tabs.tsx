@@ -112,7 +112,7 @@ export function TrendSourceTabs({
                 isEnabled
                   ? 'text-muted-foreground hover:text-foreground'
                   : 'cursor-not-allowed text-muted-foreground/40',
-                isActive && 'border-foreground text-foreground',
+                isActive && 'border-foreground text-foreground dark:border-ring',
               )}
               aria-current={isActive ? 'page' : undefined}
               onClick={() => handleSelectWithRoute(option.value, isEnabled, option.label)}

@@ -126,15 +126,15 @@ export function LoginPanel() {
   }
 
   return (
-    <Card className="border-white/60 bg-white/90 shadow-xl shadow-amber-900/10 backdrop-blur-md dark:border-white/10 dark:bg-[#0a0e15] dark:shadow-black/60">
+    <Card className="border-white/60 bg-white/90 shadow-xl shadow-amber-900/10 backdrop-blur-md dark:border-border dark:bg-card dark:shadow-black/60">
       <CardHeader className="gap-3">
-        <CardTitle className="text-2xl dark:text-slate-100">登录</CardTitle>
-        <CardDescription className="dark:text-slate-400">选择一个社交账号继续</CardDescription>
+        <CardTitle className="text-2xl text-foreground">登录</CardTitle>
+        <CardDescription>选择一个社交账号继续</CardDescription>
       </CardHeader>
       <CardContent className="space-y-3">
         <Button
           type="button"
-          className="h-11 w-full justify-start rounded-lg bg-slate-900 px-4 text-white hover:bg-slate-800 dark:border dark:border-white/15 dark:bg-[#111722] dark:hover:bg-[#1a2231]"
+          className="h-11 w-full justify-start rounded-lg bg-slate-900 px-4 text-white hover:bg-slate-800 dark:border dark:border-border dark:bg-secondary dark:text-foreground dark:hover:bg-accent"
           onClick={() => handleSocialLogin('github')}
           disabled={isLoadingProviders || !providers.github || pendingProvider !== null}
         >
@@ -150,7 +150,7 @@ export function LoginPanel() {
         <Button
           type="button"
           variant="outline"
-          className="h-11 w-full justify-start rounded-lg border-slate-200 bg-white px-4 dark:border-white/15 dark:bg-[#111722] dark:text-slate-100 dark:hover:bg-[#1a2231]"
+          className="h-11 w-full justify-start rounded-lg border-slate-200 bg-white px-4 dark:border-border dark:bg-secondary dark:text-foreground dark:hover:bg-accent"
           onClick={() => handleSocialLogin('google')}
           disabled={isLoadingProviders || !providers.google || pendingProvider !== null}
         >

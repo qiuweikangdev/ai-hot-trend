@@ -28,12 +28,12 @@ export function LoginModal({
           ? (
               // Reuse the page-level session state so reopening the modal
               // does not start another auth status request.
-              <Card className="border-white/60 bg-white/90 shadow-xl shadow-amber-900/10 backdrop-blur-md dark:border-white/10 dark:bg-[#0a0e15] dark:shadow-black/60">
+              <Card className="border-white/60 bg-white/90 shadow-xl shadow-amber-900/10 backdrop-blur-md dark:border-border dark:bg-card dark:shadow-black/60">
                 <CardHeader>
-                  <CardTitle className="text-xl dark:text-slate-100">登录中</CardTitle>
+                  <CardTitle className="text-xl text-foreground">登录中</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground dark:text-slate-300">
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
                     <Loader2 className="size-4 animate-spin" />
                     正在检查会话
                   </div>
