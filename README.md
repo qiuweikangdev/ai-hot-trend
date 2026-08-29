@@ -54,7 +54,9 @@ a retry or an accidental duplicate scheduler invocation cannot send the same dai
 ### Local development
 
 Local development uses the local profile automatically when NOTIFICATION_SCHEDULER_PROVIDER is
-unset. It does not emulate Vercel or Cloudflare.
+unset. When running `pnpm dev`, the Next.js server starts an in-process scheduler that checks
+for due notifications every minute. Keep the development server running for automatic delivery;
+this local scheduler is not enabled by production builds.
 
 ~~~env
 NOTIFICATION_ENCRYPTION_KEY_BASE64=replace-with-base64-encoded-32-bytes
@@ -62,8 +64,8 @@ NOTIFICATION_DISPATCH_TOKEN=local-test-token
 ~~~
 
 Use the Send test button after entering a Feishu webhook to verify the real robot
-immediately. To exercise the scheduled-dispatch path, choose an upcoming five-minute slot
-and call:
+immediately. To exercise the scheduled-dispatch path manually, choose an upcoming
+five-minute slot and call:
 
 ~~~powershell
 Invoke-RestMethod -Method POST -Uri "http://localhost:3000/api/internal/notifications/dispatch/local" -Headers @{ Authorization = "Bearer local-test-token" }
@@ -106,6 +108,22 @@ npx wrangler deploy
 The Worker Cron runs every five minutes and calls
 /api/internal/notifications/dispatch/cloudflare. Users can choose any five-minute slot
 in Asia/Shanghai.
+
+When connecting this repository with Cloudflare Workers Builds, configure the build settings
+as follows:
+
+- Build command: leave empty; this repository's Wrangler entry is the scheduler Worker, not the Next.js application build.
+- Deploy command: `npx wrangler deploy --config wrangler.jsonc`
+- Version command: `npx wrangler versions upload --config wrangler.jsonc`
+- Root directory: `/`
+
+Set `APP_BASE_URL` to the public URL of the deployed Next.js application, not the Worker URL
+and not `localhost`. Set `NOTIFICATION_DISPATCH_TOKEN` as a Worker secret. The Next.js
+application itself must use `NOTIFICATION_SCHEDULER_PROVIDER=cloudflare`, the same dispatch
+token, and the same `NOTIFICATION_ENCRYPTION_KEY_BASE64`.
+
+The current Wrangler file deploys the five-minute scheduler Worker only. It does not deploy
+the Next.js application or move its Node.js/MySQL runtime into Cloudflare Workers.
 
 ### Important deployment rule
 
