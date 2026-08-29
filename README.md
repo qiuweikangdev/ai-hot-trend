@@ -124,6 +124,8 @@ token, and the same `NOTIFICATION_ENCRYPTION_KEY_BASE64`.
 
 The current Wrangler file deploys the five-minute scheduler Worker only. It does not deploy
 the Next.js application or move its Node.js/MySQL runtime into Cloudflare Workers.
+Opening the Worker `workers.dev` URL only shows its scheduler health response; use the
+application URL from `APP_BASE_URL` to open the product UI.
 
 ### Important deployment rule
 
