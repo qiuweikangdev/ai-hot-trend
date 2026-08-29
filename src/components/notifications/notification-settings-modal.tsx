@@ -136,7 +136,7 @@ export function NotificationSettingsModal({ isOpen, onClose }: NotificationSetti
   const [isEnabled, setIsEnabled] = useState(true)
   const [isLoading, setIsLoading] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
-  const [isTesting, setIsTesting] = useState(false)
+  const [isPushing, setIsPushing] = useState(false)
   const [message, setMessage] = useState('')
   useEffect(() => {
     if (!isOpen)
@@ -228,26 +228,33 @@ export function NotificationSettingsModal({ isOpen, onClose }: NotificationSetti
     }
   }
 
-  async function sendTest() {
-    setIsTesting(true)
+  async function sendNotification() {
+    setIsPushing(true)
     setMessage('')
 
     try {
-      const response = await fetch(`/api/notification-settings/${activeChannel}/test`, {
+      const response = await fetch(`/api/notification-settings/${activeChannel}/push`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(activeChannel === 'feishu' ? { webhookUrl, secret } : { email, recipientEmail, authorizationCode }),
+        body: JSON.stringify(activeChannel === 'feishu'
+          ? { webhookUrl, secret, subscription: { sources, period, limit, scheduledMinute: deliveryMinute } }
+          : { email, recipientEmail, authorizationCode, subscription: { sources, period, limit, scheduledMinute: deliveryMinute } }),
       })
       if (!response.ok)
-        throw new Error(activeChannel === 'feishu' ? '测试消息发送失败，请检查机器人 Webhook。' : '测试消息发送失败，请检查 QQ 邮箱授权码。')
-      setMessage('测试消息已发送')
+        throw new Error(await getResponseErrorMessage(response, activeChannel === 'feishu' ? '推送失败，请检查飞书 Webhook、内容来源和网络连接。' : '推送失败，请检查邮箱地址、收件邮箱、授权码、内容来源和网络连接。'))
+      setMessage('热点已推送')
     }
     catch (error) {
-      setMessage(error instanceof Error ? error.message : '测试消息发送失败。')
+      setMessage(error instanceof Error ? error.message : '推送失败，请稍后重试。')
     }
     finally {
-      setIsTesting(false)
+      setIsPushing(false)
     }
+  }
+
+  async function getResponseErrorMessage(response: Response, fallback: string) {
+    const result = await response.json().catch(() => null) as { message?: unknown } | null
+    return typeof result?.message === 'string' && result.message ? result.message : fallback
   }
 
   return (
@@ -272,7 +279,7 @@ export function NotificationSettingsModal({ isOpen, onClose }: NotificationSetti
                 className={cn(
                   'flex h-8 items-center border-b-2 border-transparent text-xs font-medium text-muted-foreground transition-colors',
                   channel.enabled ? 'hover:text-foreground' : 'cursor-not-allowed opacity-35',
-                  channel.value === activeChannel && 'border-foreground text-foreground',
+                  channel.value === activeChannel && 'border-foreground text-foreground dark:border-primary',
                 )}
                 onClick={() => selectChannel(channel.value)}
               >
@@ -365,7 +372,7 @@ export function NotificationSettingsModal({ isOpen, onClose }: NotificationSetti
                             className={cn(
                               'inline-flex h-7 items-center justify-center gap-1 rounded-md border px-2.5 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60 focus-visible:ring-offset-2',
                               isSelected
-                                ? 'border-foreground bg-foreground text-background shadow-xs hover:bg-foreground/90'
+                                ? 'border-foreground bg-foreground text-background shadow-xs hover:bg-foreground/90 dark:border-primary dark:bg-primary dark:text-primary-foreground dark:hover:bg-primary/90'
                                 : 'border-transparent bg-muted/40 text-muted-foreground hover:border-border hover:bg-muted hover:text-foreground',
                             )}
                             onClick={() => toggleSource(source.value)}
@@ -382,7 +389,7 @@ export function NotificationSettingsModal({ isOpen, onClose }: NotificationSetti
                     <div className="flex items-center justify-between gap-4">
                       <h3 className="text-xs font-semibold text-foreground">规则</h3>
                       <label className="flex shrink-0 items-center gap-2 text-xs font-medium text-foreground">
-                        <input type="checkbox" className="size-3.5 accent-foreground" checked={isEnabled} onChange={event => setIsEnabled(event.target.checked)} />
+                        <input type="checkbox" className="size-3.5 accent-primary" checked={isEnabled} onChange={event => setIsEnabled(event.target.checked)} />
                         启用
                       </label>
                     </div>
@@ -411,11 +418,11 @@ export function NotificationSettingsModal({ isOpen, onClose }: NotificationSetti
         <footer className="flex min-h-12 shrink-0 items-center justify-between gap-3 border-t border-border bg-card px-4 py-2 sm:px-5">
           <p aria-live="polite" className="min-w-0 truncate text-xs text-muted-foreground">{message}</p>
           <div className="flex shrink-0 gap-2">
-            <Button type="button" variant="outline" size="sm" onClick={sendTest} disabled={isLoading || isTesting || isSaving}>
-              {isTesting ? <Loader2 className="size-3.5 animate-spin" /> : <Send className="size-3.5" strokeWidth={1.75} />}
-              测试
+            <Button type="button" variant="outline" size="sm" onClick={sendNotification} disabled={isLoading || isPushing || isSaving}>
+              {isPushing ? <Loader2 className="size-3.5 animate-spin" /> : <Send className="size-3.5" strokeWidth={1.75} />}
+              推送
             </Button>
-            <Button type="button" size="sm" onClick={saveSettings} disabled={isLoading || isTesting || isSaving}>
+            <Button type="button" size="sm" onClick={saveSettings} disabled={isLoading || isPushing || isSaving}>
               {isSaving ? <Loader2 className="size-3.5 animate-spin" /> : <Save className="size-3.5" strokeWidth={1.75} />}
               保存
             </Button>

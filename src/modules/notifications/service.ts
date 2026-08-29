@@ -5,6 +5,7 @@ import type { TrendPeriod, TrendSource } from '@/modules/trends/types'
 import process from 'node:process'
 import { getPrisma } from '@/lib/prisma'
 import { decryptNotificationConfig, encryptNotificationConfig } from '@/modules/notifications/crypto'
+import { buildNotificationDigest } from '@/modules/notifications/digest'
 import { getFeishuPublicSummary, parseFeishuConfig, sendFeishuText } from '@/modules/notifications/providers/feishu'
 import { getQqEmailPublicSummary, parseQqEmailConfig, sendQqEmail } from '@/modules/notifications/providers/qq-email'
 import { parseSubscriptionInput } from '@/modules/notifications/subscription'
@@ -52,6 +53,17 @@ async function getSavedChannelConfig<T>(userId: string, type: NotificationChanne
     iv: channel.encryptionIv,
     tag: channel.encryptionTag,
   })
+}
+
+function parseManualNotificationInput(value: unknown) {
+  if (!value || typeof value !== 'object')
+    throw new Error('Invalid notification settings')
+
+  const input = value as Record<string, unknown>
+  return {
+    input,
+    subscription: parseSubscriptionInput(input.subscription),
+  }
 }
 
 async function saveChannelConfig({
@@ -209,6 +221,18 @@ export async function testFeishuSettings(userId: string, value: unknown) {
   }
 }
 
+export async function pushFeishuNotification(userId: string, value: unknown) {
+  const { input, subscription } = parseManualNotificationInput(value)
+  const existingConfig = await getSavedChannelConfig<FeishuConfig>(userId, 'feishu')
+  const config = parseFeishuConfig({
+    webhookUrl: hasValue(input.webhookUrl) ? input.webhookUrl : existingConfig?.webhookUrl,
+    secret: hasValue(input.secret) ? input.secret : existingConfig?.secret,
+  })
+  const message = await buildNotificationDigest(subscription)
+  await sendFeishuText(config, message)
+  return { success: true }
+}
+
 export async function deleteFeishuSettings(userId: string) {
   await getPrisma().notificationChannel.deleteMany({ where: { userId, type: 'feishu' } })
 }
@@ -247,6 +271,19 @@ export async function testQqEmailSettings(userId: string, value: unknown) {
     await getPrisma().notificationChannel.updateMany({ where: { userId, type: 'email' }, data: { lastTestedAt: new Date(), lastTestStatus: 'failed', lastTestMessage: 'Test message failed' } })
     throw error
   }
+}
+
+export async function pushQqEmailNotification(userId: string, value: unknown) {
+  const { input, subscription } = parseManualNotificationInput(value)
+  const existingConfig = await getSavedChannelConfig<QqEmailConfig>(userId, 'email')
+  const config = parseQqEmailConfig({
+    email: hasValue(input.email) ? input.email : existingConfig?.email,
+    recipientEmail: hasValue(input.recipientEmail) ? input.recipientEmail : existingConfig?.recipientEmail,
+    authorizationCode: hasValue(input.authorizationCode) ? input.authorizationCode : existingConfig?.authorizationCode,
+  })
+  const message = await buildNotificationDigest(subscription)
+  await sendQqEmail(config, message)
+  return { success: true }
 }
 
 export async function deleteQqEmailSettings(userId: string) {

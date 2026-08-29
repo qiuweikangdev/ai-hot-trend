@@ -30,7 +30,10 @@ export async function sendFeishuText(config: FeishuConfig, text: string) {
     payload.sign = createHmac('sha256', `${payload.timestamp}\n${config.secret}`).digest('base64')
   }
   const response = await fetch(config.webhookUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload), cache: 'no-store' })
-  const result = await response.json().catch(() => null) as { code?: number } | null
-  if (!response.ok || result?.code !== 0)
-    throw new Error('Feishu robot rejected the request')
+  const result = await response.json().catch(() => null) as { code?: number, msg?: string, StatusCode?: number, StatusMessage?: string } | null
+  const statusCode = result?.code ?? result?.StatusCode
+  if (!response.ok || statusCode !== 0) {
+    const detail = result?.msg || result?.StatusMessage
+    throw new Error(detail ? `Feishu robot rejected the request (${statusCode ?? response.status}: ${detail})` : `Feishu robot rejected the request (${statusCode ?? response.status})`)
+  }
 }
