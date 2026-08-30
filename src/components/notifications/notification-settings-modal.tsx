@@ -402,7 +402,7 @@ export function NotificationSettingsModal({ isOpen, onClose }: NotificationSetti
                             className={cn(
                               'inline-flex h-8 items-center justify-center gap-1 rounded-full border px-3 text-xs font-medium transition-[background-color,border-color,color,transform] duration-150 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60 focus-visible:ring-offset-2',
                               isSelected
-                                ? 'border-transparent bg-foreground text-background hover:bg-foreground/90 dark:bg-accent dark:text-foreground dark:hover:bg-accent/80'
+                                ? 'border-border bg-secondary text-foreground hover:border-border hover:bg-secondary/80 dark:border-transparent dark:bg-accent dark:text-foreground dark:hover:bg-accent/80'
                                 : 'border-border/70 bg-transparent text-muted-foreground hover:border-ring/70 hover:bg-secondary hover:text-foreground',
                             )}
                             onClick={() => toggleSource(source.value)}
@@ -456,7 +456,7 @@ export function NotificationSettingsModal({ isOpen, onClose }: NotificationSetti
               {isPushing ? <Loader2 className="size-3.5 animate-spin" /> : <Send className="size-3.5" strokeWidth={1.75} />}
               推送
             </Button>
-            <Button type="button" size="sm" className="h-8 rounded-md border border-border/70 bg-secondary/80 px-3 text-xs font-medium text-foreground shadow-none hover:border-border hover:bg-secondary" onClick={saveSettings} disabled={isLoading || isPushing || isSaving}>
+            <Button type="button" size="sm" className="h-8 rounded-md border border-transparent bg-foreground px-3 text-xs font-medium text-background shadow-none hover:bg-foreground/90 dark:border-transparent dark:bg-foreground dark:text-background dark:hover:bg-foreground/90" onClick={saveSettings} disabled={isLoading || isPushing || isSaving}>
               {isSaving ? <Loader2 className="size-3.5 animate-spin" /> : <Save className="size-3.5" strokeWidth={1.75} />}
               保存
             </Button>
