@@ -1,4 +1,4 @@
-import type { NpmDownloadsPointResponse, NpmSearchResponse } from '@/modules/trends/sources/npm/types'
+import type { NpmDownloadsPointResponse, NpmSearchObject, NpmSearchResponse } from '@/modules/trends/sources/npm/types'
 import type { TrendPeriod, TrendQuery } from '@/modules/trends/types'
 
 const PERIOD_POINT_RANGE_MAP: Record<TrendPeriod, string> = {
@@ -14,6 +14,8 @@ const PERIOD_RANGE_START_MAP: Record<TrendPeriod, string> = {
 }
 
 const BULK_DOWNLOAD_CHUNK_SIZE = 40
+const NPM_SEARCH_PAGE_SIZE = 120
+const MAX_NPM_SEARCH_PAGES = 5
 
 const LANGUAGE_KEYWORD_MAP: Record<string, string> = {
   'js': 'javascript',
@@ -119,13 +121,11 @@ export function isPackageRecentlyUpdated(dateString: string | undefined, period:
   return packageDate >= cutoff
 }
 
-export async function searchNpmTrendingPackages(query: TrendQuery): Promise<NpmSearchResponse> {
-  const conditions = buildNpmSearchConditions(query)
-
+async function fetchNpmSearchPage(conditions: string[], from: number): Promise<NpmSearchResponse> {
   const searchParams = new URLSearchParams({
     text: conditions.join(' '),
-    size: String(Math.min(query.limit * 6, 120)),
-    from: String(query.offset),
+    size: String(NPM_SEARCH_PAGE_SIZE),
+    from: String(from),
   })
 
   const response = await fetch(`https://registry.npmjs.org/-/v1/search?${searchParams.toString()}`, {
@@ -142,12 +142,27 @@ export async function searchNpmTrendingPackages(query: TrendQuery): Promise<NpmS
   }
 
   const payload = await response.json() as NpmSearchResponse
+  return payload
+}
 
-  const activePackages = payload.objects.filter(obj => isPackageRecentlyUpdated(obj.package.date, query.period))
+export async function searchNpmTrendingPackages(query: TrendQuery): Promise<NpmSearchResponse> {
+  const conditions = buildNpmSearchConditions(query)
+  const targetCount = query.offset + query.limit
+  const activePackages: NpmSearchObject[] = []
+  let lastPayload: NpmSearchResponse = { objects: [] }
+
+  for (let page = 0; page < MAX_NPM_SEARCH_PAGES && activePackages.length < targetCount; page++) {
+    const payload = await fetchNpmSearchPage(conditions, page * NPM_SEARCH_PAGE_SIZE)
+    lastPayload = payload
+    activePackages.push(...payload.objects.filter(obj => isPackageRecentlyUpdated(obj.package.date, query.period)))
+
+    if (payload.objects.length < NPM_SEARCH_PAGE_SIZE)
+      break
+  }
 
   return {
-    ...payload,
-    objects: activePackages,
+    ...lastPayload,
+    objects: activePackages.slice(0, targetCount),
   }
 }
 

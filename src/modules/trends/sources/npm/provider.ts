@@ -24,12 +24,12 @@ export class NpmTrendProvider implements TrendProvider {
       .sort((left, right) => {
         return right.stats!.growthRate - left.stats!.growthRate
       })
-      .slice(0, query.limit)
+      .slice(query.offset, query.offset + query.limit)
 
     return rankedItems.map((entry, index) => {
       return mapNpmPackageToTrendItem(
         entry.item,
-        index,
+        query.offset + index,
         entry.stats!.currentDownloads,
         entry.stats!.growthRate,
       )
