@@ -8,6 +8,6 @@ test('orders enabled trend sources for navigation', () => {
     TREND_SOURCE_OPTIONS
       .filter(option => option.enabled)
       .map(option => option.label),
-    ['AI', 'Python', 'Github', 'Node', 'React', 'Vue', 'npm', '组件库', 'V2EX', '知乎', '掘金', '微博'],
+    ['AI', 'Python', 'Go', 'Github', 'Node', 'React', 'Vue', 'npm', '组件库', 'V2EX', '知乎', '掘金', '微博'],
   )
 })

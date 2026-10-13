@@ -3,6 +3,7 @@ import type { TrendItem, TrendSource } from '@/modules/trends/types'
 const GITHUB_REPOSITORY_SOURCES: ReadonlySet<TrendSource> = new Set([
   'github',
   'python',
+  'go',
   'node',
   'react',
   'vue',

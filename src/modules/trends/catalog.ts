@@ -28,6 +28,7 @@ export const TREND_SOURCE_OPTIONS: TrendSourceOption[] = [
   { value: 'hot', label: '热点聚合', enabled: false, description: '聚合多站点热度排行' },
   { value: 'ai', label: 'AI', enabled: true, description: 'Best of JS 的 AI 生态增星趋势' },
   { value: 'python', label: 'Python', enabled: true, description: 'GitHub Python 热门开源项目趋势' },
+  { value: 'go', label: 'Go', enabled: true, description: 'GitHub Go 热门开源项目趋势' },
   { value: 'github', label: 'Github', enabled: true, description: '代码仓库热点趋势' },
   { value: 'node', label: 'Node', enabled: true, description: 'Best of JS 的 Node 生态增星趋势' },
   { value: 'react', label: 'React', enabled: true, description: 'Best of JS 的 React 生态增星趋势' },

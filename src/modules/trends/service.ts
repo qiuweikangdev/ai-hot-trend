@@ -13,6 +13,7 @@ const TREND_CACHE_VERSION_MAP: Record<TrendSource, string> = {
   node: 'v1',
   ai: 'v1',
   python: 'v1',
+  go: 'v1',
   component: 'v1',
   zhihu: 'v1',
   juejin: 'v1',
